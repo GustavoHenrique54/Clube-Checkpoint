@@ -1,0 +1,26 @@
+{
+  "name": "ClubLink",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Link title"
+    },
+    "url": {
+      "type": "string",
+      "description": "URL"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of the link"
+    },
+    "emoji": {
+      "type": "string",
+      "description": "Emoji icon for the link"
+    }
+  },
+  "required": [
+    "title",
+    "url"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "FriendRequest",
+  "type": "object",
+  "properties": {
+    "sender_user_id": {
+      "type": "string",
+      "description": "ID of the user who sent the request"
+    },
+    "receiver_user_id": {
+      "type": "string",
+      "description": "ID of the user who received the request"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Status of the friend request"
+    }
+  },
+  "required": [
+    "sender_user_id",
+    "receiver_user_id"
+  ]
+}

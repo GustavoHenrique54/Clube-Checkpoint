@@ -1,0 +1,31 @@
+{
+  "name": "ClubNews",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "News title"
+    },
+    "excerpt": {
+      "type": "string",
+      "description": "Short summary shown in the card"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full article content"
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Cover image URL"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this news is visible to members"
+    }
+  },
+  "required": [
+    "title",
+    "content"
+  ]
+}

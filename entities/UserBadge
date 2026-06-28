@@ -1,0 +1,26 @@
+{
+  "name": "UserBadge",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user who earned this badge"
+    },
+    "badge_id": {
+      "type": "string",
+      "description": "ID of the badge"
+    },
+    "granted_by_admin": {
+      "type": "string",
+      "description": "Email of the admin who granted this badge"
+    },
+    "note": {
+      "type": "string",
+      "description": "Optional note about why badge was granted"
+    }
+  },
+  "required": [
+    "user_id",
+    "badge_id"
+  ]
+}

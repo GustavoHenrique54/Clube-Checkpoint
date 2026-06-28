@@ -1,0 +1,54 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Badge name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Badge description"
+    },
+    "icon_image": {
+      "type": "string",
+      "description": "URL to badge icon image"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "participation",
+        "game_completion",
+        "events",
+        "founder",
+        "special",
+        "secret",
+        "veteran"
+      ],
+      "description": "Badge category"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "default": "common",
+      "description": "Badge rarity level"
+    },
+    "is_secret": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the badge is secret until earned"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "category",
+    "rarity"
+  ]
+}

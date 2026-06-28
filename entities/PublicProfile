@@ -1,0 +1,73 @@
+{
+  "name": "PublicProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Reference to the User id"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Display name shown on profile"
+    },
+    "username": {
+      "type": "string",
+      "description": "Unique username"
+    },
+    "bio": {
+      "type": "string",
+      "description": "User bio"
+    },
+    "profile_image": {
+      "type": "string",
+      "description": "Profile picture URL"
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Cover image URL"
+    },
+    "featured_badges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of featured badges"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "discord": {
+      "type": "string"
+    },
+    "steam": {
+      "type": "string"
+    },
+    "psn_username": {
+      "type": "string"
+    },
+    "xbox_username": {
+      "type": "string"
+    },
+    "games_completed": {
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Number of games completed"
+    },
+    "meetings_attended": {
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Number of meetings attended"
+    },
+    "score": {
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Total badge score for leaderboard"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

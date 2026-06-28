@@ -1,0 +1,96 @@
+{
+  "name": "LandingConfig",
+  "type": "object",
+  "properties": {
+    "subtitle_font_url": {
+      "type": "string",
+      "description": "URL da fonte para o texto 'clube'"
+    },
+    "subtitle_font_name": {
+      "type": "string",
+      "description": "Nome da fonte para o texto 'clube'"
+    },
+    "title_font_url": {
+      "type": "string",
+      "description": "URL da fonte para o texto 'CHECKPOINT'"
+    },
+    "title_font_name": {
+      "type": "string",
+      "description": "Nome da fonte para o texto 'CHECKPOINT'"
+    },
+    "body_font_url": {
+      "type": "string",
+      "description": "URL da fonte para textos gerais"
+    },
+    "body_font_name": {
+      "type": "string",
+      "description": "Nome da fonte para textos gerais"
+    },
+    "gradient_from": {
+      "type": "string",
+      "description": "Cor inicial do gradiente de fundo (hex)",
+      "default": "#0f2566"
+    },
+    "gradient_mid": {
+      "type": "string",
+      "description": "Cor do meio do gradiente (hex)",
+      "default": "#1d4ed8"
+    },
+    "gradient_to": {
+      "type": "string",
+      "description": "Cor final do gradiente (hex)",
+      "default": "#3b82f6"
+    },
+    "title_size": {
+      "type": "string",
+      "description": "Tamanho do t\u00edtulo CHECKPOINT (ex: 8rem)",
+      "default": "6rem"
+    },
+    "subtitle_size": {
+      "type": "string",
+      "description": "Tamanho do subt\u00edtulo clube (ex: 2rem)",
+      "default": "1.875rem"
+    },
+    "hero_title": {
+      "type": "string",
+      "description": "Texto principal do hero (CHECKPOINT)"
+    },
+    "hero_subtitle": {
+      "type": "string",
+      "description": "Texto do subt\u00edtulo (clube)"
+    },
+    "hero_tagline": {
+      "type": "string",
+      "description": "Tagline abaixo do t\u00edtulo"
+    },
+    "hero_description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o no hero"
+    },
+    "cta_title": {
+      "type": "string",
+      "description": "T\u00edtulo do bloco CTA"
+    },
+    "cta_description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do bloco CTA"
+    },
+    "cta_button_text": {
+      "type": "string",
+      "description": "Texto do bot\u00e3o CTA"
+    },
+    "features_title": {
+      "type": "string",
+      "description": "T\u00edtulo da se\u00e7\u00e3o Como Funciona"
+    },
+    "features_subtitle": {
+      "type": "string",
+      "description": "Subt\u00edtulo da se\u00e7\u00e3o Como Funciona"
+    },
+    "news_section_title": {
+      "type": "string",
+      "description": "T\u00edtulo da se\u00e7\u00e3o de not\u00edcias"
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,27 @@
+{
+  "name": "ClubHub",
+  "type": "object",
+  "properties": {
+    "active_game_title": {
+      "type": "string",
+      "description": "Title of the current active game"
+    },
+    "active_game_image": {
+      "type": "string",
+      "description": "Cover image URL of the active game"
+    },
+    "active_game_description": {
+      "type": "string",
+      "description": "Short description or progress notes"
+    },
+    "next_meeting_datetime": {
+      "type": "string",
+      "description": "ISO datetime of the next meeting"
+    },
+    "meeting_location": {
+      "type": "string",
+      "description": "Where the meeting will be held (text or URL)"
+    }
+  },
+  "required": []
+}
