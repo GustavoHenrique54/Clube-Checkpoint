@@ -14,7 +14,7 @@ import {
 "@/components/ui/dialog";
 import {
   Pencil, Plus, Trash2, ExternalLink, Gamepad2, Calendar,
-  Link as LinkIcon, Newspaper, Globe, Save, X, MapPin, Trophy, Medal, Crown, ChevronLeft, ChevronRight } from
+  Link as LinkIcon, Newspaper, Save, MapPin, Trophy, Medal, Crown, ChevronLeft, ChevronRight } from
 "lucide-react";
 
 function formatMeetingDate(dt) {

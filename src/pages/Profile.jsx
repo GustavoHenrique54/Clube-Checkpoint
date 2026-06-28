@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Pencil, ExternalLink, Copy, Check, Search, Users, UserCheck, Clock, X, Trophy, Filter, Shield } from "lucide-react";
+import { Pencil, ExternalLink, Copy, Check, Search, Users, UserCheck, Clock, X, Filter, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

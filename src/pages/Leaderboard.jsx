@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Trophy, Medal, Crown, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
+import { Trophy, Medal, Crown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const PAGE_SIZE = 15;

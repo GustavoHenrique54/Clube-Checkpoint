@@ -4,8 +4,6 @@ import React, { useState, useEffect } from "react";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
 import { Copy, Check, UserPlus, UserCheck, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileHeader from "@/components/profile/ProfileHeader";

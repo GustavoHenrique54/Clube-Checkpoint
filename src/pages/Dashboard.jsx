@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Trophy, Pencil, ExternalLink, Star, Gamepad2, Calendar, ArrowRight } from "lucide-react";
+import { Trophy, Pencil, ExternalLink, Star, Gamepad2, Calendar } from "lucide-react";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import RecentBadges from "@/components/profile/RecentBadges";
 

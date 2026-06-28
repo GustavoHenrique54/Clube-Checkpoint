@@ -6,7 +6,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Users, UserCheck, Clock, Check, X, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function FriendsSidebar({ userId }) {
   const queryClient = useQueryClient();
