@@ -1,7 +1,7 @@
 import { db } from "@/api/supabaseClient";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon, Library } from "lucide-react";
+import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon, Library, Settings } from "lucide-react";
 
 const PUBLIC_PAGES = ["Landing", "PublicProfile"];
 
@@ -125,7 +125,8 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   if (isAdmin) {
-    navigation.push({ name: "Configurações", href: "/AdminLandingConfig", icon: Shield });
+    navigation.push({ name: "Painel Admin", href: "/AdminDashboard", icon: Shield });
+    navigation.push({ name: "Configurações", href: "/AdminLandingConfig", icon: Settings });
   }
 
   return (
