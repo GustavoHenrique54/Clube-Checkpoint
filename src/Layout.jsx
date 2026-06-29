@@ -1,7 +1,7 @@
 import { db } from "@/api/supabaseClient";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon } from "lucide-react";
+import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon, Library } from "lucide-react";
 
 const PUBLIC_PAGES = ["Landing", "PublicProfile"];
 
@@ -117,6 +117,7 @@ export default function Layout({ children, currentPageName }) {
 
   const navigation = [
     { name: "Hub do Clube", href: "/hub", icon: Gamepad2 },
+    { name: "Jogos", href: "/ConsideredGames", icon: Library },
     { name: "Placar", href: "/Leaderboard", icon: Trophy },
     { name: "Buscar Membros", href: "/SearchProfiles", icon: Users },
     { name: "Amigos", href: "/Friends", icon: Users },

@@ -61,6 +61,7 @@ import Landing from './pages/Landing';
 import Profile from './pages/Profile';
 import PublicProfile from './pages/PublicProfile';
 import SearchProfiles from './pages/SearchProfiles';
+import ConsideredGames from './pages/ConsideredGames';
 import __Layout from './Layout.jsx';
 
 export const PAGES = {
@@ -78,6 +79,7 @@ export const PAGES = {
     "Profile": Profile,
     "PublicProfile": PublicProfile,
     "SearchProfiles": SearchProfiles,
+    "ConsideredGames": ConsideredGames,
 }
 
 export const pagesConfig = {
