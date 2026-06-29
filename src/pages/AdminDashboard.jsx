@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
         <div className="text-center">
           <Shield className="w-12 h-12 text-white/40 mx-auto mb-4" />
           <h2 className="text-xl font-black text-white uppercase">Acesso Negado</h2>
-          <p className="text-white/60 mt-2">Você precisa de permissões de admin.</p>
+          <p className="text-white/60 mt-2">VocÃª precisa de permissÃµes de admin.</p>
         </div>
       </div>
     );
@@ -77,8 +77,8 @@ export default function AdminDashboard() {
           { to: "AdminUsers", icon: Users, label: "Gerenciar Membros", desc: "Ver e conceder emblemas" },
           { to: "AdminBadges", icon: Trophy, label: "Gerenciar Emblemas", desc: "Criar e editar emblemas" },
           { to: "AdminGrantBadge", icon: Award, label: "Conceder Emblema", desc: "Dar emblemas a membros" },
-          { to: "AdminBatchBadge", icon: Award, label: "Emblemas em Lote", desc: "Conceder/revogar para vários membros" },
-          { to: "AdminLandingConfig", icon: Shield, label: "Visual da Landing", desc: "Fonts e estilo da página inicial" },
+          { to: "AdminBatchBadge", icon: Award, label: "Emblemas em Lote", desc: "Conceder/revogar para vÃ¡rios membros" },
+          { to: "AdminLandingConfig", icon: Shield, label: "Visual da Landing", desc: "Fonts e estilo da pÃ¡gina inicial" },
         ].map((item) => (
           <Link
             key={item.to}
@@ -94,7 +94,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6">
-        <h2 className="text-lg font-black text-white uppercase mb-4">Últimos Emblemas Concedidos</h2>
+        <h2 className="text-lg font-black text-white uppercase mb-4">Ãšltimos Emblemas Concedidos</h2>
         {recentGrants.length === 0 ? (
           <p className="text-white/50 text-sm">Nenhum emblema concedido ainda.</p>
         ) : (
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
                 <div key={ub.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                      {badge?.icon_image ? <img src={badge.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span>🏆</span>}
+                      {badge?.icon_image ? <img src={badge.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span>ðŸ†</span>}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white">{badge?.name || "Desconhecido"}</p>

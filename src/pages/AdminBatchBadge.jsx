@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -16,7 +16,7 @@ const rarityColors = {
   epic: "text-purple-300", legendary: "text-yellow-300",
 };
 const rarityLabels = {
-  common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Épico", legendary: "Lendário",
+  common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Ã‰pico", legendary: "LendÃ¡rio",
 };
 
 export default function AdminBatchBadge() {
@@ -185,7 +185,7 @@ export default function AdminBatchBadge() {
         <div className="bg-green-500/20 border border-green-400/40 rounded-xl p-4 flex items-center gap-3">
           <Check className="w-5 h-5 text-green-300" />
           <p className="text-green-300 text-sm font-bold">
-            Operação concluída com sucesso para {selectedUsers.length} membro(s) e {selectedBadges.length} emblema(s)!
+            OperaÃ§Ã£o concluÃ­da com sucesso para {selectedUsers.length} membro(s) e {selectedBadges.length} emblema(s)!
           </p>
         </div>
       )}
@@ -272,7 +272,7 @@ export default function AdminBatchBadge() {
             {displayBadges.length === 0 ? (
               <p className="text-sm text-white/40 text-center py-6">
                 {mode === "revoke" && selectedUsers.length === 0
-                  ? "Selecione membros primeiro para ver os emblemas revogáveis."
+                  ? "Selecione membros primeiro para ver os emblemas revogÃ¡veis."
                   : "Nenhum emblema encontrado."}
               </p>
             ) : (
@@ -285,7 +285,7 @@ export default function AdminBatchBadge() {
                     className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left ${isSelected ? "bg-white/20 border border-white/30" : "hover:bg-white/10"}`}
                   >
                     <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
-                      {b.icon_image ? <img src={b.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span className="text-sm">🏆</span>}
+                      {b.icon_image ? <img src={b.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span className="text-sm">ðŸ†</span>}
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm text-white font-bold truncate">{b.name}</p>
@@ -307,7 +307,7 @@ export default function AdminBatchBadge() {
             <p className="text-white font-bold text-sm">
               {selectedUsers.length > 0 && selectedBadges.length > 0 ? (
                 mode === "grant"
-                  ? `Conceder ${selectedBadges.length} emblema(s) para ${selectedUsers.length} membro(s) — ${selectedUsers.length * selectedBadges.length} operações`
+                  ? `Conceder ${selectedBadges.length} emblema(s) para ${selectedUsers.length} membro(s) â€” ${selectedUsers.length * selectedBadges.length} operaÃ§Ãµes`
                   : `Revogar ${selectedBadges.length} emblema(s) de ${selectedUsers.length} membro(s)`
               ) : (
                 <span className="text-white/40">Selecione membros e emblemas para continuar.</span>

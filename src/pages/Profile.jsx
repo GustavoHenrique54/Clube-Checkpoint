@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -16,8 +16,8 @@ import { syncPublicProfile } from "@/lib/syncPublicProfile";
 
 const CATEGORIES = [
   { value: "all", label: "Todas as Categorias" },
-  { value: "participation", label: "Participação" },
-  { value: "game_completion", label: "Games Concluídos" },
+  { value: "participation", label: "ParticipaÃ§Ã£o" },
+  { value: "game_completion", label: "Games ConcluÃ­dos" },
   { value: "events", label: "Eventos" },
   { value: "founder", label: "Fundador" },
   { value: "special", label: "Especial" },
@@ -30,8 +30,8 @@ const RARITIES = [
   { value: "common", label: "Comum" },
   { value: "uncommon", label: "Incomum" },
   { value: "rare", label: "Raro" },
-  { value: "epic", label: "Épico" },
-  { value: "legendary", label: "Lendário" },
+  { value: "epic", label: "Ã‰pico" },
+  { value: "legendary", label: "LendÃ¡rio" },
 ];
 
 export default function Profile() {
@@ -191,7 +191,7 @@ export default function Profile() {
           </Link>
           <Link to={createPageUrl(`PublicProfile?id=${user.id}`)}>
             <Button variant="outline" size="sm" className="border-white/20 text-white bg-transparent hover:bg-white/10 rounded-full font-bold px-4">
-              <ExternalLink className="w-4 h-4 mr-1.5" /> Ver Perfil Público
+              <ExternalLink className="w-4 h-4 mr-1.5" /> Ver Perfil PÃºblico
             </Button>
           </Link>
           <Button variant="outline" size="sm" onClick={() => handleCopyPublicLink(user.id)} className="border-white/20 text-white bg-transparent hover:bg-white/10 rounded-full font-bold px-4">
@@ -210,7 +210,7 @@ export default function Profile() {
 
       {/* Featured Badges */}
       <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
-        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">⭐ Emblemas em Destaque</h2>
+        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">â­ Emblemas em Destaque</h2>
         {featuredBadges.length === 0 ? (
           <p className="text-white/40 text-sm italic font-sans">Nenhum emblema em destaque. <Link to={createPageUrl("EditProfile")} className="underline text-white/60 hover:text-white">Selecionar no perfil</Link></p>
         ) : (
@@ -222,7 +222,7 @@ export default function Profile() {
       <div className="bg-ps-dark-card border border-white/10 rounded-md p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-white uppercase tracking-wide">
-            🏅 Meus Emblemas
+            ðŸ… Meus Emblemas
             <span className="ml-2 text-sm font-bold text-white/50 normal-case">{userBadges.length} / {badges.length}</span>
           </h2>
           <button

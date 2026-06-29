@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -10,13 +10,13 @@ const rarityConfig = {
   common: { color: "text-slate-300", bg: "bg-slate-400/15", border: "border-slate-400/30", label: "Comum" },
   uncommon: { color: "text-green-300", bg: "bg-green-400/15", border: "border-green-400/30", label: "Incomum" },
   rare: { color: "text-blue-200", bg: "bg-blue-300/15", border: "border-blue-300/30", label: "Raro" },
-  epic: { color: "text-purple-300", bg: "bg-purple-400/15", border: "border-purple-400/30", label: "Épico" },
-  legendary: { color: "text-yellow-300", bg: "bg-yellow-400/15", border: "border-yellow-400/30", label: "Lendário" },
+  epic: { color: "text-purple-300", bg: "bg-purple-400/15", border: "border-purple-400/30", label: "Ã‰pico" },
+  legendary: { color: "text-yellow-300", bg: "bg-yellow-400/15", border: "border-yellow-400/30", label: "LendÃ¡rio" },
 };
 
 const categoryLabels = {
-  participation: "Participação",
-  game_completion: "Game Concluído",
+  participation: "ParticipaÃ§Ã£o",
+  game_completion: "Game ConcluÃ­do",
   events: "Eventos",
   founder: "Fundador",
   special: "Especial",
@@ -83,13 +83,13 @@ export default function BadgeDetail() {
             {badge.icon_image ? (
               <img src={badge.icon_image} alt={badge.name} className="w-14 h-14 object-contain" />
             ) : (
-              <span className="text-4xl">🏆</span>
+              <span className="text-4xl">ðŸ†</span>
             )}
           </div>
           <h1 className="text-2xl font-black text-white mt-4 uppercase" style={{textShadow: "2px 2px 0 rgba(0,0,0,0.3)"}}>{badge.name}</h1>
           <div className="flex items-center justify-center gap-2 mt-2">
             <span className={`text-sm font-bold ${rarity.color}`}>{rarity.label}</span>
-            <span className="text-white/30">·</span>
+            <span className="text-white/30">Â·</span>
             <span className="text-sm text-white/60">{categoryLabels[badge.category] || badge.category}</span>
           </div>
           {badge.is_secret && (
@@ -102,7 +102,7 @@ export default function BadgeDetail() {
         {/* Details */}
         <div className="p-6 space-y-6">
           <div>
-            <h3 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-2">Descrição</h3>
+            <h3 className="text-sm font-bold text-white/60 uppercase tracking-wider mb-2">DescriÃ§Ã£o</h3>
             <p className="text-white leading-relaxed">{badge.description}</p>
           </div>
 
@@ -110,7 +110,7 @@ export default function BadgeDetail() {
             <div className={`rounded-xl p-4 ${rarity.bg} border ${rarity.border}`}>
               <div className="flex items-center gap-2 mb-1">
                 <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                <span className="text-sm font-black text-white uppercase">Você conquistou este emblema!</span>
+                <span className="text-sm font-black text-white uppercase">VocÃª conquistou este emblema!</span>
               </div>
               {earnedDate && (
                 <p className="text-xs text-white/60 flex items-center gap-1">

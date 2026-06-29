@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -86,7 +86,7 @@ export default function Friends() {
       {pendingReceived.length > 0 && (
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6 space-y-4">
           <h2 className="text-sm font-black text-white/70 uppercase tracking-wide flex items-center gap-2">
-            <Clock className="w-4 h-4" /> Solicitações Recebidas ({pendingReceived.length})
+            <Clock className="w-4 h-4" /> SolicitaÃ§Ãµes Recebidas ({pendingReceived.length})
           </h2>
           <div className="space-y-3">
             {pendingReceived.map((req) => {

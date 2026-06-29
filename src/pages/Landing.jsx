@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 const features = [
 {
   icon: Trophy,
-  title: "Conquistas Colecionáveis",
-  description: "Ganhe emblemas por cada marco — games concluídos, encontros e conquistas especiais."
+  title: "Conquistas ColecionÃ¡veis",
+  description: "Ganhe emblemas por cada marco â€” games concluÃ­dos, encontros e conquistas especiais."
 },
 {
   icon: Users,
@@ -23,12 +23,12 @@ const features = [
 {
   icon: Star,
   title: "Sistema de Raridade",
-  description: "De Comum a Lendário — os emblemas têm raridades que refletem sua dedicação."
+  description: "De Comum a LendÃ¡rio â€” os emblemas tÃªm raridades que refletem sua dedicaÃ§Ã£o."
 },
 {
   icon: Shield,
   title: "Acompanhe seu Progresso",
-  description: "Veja sua participação, games concluídos e encontros frequentados em um só lugar."
+  description: "Veja sua participaÃ§Ã£o, games concluÃ­dos e encontros frequentados em um sÃ³ lugar."
 }];
 
 export default function Landing() {
@@ -100,7 +100,7 @@ export default function Landing() {
             </div>
 
             <p className="mt-6 text-base sm:text-lg text-white/70 max-w-lg mx-auto leading-relaxed font-sans">
-              {config?.hero_description || "Jogue junto, discuta seus games favoritos e construa sua coleção de conquistas no clube."}
+              {config?.hero_description || "Jogue junto, discuta seus games favoritos e construa sua coleÃ§Ã£o de conquistas no clube."}
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -128,7 +128,7 @@ export default function Landing() {
                   onClick={() => db.auth.redirectToLogin()}
                   className="bg-transparent border border-white/20 text-white hover:bg-white/10 px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-full inline-flex items-center justify-center gap-2 transition-all h-12"
                 >
-                  Já tenho conta
+                  JÃ¡ tenho conta
                 </Button>
               </>
               }
@@ -176,7 +176,7 @@ export default function Landing() {
             <div className="flex items-center gap-3 mb-12 justify-center sm:justify-start">
               <Newspaper className="w-6 h-6 text-ps-blue" />
               <h2 className="text-2xl sm:text-3xl font-display font-light text-white uppercase tracking-wide">
-                {config?.news_section_title || "Últimas Notícias"}
+                {config?.news_section_title || "Ãšltimas NotÃ­cias"}
               </h2>
             </div>
             
@@ -208,7 +208,7 @@ export default function Landing() {
             <div className="mt-12 text-center">
               <Link to={createPageUrl("ClubHub")}>
                 <Button className="bg-transparent border border-white/20 text-white hover:bg-white/10 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all">
-                  Ver todas as notícias <ArrowRight className="w-4 h-4 ml-1 inline" />
+                  Ver todas as notÃ­cias <ArrowRight className="w-4 h-4 ml-1 inline" />
                 </Button>
               </Link>
             </div>
@@ -220,16 +220,16 @@ export default function Landing() {
       <section className="bg-ps-blue py-20 text-center text-white relative">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-display font-light uppercase tracking-wide">
-            {config?.cta_title || "Pronto para Começar?"}
+            {config?.cta_title || "Pronto para ComeÃ§ar?"}
           </h2>
           <p className="text-white/80 mt-4 max-w-md mx-auto text-sm leading-relaxed">
-            {config?.cta_description || "Crie seu perfil e comece a colecionar emblemas que contam a história das suas aventuras gamer."}
+            {config?.cta_description || "Crie seu perfil e comece a colecionar emblemas que contam a histÃ³ria das suas aventuras gamer."}
           </p>
           <Button
             onClick={() => db.auth.redirectToLogin()} 
             className="bg-white text-ps-blue hover:bg-gray-100 mt-8 px-10 py-3 text-sm font-bold uppercase tracking-wider rounded-full inline-flex items-center justify-center gap-2 transition-all h-12 shadow-md border-none"
           >
-            {config?.cta_button_text || "Começar Agora"}
+            {config?.cta_button_text || "ComeÃ§ar Agora"}
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
@@ -242,7 +242,7 @@ export default function Landing() {
             <span className="text-[10px] text-white/55 uppercase tracking-widest font-mono">clube</span>
             <span className="font-display font-light text-white text-lg tracking-wider">CHECKPOINT</span>
           </div>
-          <p className="text-xs text-white/40 font-mono">© {new Date().getFullYear()} Clube Checkpoint. Todos os direitos reservados.</p>
+          <p className="text-xs text-white/40 font-mono">Â© {new Date().getFullYear()} Clube Checkpoint. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState } from "react";
 
@@ -43,7 +43,7 @@ export default function Leaderboard() {
       <div className="flex items-center gap-3">
         <Trophy className="w-6 h-6 text-yellow-400" />
         <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
-          Placar de Líderes
+          Placar de LÃ­deres
         </h1>
       </div>
 
@@ -52,8 +52,8 @@ export default function Leaderboard() {
           { label: "Comum", pts: "5 pts", color: "text-white" },
           { label: "Incomum", pts: "10 pts", color: "text-green-400" },
           { label: "Raro", pts: "25 pts", color: "text-blue-400" },
-          { label: "Épico", pts: "50 pts", color: "text-purple-400" },
-          { label: "Lendário", pts: "100 pts", color: "text-yellow-400" },
+          { label: "Ã‰pico", pts: "50 pts", color: "text-purple-400" },
+          { label: "LendÃ¡rio", pts: "100 pts", color: "text-yellow-400" },
         ].map(({ label, pts, color }) => (
           <div key={label} className="flex-1 min-w-[60px]">
             <p className="text-xs text-white/50 font-bold uppercase">{label}</p>
@@ -101,7 +101,7 @@ export default function Leaderboard() {
             {sorted.length === 0 && (
               <div className="text-center py-12 text-white/50">
                 <Trophy className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                <p className="font-bold">Nenhum membro com pontuação ainda.</p>
+                <p className="font-bold">Nenhum membro com pontuaÃ§Ã£o ainda.</p>
                 <p className="text-sm mt-1">Conquiste emblemas para aparecer aqui!</p>
               </div>
             )}
@@ -119,7 +119,7 @@ export default function Leaderboard() {
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               <span className="text-sm text-white/60 font-bold">
-                Página {page} de {totalPages}
+                PÃ¡gina {page} de {totalPages}
               </span>
               <Button
                 size="sm"

@@ -26,17 +26,63 @@ class SupabaseEntity {
     this.tableName = TABLE_MAPPINGS[entityName] || entityName;
   }
 
+  // Helper to format record going out to the app (parsing arrays, setting compatibility fields)
+  _formatOut(record) {
+    if (!record) return null;
+    const copy = { ...record };
+    
+    // Add created_date alias for backward compatibility (old code references created_date)
+    if (record.created_at && !record.created_date) {
+      copy.created_date = record.created_at;
+    }
+    
+    // Add user_id for profile compatibility
+    if (this.tableName === 'profiles') {
+      copy.user_id = record.id;
+      
+      // Parse featured_badges if stored as text
+      if (typeof record.featured_badges === 'string') {
+        try {
+          copy.featured_badges = JSON.parse(record.featured_badges);
+        } catch (e) {
+          copy.featured_badges = [];
+        }
+      } else if (!record.featured_badges) {
+        copy.featured_badges = [];
+      }
+    }
+    return copy;
+  }
+
+  // Helper to format payload going into the DB (serializing arrays, stripping non-existent fields)
+  _formatIn(data) {
+    const copy = { ...data };
+    if (this.tableName === 'profiles') {
+      // Remove compatibility field user_id (the DB column is 'id')
+      delete copy.user_id;
+
+      // Stringify featured_badges if it is an array/object
+      if (copy.featured_badges && typeof copy.featured_badges !== 'string') {
+        copy.featured_badges = JSON.stringify(copy.featured_badges);
+      }
+    }
+    return copy;
+  }
+
   async list(orderBy = "", limit = 100) {
     try {
       let query = supabase.from(this.tableName).select('*');
       if (orderBy) {
         const desc = orderBy.startsWith("-");
-        const field = desc ? orderBy.slice(1) : orderBy;
+        let field = desc ? orderBy.slice(1) : orderBy;
+        if (field === 'created_date') {
+          field = 'created_at';
+        }
         query = query.order(field, { ascending: !desc });
       }
       const { data, error } = await query.limit(limit);
       if (error) throw error;
-      return data || [];
+      return (data || []).map(r => this._formatOut(r));
     } catch (e) {
       console.error(`Error listing entity ${this.entityName}:`, e);
       return [];
@@ -47,11 +93,15 @@ class SupabaseEntity {
     try {
       let query = supabase.from(this.tableName).select('*');
       for (const [key, value] of Object.entries(criteria)) {
-        query = query.eq(key, value);
+        if (this.tableName === 'profiles' && key === 'user_id') {
+          query = query.eq('id', value);
+        } else {
+          query = query.eq(key, value);
+        }
       }
       const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+      return (data || []).map(r => this._formatOut(r));
     } catch (e) {
       console.error(`Error filtering entity ${this.entityName}:`, e);
       return [];
@@ -62,7 +112,7 @@ class SupabaseEntity {
     try {
       const { data, error } = await supabase.from(this.tableName).select('*').eq('id', id).maybeSingle();
       if (error) throw error;
-      return data;
+      return this._formatOut(data);
     } catch (e) {
       console.error(`Error getting entity ${this.entityName} with id ${id}:`, e);
       return null;
@@ -71,12 +121,11 @@ class SupabaseEntity {
 
   async create(data) {
     try {
-      // Keep original Mongo-like IDs for compatibility or custom items
       const newId = data.id || Math.random().toString(36).substring(2, 11) + Math.random().toString(36).substring(2, 11) + Math.random().toString(36).substring(2, 8);
-      const payload = { id: newId, ...data };
+      const payload = this._formatIn({ id: newId, ...data });
       const { data: created, error } = await supabase.from(this.tableName).insert([payload]).select().single();
       if (error) throw error;
-      return created;
+      return this._formatOut(created);
     } catch (e) {
       console.error(`Error creating entity ${this.entityName}:`, e);
       throw e;
@@ -85,9 +134,10 @@ class SupabaseEntity {
 
   async update(id, data) {
     try {
-      const { data: updated, error } = await supabase.from(this.tableName).update(data).eq('id', id).select().single();
+      const payload = this._formatIn(data);
+      const { data: updated, error } = await supabase.from(this.tableName).update(payload).eq('id', id).select().single();
       if (error) throw error;
-      return updated;
+      return this._formatOut(updated);
     } catch (e) {
       console.error(`Error updating entity ${this.entityName} with id ${id}:`, e);
       throw e;
@@ -128,6 +178,13 @@ export const db = {
       }
 
       if (profile) {
+        // Parse featured_badges if stored as JSON string
+        let featuredBadges = profile.featured_badges;
+        if (typeof featuredBadges === 'string') {
+          try { featuredBadges = JSON.parse(featuredBadges); } catch { featuredBadges = []; }
+        }
+        if (!featuredBadges) featuredBadges = [];
+
         return {
           ...user,
           id: profile.id, // Override with original 24-character profile ID for relation mapping
@@ -144,7 +201,8 @@ export const db = {
           xbox_username: profile.xbox_username,
           games_completed: profile.games_completed,
           meetings_attended: profile.meetings_attended,
-          score: profile.score
+          score: profile.score,
+          featured_badges: featuredBadges
         };
       }
       return user;
@@ -153,9 +211,27 @@ export const db = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
+      // Clean and format payload before sending to Supabase
+      const payload = { ...data };
+      
+      // Remove compatibility field (the DB column is 'id', not 'user_id')
+      delete payload.user_id;
+
+      // Stringify featured_badges if it's an array/object
+      if (payload.featured_badges && typeof payload.featured_badges !== 'string') {
+        payload.featured_badges = JSON.stringify(payload.featured_badges);
+      }
+
+      // Strip undefined values to avoid overwriting with null
+      for (const key of Object.keys(payload)) {
+        if (payload[key] === undefined) {
+          delete payload[key];
+        }
+      }
+
       const { data: updated, error } = await supabase
         .from('profiles')
-        .update(data)
+        .update(payload)
         .eq('email', user.email)
         .select()
         .single();

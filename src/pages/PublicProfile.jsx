@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -110,8 +110,8 @@ export default function PublicProfile() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>Perfil não encontrado</p>
-          <p className="text-white/60 mt-2">Este usuário não existe ou o perfil está indisponível.</p>
+          <p className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>Perfil nÃ£o encontrado</p>
+          <p className="text-white/60 mt-2">Este usuÃ¡rio nÃ£o existe ou o perfil estÃ¡ indisponÃ­vel.</p>
         </div>
       </div>
     );
@@ -143,7 +143,7 @@ export default function PublicProfile() {
               </div>
             ) : isPendingSent ? (
               <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-bold">
-                <Clock className="w-3.5 h-3.5" /> Solicitação enviada
+                <Clock className="w-3.5 h-3.5" /> SolicitaÃ§Ã£o enviada
               </div>
             ) : isPendingReceived ? (
               <Button size="sm" onClick={() => acceptRequestMutation.mutate(friendRequest.id)} className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs h-8 rounded-full px-4">
@@ -160,7 +160,7 @@ export default function PublicProfile() {
 
       {featuredBadges.length > 0 && (
         <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
-          <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">⭐ Emblemas em Destaque</h2>
+          <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">â­ Emblemas em Destaque</h2>
           <BadgeGrid
             badges={featuredBadges}
             userBadges={userBadges}
@@ -170,7 +170,7 @@ export default function PublicProfile() {
       )}
 
       <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
-        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">🏅 Emblemas</h2>
+        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">ðŸ… Emblemas</h2>
         <BadgeIconGrid badges={badges} userBadges={userBadges} />
       </div>
     </div>

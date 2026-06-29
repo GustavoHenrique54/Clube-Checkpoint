@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -47,7 +47,7 @@ export default function ClubHub() {
   const [gameForm, setGameForm] = useState({ active_game_title: "", active_game_image: "", active_game_description: "" });
   const [meetingForm, setMeetingForm] = useState({ next_meeting_datetime: "", meeting_location: "" });
   const [newsForm, setNewsForm] = useState({ title: "", excerpt: "", content: "", cover_image: "", is_published: true });
-  const [linkForm, setLinkForm] = useState({ title: "", url: "", description: "", emoji: "🔗" });
+  const [linkForm, setLinkForm] = useState({ title: "", url: "", description: "", emoji: "ðŸ”—" });
 
   useEffect(() => {db.auth.me().then(setUser);}, []);
 
@@ -165,7 +165,7 @@ export default function ClubHub() {
 
   const openEditLink = (item = null) => {
     setEditingLink(item);
-    setLinkForm(item ? { title: item.title, url: item.url, description: item.description || "", emoji: item.emoji || "🔗" } : { title: "", url: "", description: "", emoji: "🔗" });
+    setLinkForm(item ? { title: item.title, url: item.url, description: item.description || "", emoji: item.emoji || "ðŸ”—" } : { title: "", url: "", description: "", emoji: "ðŸ”—" });
     setEditLinkOpen(true);
   };
 
@@ -187,9 +187,9 @@ export default function ClubHub() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
-            🎮 Hub do Clube
+            ðŸŽ® Hub do Clube
           </h1>
-          <p className="text-white/55 text-sm mt-1">Tudo do Clube Checkpoint em um só lugar</p>
+          <p className="text-white/55 text-sm mt-1">Tudo do Clube Checkpoint em um sÃ³ lugar</p>
         </div>
       </div>
 
@@ -199,7 +199,7 @@ export default function ClubHub() {
           onClick={() => setActiveTab("hub")}
           className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "hub" ? "bg-ps-blue text-white" : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"}`}
         >
-          🎮 Hub
+          ðŸŽ® Hub
         </button>
         <button
           onClick={() => setActiveTab("leaderboard")}
@@ -216,8 +216,8 @@ export default function ClubHub() {
               { label: "Comum", pts: "5 pts", color: "text-white" },
               { label: "Incomum", pts: "10 pts", color: "text-green-400" },
               { label: "Raro", pts: "25 pts", color: "text-blue-400" },
-              { label: "Épico", pts: "50 pts", color: "text-purple-400" },
-              { label: "Lendário", pts: "100 pts", color: "text-yellow-400" },
+              { label: "Ã‰pico", pts: "50 pts", color: "text-purple-400" },
+              { label: "LendÃ¡rio", pts: "100 pts", color: "text-yellow-400" },
             ].map(({ label, pts, color }) => (
               <div key={label} className="flex-1 min-w-[60px]">
                 <p className="text-xs text-white/50 font-bold uppercase">{label}</p>
@@ -258,7 +258,7 @@ export default function ClubHub() {
             {sortedProfiles.length === 0 && (
               <div className="text-center py-12 text-white/50">
                 <Trophy className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                <p className="font-bold">Nenhum membro com pontuação ainda.</p>
+                <p className="font-bold">Nenhum membro com pontuaÃ§Ã£o ainda.</p>
               </div>
             )}
           </div>
@@ -267,7 +267,7 @@ export default function ClubHub() {
               <Button size="sm" variant="outline" onClick={() => setLeaderboardPage(p => Math.max(1, p - 1))} disabled={leaderboardPage === 1} className="border-white/20 text-white bg-transparent hover:bg-white/10 disabled:opacity-30 rounded-full px-4 py-1.5 text-xs font-bold">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-white/60 font-bold">Página {leaderboardPage} de {leaderTotalPages}</span>
+              <span className="text-sm text-white/60 font-bold">PÃ¡gina {leaderboardPage} de {leaderTotalPages}</span>
               <Button size="sm" variant="outline" onClick={() => setLeaderboardPage(p => Math.min(leaderTotalPages, p + 1))} disabled={leaderboardPage === leaderTotalPages} className="border-white/20 text-white bg-transparent hover:bg-white/10 disabled:opacity-30 rounded-full px-4 py-1.5 text-xs font-bold">
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -279,7 +279,7 @@ export default function ClubHub() {
       {activeTab === "hub" && <>
       {/* Active Game + Meeting */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Active Game — vertical cover */}
+        {/* Active Game â€” vertical cover */}
         <div className="bg-ps-dark-card border border-white/10 rounded-md overflow-hidden relative group flex flex-col justify-center flex-1">
           {isAdmin &&
           <button onClick={openEditGame} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/40 text-white/70 hover:text-white hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100">
@@ -304,7 +304,7 @@ export default function ClubHub() {
                 }
                 </> :
 
-              <p className="text-white/40 text-sm italic">{isAdmin ? "Clique no lápis para definir o jogo ativo." : "Nenhum jogo ativo no momento."}</p>
+              <p className="text-white/40 text-sm italic">{isAdmin ? "Clique no lÃ¡pis para definir o jogo ativo." : "Nenhum jogo ativo no momento."}</p>
               }
             </div>
           </div>
@@ -318,7 +318,7 @@ export default function ClubHub() {
             </button>
           }
           <div className="flex items-center gap-2 mb-4">
-            <span className="bg-green-600 text-white rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">Próxima Reunião</span>
+            <span className="bg-green-600 text-white rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">PrÃ³xima ReuniÃ£o</span>
           </div>
           {meeting ?
           <div className="space-y-3">
@@ -334,7 +334,7 @@ export default function ClubHub() {
             }
             </div> :
 
-          <p className="text-white/40 text-sm italic">{isAdmin ? "Clique no lápis para definir a reunião." : "Data da próxima reunião não anunciada ainda."}</p>
+          <p className="text-white/40 text-sm italic">{isAdmin ? "Clique no lÃ¡pis para definir a reuniÃ£o." : "Data da prÃ³xima reuniÃ£o nÃ£o anunciada ainda."}</p>
           }
         </div>
       </div>
@@ -344,7 +344,7 @@ export default function ClubHub() {
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <LinkIcon className="w-5 h-5 text-white" />
-            <h2 className="text-base font-bold text-white uppercase tracking-wide">Links Úteis</h2>
+            <h2 className="text-base font-bold text-white uppercase tracking-wide">Links Ãšteis</h2>
           </div>
           {isAdmin &&
           <Button size="sm" onClick={() => openEditLink()} className="bg-ps-blue text-white hover:bg-ps-blue-pressed rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider border-none">
@@ -364,7 +364,7 @@ export default function ClubHub() {
               rel="noopener noreferrer"
               className="flex items-start gap-3 p-4 rounded-md border border-white/10 bg-ps-dark-elevated hover:bg-white/5 transition-all">
 
-                  <span className="text-2xl flex-shrink-0">{link.emoji || "🔗"}</span>
+                  <span className="text-2xl flex-shrink-0">{link.emoji || "ðŸ”—"}</span>
                   <div className="min-w-0">
                     <p className="font-bold text-white text-sm truncate">{link.title}</p>
                     {link.description && <p className="text-white/50 text-xs mt-0.5 line-clamp-2">{link.description}</p>}
@@ -392,16 +392,16 @@ export default function ClubHub() {
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <Newspaper className="w-5 h-5 text-white" />
-            <h2 className="text-base font-bold text-white uppercase tracking-wide">Notícias</h2>
+            <h2 className="text-base font-bold text-white uppercase tracking-wide">NotÃ­cias</h2>
           </div>
           {isAdmin &&
           <Button size="sm" onClick={() => openEditNews()} className="bg-ps-blue text-white hover:bg-ps-blue-pressed rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider border-none">
-              <Plus className="w-4 h-4 mr-1" /> Nova Notícia
+              <Plus className="w-4 h-4 mr-1" /> Nova NotÃ­cia
             </Button>
           }
         </div>
         {publishedNews.length === 0 ?
-        <p className="text-white/40 text-sm italic">Nenhuma notícia publicada ainda.</p> :
+        <p className="text-white/40 text-sm italic">Nenhuma notÃ­cia publicada ainda.</p> :
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {publishedNews.map((item) =>
@@ -420,7 +420,7 @@ export default function ClubHub() {
                     {item.excerpt && <p className="text-white/60 text-xs mt-1.5 line-clamp-2">{item.excerpt}</p>}
                     <p className="text-white/40 text-[10px] mt-2 font-mono">{new Date(item.created_date).toLocaleDateString("pt-BR")}</p>
                     {!item.is_published && isAdmin &&
-                <span className="text-xs text-yellow-400 font-bold mt-1 block">● Rascunho</span>
+                <span className="text-xs text-yellow-400 font-bold mt-1 block">â— Rascunho</span>
                 }
                   </div>
                 </button>
@@ -464,11 +464,11 @@ export default function ClubHub() {
       <Dialog open={editNewsOpen} onOpenChange={setEditNewsOpen}>
         <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-xl max-h-[85vh] overflow-y-auto rounded-md">
           <DialogHeader>
-            <DialogTitle className="text-white font-bold">{editingNews ? "Editar Notícia" : "Nova Notícia"}</DialogTitle>
+            <DialogTitle className="text-white font-bold">{editingNews ? "Editar NotÃ­cia" : "Nova NotÃ­cia"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
-              <Label className="text-white/80 text-sm">Título *</Label>
+              <Label className="text-white/80 text-sm">TÃ­tulo *</Label>
               <Input value={newsForm.title} onChange={(e) => setNewsForm((f) => ({ ...f, title: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
@@ -476,7 +476,7 @@ export default function ClubHub() {
               <Input value={newsForm.excerpt} onChange={(e) => setNewsForm((f) => ({ ...f, excerpt: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
-              <Label className="text-white/80 text-sm">Conteúdo completo *</Label>
+              <Label className="text-white/80 text-sm">ConteÃºdo completo *</Label>
               <Textarea value={newsForm.content} onChange={(e) => setNewsForm((f) => ({ ...f, content: e.target.value }))} rows={6} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 resize-none rounded-sm" />
             </div>
             <div>
@@ -513,7 +513,7 @@ export default function ClubHub() {
               <Input value={gameForm.active_game_image} onChange={(e) => setGameForm((f) => ({ ...f, active_game_image: e.target.value }))} placeholder="https://..." className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
-              <Label className="text-white/80 text-sm">Descrição / Progresso</Label>
+              <Label className="text-white/80 text-sm">DescriÃ§Ã£o / Progresso</Label>
               <Textarea value={gameForm.active_game_description} onChange={(e) => setGameForm((f) => ({ ...f, active_game_description: e.target.value }))} rows={3} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 resize-none rounded-sm" />
             </div>
           </div>
@@ -530,11 +530,11 @@ export default function ClubHub() {
       <Dialog open={editMeetingOpen} onOpenChange={setEditMeetingOpen}>
         <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-md rounded-md">
           <DialogHeader>
-            <DialogTitle className="text-white font-bold">Próxima Reunião</DialogTitle>
+            <DialogTitle className="text-white font-bold">PrÃ³xima ReuniÃ£o</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
-              <Label className="text-white/80 text-sm">Data e Horário</Label>
+              <Label className="text-white/80 text-sm">Data e HorÃ¡rio</Label>
               <input
                 type="datetime-local"
                 value={meetingForm.next_meeting_datetime}
@@ -543,7 +543,7 @@ export default function ClubHub() {
             </div>
             <div>
               <Label className="text-white/80 text-sm">Local / Link</Label>
-              <Input value={meetingForm.meeting_location} onChange={(e) => setMeetingForm((f) => ({ ...f, meeting_location: e.target.value }))} placeholder="Discord, Zoom, endereço..." className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
+              <Input value={meetingForm.meeting_location} onChange={(e) => setMeetingForm((f) => ({ ...f, meeting_location: e.target.value }))} placeholder="Discord, Zoom, endereÃ§o..." className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
           </div>
           <DialogFooter className="mt-4">
@@ -567,7 +567,7 @@ export default function ClubHub() {
               <Input value={linkForm.emoji} onChange={(e) => setLinkForm((f) => ({ ...f, emoji: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white w-20 rounded-sm" />
             </div>
             <div>
-              <Label className="text-white/80 text-sm">Título *</Label>
+              <Label className="text-white/80 text-sm">TÃ­tulo *</Label>
               <Input value={linkForm.title} onChange={(e) => setLinkForm((f) => ({ ...f, title: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
@@ -575,7 +575,7 @@ export default function ClubHub() {
               <Input value={linkForm.url} onChange={(e) => setLinkForm((f) => ({ ...f, url: e.target.value }))} placeholder="https://..." className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
-              <Label className="text-white/80 text-sm">Descrição</Label>
+              <Label className="text-white/80 text-sm">DescriÃ§Ã£o</Label>
               <Input value={linkForm.description} onChange={(e) => setLinkForm((f) => ({ ...f, description: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
           </div>

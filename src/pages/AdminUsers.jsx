@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -65,7 +65,7 @@ export default function AdminUsers() {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
         <Input
-          placeholder="Buscar por nome, e-mail ou usuário..."
+          placeholder="Buscar por nome, e-mail ou usuÃ¡rio..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/30"
@@ -106,7 +106,7 @@ export default function AdminUsers() {
                 className="text-white/50 hover:text-white"
                 onClick={() => handleSync(member)}
                 disabled={syncingId === member.id}
-                title="Sincronizar perfil público"
+                title="Sincronizar perfil pÃºblico"
               >
                 <RefreshCw className={`w-4 h-4 ${syncingId === member.id ? "animate-spin" : ""}`} />
               </Button>
