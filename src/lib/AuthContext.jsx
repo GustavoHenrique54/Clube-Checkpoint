@@ -1,4 +1,4 @@
-import { db } from '@/api/base44Client';
+import { db, supabase } from '@/api/supabaseClient';
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
@@ -13,48 +13,67 @@ export const AuthProvider = ({ children }) => {
   const [appPublicSettings, setAppPublicSettings] = useState(null);
 
   useEffect(() => {
-    checkAppState();
-  }, []);
+    // Setup mock public settings for layout fallback
+    setAppPublicSettings({
+      id: "supabase-app",
+      public_settings: {
+        auth_required: false
+      }
+    });
 
-  const checkAppState = async () => {
-    try {
-      setIsLoadingPublicSettings(true);
-      setAuthError(null);
-      
-      const publicSettings = {
-        id: "local-app",
-        public_settings: {
-          auth_required: false
+    const initAuth = async () => {
+      try {
+        const isAuth = await db.auth.isAuthenticated();
+        if (isAuth) {
+          const me = await db.auth.me();
+          setUser(me);
+          setIsAuthenticated(true);
+        } else {
+          setUser(null);
+          setIsAuthenticated(false);
         }
-      };
-      setAppPublicSettings(publicSettings);
-      
-      const isAuth = await db.auth.isAuthenticated();
-      if (isAuth) {
+      } catch (err) {
+        console.error("Auth init error:", err);
+      } finally {
+        setIsLoadingAuth(false);
+        setIsLoadingPublicSettings(false);
+      }
+    };
+    
+    initAuth();
+
+    // Listen to Supabase auth events in real-time
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         const me = await db.auth.me();
         setUser(me);
         setIsAuthenticated(true);
-      } else {
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
         setIsAuthenticated(false);
       }
-      setIsLoadingPublicSettings(false);
-      setIsLoadingAuth(false);
-    } catch (error) {
-      console.error('Local app state check failed:', error);
-      setIsLoadingPublicSettings(false);
-      setIsLoadingAuth(false);
-    }
-  };
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   const logout = async (shouldRedirect = true) => {
     await db.auth.logout();
     setUser(null);
     setIsAuthenticated(false);
-    window.location.reload();
+    if (shouldRedirect) {
+      window.location.href = '/login';
+    }
   };
 
   const navigateToLogin = () => {
-    db.auth.redirectToLogin(window.location.href);
+    window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+  };
+
+  const checkAppState = async () => {
+    // Compatibility stub
   };
 
   return (
