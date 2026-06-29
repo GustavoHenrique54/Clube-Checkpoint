@@ -16,43 +16,43 @@ export default function BadgeCard({ badge, earned = false, earnedDate, featured 
   const rarity = rarityStyles[badge.rarity] || rarityStyles.common;
   const isSecret = badge.is_secret && !earned;
 
-  const content =
-  <motion.div
-    whileHover={{ scale: 1.04, y: -3 }}
-    transition={{ type: "spring", stiffness: 400, damping: 20 }} className="bg-white/10 px-4 py-24 rounded-xl relative group border border-yellow-400/50 hover:bg-white/20 transition-all cursor-pointer backdrop-blur-sm h-40 flex flex-col justify-center rarity-glow-legendary ring-2 ring-yellow-400/60">
-
-      
-
-      <div className="pb-1 text-center flex flex-col items-center gap-3">
-        <div className="rounded-xl w-16 h-16 flex items-center justify-center rarity-legendary-bg border border-yellow-400/50">
-          {isSecret ?
-        <Lock className="w-7 h-7 text-white/30" /> :
-        badge.icon_image ?
-        <img src={badge.icon_image} alt={badge.name} className="w-10 h-10 object-contain" /> :
-
-        <span className="text-2xl">🏆</span>
-        }
+  const content = (
+    <motion.div
+      whileHover={{ scale: 1.04, y: -3 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      className={`bg-white/10 px-4 py-5 rounded-xl relative group hover:bg-white/20 transition-all cursor-pointer backdrop-blur-sm h-full min-h-[190px] flex flex-col justify-between items-center text-center border ${rarity.border} ${earned ? rarity.glow : "opacity-40 grayscale"} ${featured ? "ring-2 ring-yellow-400/60 shadow-lg" : ""}`}
+    >
+      <div className="w-full flex flex-col items-center gap-2.5 flex-grow justify-center">
+        <div className="rounded-xl w-16 h-16 flex items-center justify-center bg-white border border-white flex-shrink-0 shadow-sm">
+          {isSecret ? (
+            <Lock className="w-7 h-7 text-slate-400" />
+          ) : badge.icon_image ? (
+            <img src={badge.icon_image} alt={badge.name} className="w-11 h-11 object-contain" />
+          ) : (
+            <span className="text-2xl">🏆</span>
+          )}
         </div>
         <div>
-          <h3 className={`font-bold text-sm ${earned ? "text-white" : "text-white/40"}`}>
+          <h3 className={`font-bold text-sm leading-snug ${earned ? "text-white" : "text-white/40"}`}>
             {isSecret ? "Emblema Secreto" : badge.name}
           </h3>
           <p className={`text-xs mt-0.5 font-semibold ${rarity.text}`}>{rarity.label}</p>
-          {earnedDate &&
-        <p className="text-[10px] text-white/45 mt-1">
-              {new Date(earnedDate).toLocaleDateString("pt-BR", { month: "short", day: "numeric", year: "numeric" })}
-            </p>
-        }
         </div>
       </div>
-    </motion.div>;
+      {earnedDate && (
+        <p className="text-[10px] text-white/45 mt-2 flex-shrink-0">
+          {new Date(earnedDate).toLocaleDateString("pt-BR", { month: "short", day: "numeric", year: "numeric" })}
+        </p>
+      )}
+    </motion.div>
+  );
 
   if (showLink && !isSecret) {
     return (
-      <Link to={createPageUrl(`BadgeDetail?id=${badge.id}`)}>
+      <Link to={createPageUrl(`BadgeDetail?id=${badge.id}`)} className="h-full block">
         {content}
-      </Link>);
-
+      </Link>
+    );
   }
 
   return content;

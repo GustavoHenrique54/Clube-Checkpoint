@@ -1,7 +1,7 @@
 import { db } from "@/api/supabaseClient";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users } from "lucide-react";
+import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon } from "lucide-react";
 
 const PUBLIC_PAGES = ["Landing", "PublicProfile"];
 
@@ -11,6 +11,24 @@ export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "dark";
+  });
+
+  useEffect(() => {
+    if (theme === "light") {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === "dark" ? "light" : "dark"));
+  };
 
   useEffect(() => {
     const loadUser = async () => {
@@ -61,6 +79,9 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </Link>
             <div className="flex items-center gap-3">
+              <button onClick={toggleTheme} className="p-2 text-white/60 hover:text-white rounded-full transition-all" title="Alternar Tema">
+                {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
               {user ? (
                 <>
                   <Link to="/perfil">
@@ -113,9 +134,14 @@ export default function Layout({ children, currentPageName }) {
         <Link to="/hub" className="flex items-center gap-2">
           <span className="text-lg font-black tracking-tight text-white uppercase">CHECKPOINT</span>
         </Link>
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-white hover:bg-white/10 rounded-full">
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-2 text-white/60 hover:text-white rounded-full transition-all" title="Alternar Tema">
+            {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-white hover:bg-white/10 rounded-full">
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Sidebar for Desktop */}
@@ -161,9 +187,14 @@ export default function Layout({ children, currentPageName }) {
               )}
             </div>
           </div>
-          <button onClick={handleLogout} className="p-2 text-white/50 hover:text-white hover:bg-white/5 rounded-full flex-shrink-0">
-            <LogOut className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button onClick={toggleTheme} className="p-2 text-white/55 hover:text-white hover:bg-white/5 rounded-full" title="Alternar Tema">
+              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button onClick={handleLogout} className="p-2 text-white/55 hover:text-white hover:bg-white/5 rounded-full flex-shrink-0" title="Sair">
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </aside>
 
