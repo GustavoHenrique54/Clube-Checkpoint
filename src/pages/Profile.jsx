@@ -16,8 +16,8 @@ import { syncPublicProfile } from "@/lib/syncPublicProfile";
 
 const CATEGORIES = [
   { value: "all", label: "Todas as Categorias" },
-  { value: "participation", label: "ParticipaÃ§Ã£o" },
-  { value: "game_completion", label: "Games ConcluÃ­dos" },
+  { value: "participation", label: "Participação" },
+  { value: "game_completion", label: "Games Concluídos" },
   { value: "events", label: "Eventos" },
   { value: "founder", label: "Fundador" },
   { value: "special", label: "Especial" },
@@ -30,8 +30,8 @@ const RARITIES = [
   { value: "common", label: "Comum" },
   { value: "uncommon", label: "Incomum" },
   { value: "rare", label: "Raro" },
-  { value: "epic", label: "Ã‰pico" },
-  { value: "legendary", label: "LendÃ¡rio" },
+  { value: "epic", label: "Épico" },
+  { value: "legendary", label: "Lendário" },
 ];
 
 export default function Profile() {
@@ -191,7 +191,7 @@ export default function Profile() {
           </Link>
           <Link to={createPageUrl(`PublicProfile?id=${user.id}`)}>
             <Button variant="outline" size="sm" className="border-white/20 text-white bg-transparent hover:bg-white/10 rounded-full font-bold px-4">
-              <ExternalLink className="w-4 h-4 mr-1.5" /> Ver Perfil PÃºblico
+              <ExternalLink className="w-4 h-4 mr-1.5" /> Ver Perfil Público
             </Button>
           </Link>
           <Button variant="outline" size="sm" onClick={() => handleCopyPublicLink(user.id)} className="border-white/20 text-white bg-transparent hover:bg-white/10 rounded-full font-bold px-4">

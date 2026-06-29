@@ -175,7 +175,7 @@ export default function EditProfile() {
 
       {/* Basic Info */}
       <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6 space-y-4">
-        <h2 className="text-sm font-black text-white/70 uppercase tracking-wide">InformaÃ§Ãµes BÃ¡sicas</h2>
+        <h2 className="text-sm font-black text-white/70 uppercase tracking-wide">Informações Básicas</h2>
         <div>
           <Label className="text-white font-bold">Nome completo</Label>
           <Input
@@ -186,11 +186,11 @@ export default function EditProfile() {
           />
         </div>
         <div>
-          <Label className="text-white font-bold">Nome de usuÃ¡rio</Label>
+          <Label className="text-white font-bold">Nome de usuário</Label>
           <Input
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
-            placeholder="Escolha um nome de usuÃ¡rio"
+            placeholder="Escolha um nome de usuário"
             className="mt-1.5 bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-white/50"
           />
         </div>
@@ -199,7 +199,7 @@ export default function EditProfile() {
           <Textarea
             value={form.bio}
             onChange={(e) => setForm({ ...form, bio: e.target.value })}
-            placeholder="Conta um pouco sobre vocÃª..."
+            placeholder="Conta um pouco sobre você..."
             rows={3}
             className="mt-1.5 bg-white/10 border-white/20 text-white placeholder:text-white/30 resize-none focus:border-white/50"
           />
@@ -236,7 +236,7 @@ export default function EditProfile() {
             <Input
               value={form.steam}
               onChange={(e) => setForm({ ...form, steam: e.target.value })}
-              placeholder="URL ou nome de usuÃ¡rio"
+              placeholder="URL ou nome de usuário"
               className="mt-1.5 bg-white/10 border-white/20 text-white placeholder:text-white/30"
             />
           </div>
@@ -266,7 +266,7 @@ export default function EditProfile() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <Label className="text-white font-bold text-base">Emblemas em Destaque</Label>
-            <p className="text-xs text-white/50 mt-0.5">Selecione atÃ© 4 emblemas para destacar no seu perfil</p>
+            <p className="text-xs text-white/50 mt-0.5">Selecione até 4 emblemas para destacar no seu perfil</p>
           </div>
           <span className="text-xs text-white/70 font-bold">{form.featured_badges.length}/4</span>
         </div>

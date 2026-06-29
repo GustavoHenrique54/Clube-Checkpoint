@@ -18,12 +18,12 @@ const CATEGORIES = ["participation", "game_completion", "events", "founder", "sp
 const RARITIES = ["common", "uncommon", "rare", "epic", "legendary"];
 
 const categoryLabels = {
-  participation: "ParticipaÃ§Ã£o", game_completion: "Game ConcluÃ­do", events: "Eventos",
+  participation: "Participação", game_completion: "Game Concluído", events: "Eventos",
   founder: "Fundador", special: "Especial", secret: "Secreto", veteran: "Veterano",
 };
 
 const rarityLabels = {
-  common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Ã‰pico", legendary: "LendÃ¡rio",
+  common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Épico", legendary: "Lendário",
 };
 
 const rarityColors = {
@@ -115,9 +115,9 @@ export default function AdminBadges() {
                 <p className="text-sm font-black text-white truncate uppercase">{badge.name}</p>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className={`text-xs font-bold ${rarityColors[badge.rarity]}`}>{rarityLabels[badge.rarity]}</span>
-                  <span className="text-white/25">Â·</span>
+                  <span className="text-white/25">·</span>
                   <span className="text-xs text-white/50">{categoryLabels[badge.category]}</span>
-                  {badge.is_secret && <span className="text-xs text-white/40">Â· ðŸ”’</span>}
+                  {badge.is_secret && <span className="text-xs text-white/40">· ðŸ”’</span>}
                 </div>
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function AdminBadges() {
           </DialogHeader>
           <div className="space-y-4 mt-2">
             <div>
-              <Label className="text-white font-bold">Ãcone do Emblema</Label>
+              <Label className="text-white font-bold">Ícone do Emblema</Label>
               <div className="flex items-center gap-3 mt-1.5">
                 <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
                   {form.icon_image ? <img src={form.icon_image} alt="" className="w-8 h-8 object-contain" /> : <span className="text-xl">ðŸ†</span>}
@@ -167,7 +167,7 @@ export default function AdminBadges() {
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-1 bg-white/10 border-white/20 text-white" />
             </div>
             <div>
-              <Label className="text-white font-bold">DescriÃ§Ã£o</Label>
+              <Label className="text-white font-bold">Descrição</Label>
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="mt-1 bg-white/10 border-white/20 text-white resize-none" />
             </div>
             <div className="grid grid-cols-2 gap-4">

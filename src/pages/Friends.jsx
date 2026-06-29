@@ -86,7 +86,7 @@ export default function Friends() {
       {pendingReceived.length > 0 && (
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6 space-y-4">
           <h2 className="text-sm font-black text-white/70 uppercase tracking-wide flex items-center gap-2">
-            <Clock className="w-4 h-4" /> SolicitaÃ§Ãµes Recebidas ({pendingReceived.length})
+            <Clock className="w-4 h-4" /> Solicitações Recebidas ({pendingReceived.length})
           </h2>
           <div className="space-y-3">
             {pendingReceived.map((req) => {

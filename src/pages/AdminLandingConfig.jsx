@@ -109,7 +109,7 @@ export default function AdminLandingConfig() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
-            Visual da PÃ¡gina Inicial
+            Visual da Página Inicial
           </h1>
         </div>
         <Button onClick={handleSave} disabled={saveConfig.isPending} className="bg-white text-blue-700 hover:bg-blue-50 font-black">
@@ -176,8 +176,8 @@ export default function AdminLandingConfig() {
       <Section title="Fontes Customizadas" icon={Type}>
         <p className="text-white/50 text-xs">Formatos suportados: .ttf, .otf, .woff, .woff2</p>
         {[
-          { label: 'Fonte do "clube" (subtÃ­tulo)', urlKey: "subtitle_font_url", nameKey: "subtitle_font_name" },
-          { label: 'Fonte do "CHECKPOINT" (tÃ­tulo)', urlKey: "title_font_url", nameKey: "title_font_name" },
+          { label: 'Fonte do "clube" (subtítulo)', urlKey: "subtitle_font_url", nameKey: "subtitle_font_name" },
+          { label: 'Fonte do "CHECKPOINT" (título)', urlKey: "title_font_url", nameKey: "title_font_name" },
           { label: "Fonte dos textos gerais", urlKey: "body_font_url", nameKey: "body_font_name" },
         ].map(({ label, urlKey, nameKey }) => (
           <div key={urlKey} className="space-y-2">
@@ -201,47 +201,47 @@ export default function AdminLandingConfig() {
         ))}
 
         <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t border-white/10">
-          <Field label='Tamanho do tÃ­tulo "CHECKPOINT"'>
+          <Field label='Tamanho do título "CHECKPOINT"'>
             <Input value={form.title_size || ""} onChange={setFromInput("title_size")} placeholder="ex: 6rem ou 96px" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
-          <Field label='Tamanho do subtÃ­tulo "clube"'>
+          <Field label='Tamanho do subtítulo "clube"'>
             <Input value={form.subtitle_size || ""} onChange={setFromInput("subtitle_size")} placeholder="ex: 2rem ou 32px" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
         </div>
       </Section>
 
       {/* Textos */}
-      <Section title="Textos da PÃ¡gina" icon={AlignLeft}>
+      <Section title="Textos da Página" icon={AlignLeft}>
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label='SubtÃ­tulo (ex: "clube")'>
+          <Field label='Subtítulo (ex: "clube")'>
             <Input value={form.hero_subtitle || ""} onChange={setFromInput("hero_subtitle")} placeholder="clube" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
-          <Field label='TÃ­tulo principal (ex: "CHECKPOINT")'>
+          <Field label='Título principal (ex: "CHECKPOINT")'>
             <Input value={form.hero_title || ""} onChange={setFromInput("hero_title")} placeholder="CHECKPOINT" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
           <Field label="Tagline">
             <Input value={form.hero_tagline || ""} onChange={setFromInput("hero_tagline")} placeholder='O CLUBE "DO LIVRO" DE GAMES' className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
-          <Field label="DescriÃ§Ã£o do hero">
+          <Field label="Descrição do hero">
             <Textarea value={form.hero_description || ""} onChange={setFromInput("hero_description")} placeholder="Jogue junto, discuta seus games favoritos..." rows={2} className="bg-white/10 border-white/20 text-white placeholder:text-white/30 resize-none" />
           </Field>
-          <Field label='TÃ­tulo seÃ§Ã£o "Como Funciona"'>
+          <Field label='Título seção "Como Funciona"'>
             <Input value={form.features_title || ""} onChange={setFromInput("features_title")} placeholder="Como Funciona" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
-          <Field label="SubtÃ­tulo seÃ§Ã£o features">
+          <Field label="Subtítulo seção features">
             <Input value={form.features_subtitle || ""} onChange={setFromInput("features_subtitle")} placeholder="Entre no clube, participe..." className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
-          <Field label="TÃ­tulo seÃ§Ã£o NotÃ­cias">
-            <Input value={form.news_section_title || ""} onChange={setFromInput("news_section_title")} placeholder="Ãšltimas NotÃ­cias" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+          <Field label="Título seção Notícias">
+            <Input value={form.news_section_title || ""} onChange={setFromInput("news_section_title")} placeholder="Últimas Notícias" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
-          <Field label="TÃ­tulo do bloco CTA">
-            <Input value={form.cta_title || ""} onChange={setFromInput("cta_title")} placeholder="Pronto para ComeÃ§ar?" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+          <Field label="Título do bloco CTA">
+            <Input value={form.cta_title || ""} onChange={setFromInput("cta_title")} placeholder="Pronto para Começar?" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
-          <Field label="DescriÃ§Ã£o do bloco CTA">
+          <Field label="Descrição do bloco CTA">
             <Textarea value={form.cta_description || ""} onChange={setFromInput("cta_description")} placeholder="Crie seu perfil e comece a colecionar..." rows={2} className="bg-white/10 border-white/20 text-white placeholder:text-white/30 resize-none" />
           </Field>
-          <Field label="Texto do botÃ£o CTA">
-            <Input value={form.cta_button_text || ""} onChange={setFromInput("cta_button_text")} placeholder="ComeÃ§ar Agora" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+          <Field label="Texto do botão CTA">
+            <Input value={form.cta_button_text || ""} onChange={setFromInput("cta_button_text")} placeholder="Começar Agora" className="bg-white/10 border-white/20 text-white placeholder:text-white/30" />
           </Field>
         </div>
       </Section>

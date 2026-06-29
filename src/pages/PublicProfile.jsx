@@ -110,8 +110,8 @@ export default function PublicProfile() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>Perfil nÃ£o encontrado</p>
-          <p className="text-white/60 mt-2">Este usuÃ¡rio nÃ£o existe ou o perfil estÃ¡ indisponÃ­vel.</p>
+          <p className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>Perfil não encontrado</p>
+          <p className="text-white/60 mt-2">Este usuário não existe ou o perfil está indisponível.</p>
         </div>
       </div>
     );
@@ -143,7 +143,7 @@ export default function PublicProfile() {
               </div>
             ) : isPendingSent ? (
               <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-bold">
-                <Clock className="w-3.5 h-3.5" /> SolicitaÃ§Ã£o enviada
+                <Clock className="w-3.5 h-3.5" /> Solicitação enviada
               </div>
             ) : isPendingReceived ? (
               <Button size="sm" onClick={() => acceptRequestMutation.mutate(friendRequest.id)} className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs h-8 rounded-full px-4">

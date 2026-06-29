@@ -16,7 +16,7 @@ const rarityColors = {
   epic: "text-purple-300", legendary: "text-yellow-300",
 };
 const rarityLabels = {
-  common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Ã‰pico", legendary: "LendÃ¡rio",
+  common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Épico", legendary: "Lendário",
 };
 
 export default function AdminBatchBadge() {
@@ -185,7 +185,7 @@ export default function AdminBatchBadge() {
         <div className="bg-green-500/20 border border-green-400/40 rounded-xl p-4 flex items-center gap-3">
           <Check className="w-5 h-5 text-green-300" />
           <p className="text-green-300 text-sm font-bold">
-            OperaÃ§Ã£o concluÃ­da com sucesso para {selectedUsers.length} membro(s) e {selectedBadges.length} emblema(s)!
+            Operação concluída com sucesso para {selectedUsers.length} membro(s) e {selectedBadges.length} emblema(s)!
           </p>
         </div>
       )}
@@ -272,7 +272,7 @@ export default function AdminBatchBadge() {
             {displayBadges.length === 0 ? (
               <p className="text-sm text-white/40 text-center py-6">
                 {mode === "revoke" && selectedUsers.length === 0
-                  ? "Selecione membros primeiro para ver os emblemas revogÃ¡veis."
+                  ? "Selecione membros primeiro para ver os emblemas revogáveis."
                   : "Nenhum emblema encontrado."}
               </p>
             ) : (
@@ -307,7 +307,7 @@ export default function AdminBatchBadge() {
             <p className="text-white font-bold text-sm">
               {selectedUsers.length > 0 && selectedBadges.length > 0 ? (
                 mode === "grant"
-                  ? `Conceder ${selectedBadges.length} emblema(s) para ${selectedUsers.length} membro(s) â€” ${selectedUsers.length * selectedBadges.length} operaÃ§Ãµes`
+                  ? `Conceder ${selectedBadges.length} emblema(s) para ${selectedUsers.length} membro(s) â€” ${selectedUsers.length * selectedBadges.length} operações`
                   : `Revogar ${selectedBadges.length} emblema(s) de ${selectedUsers.length} membro(s)`
               ) : (
                 <span className="text-white/40">Selecione membros e emblemas para continuar.</span>

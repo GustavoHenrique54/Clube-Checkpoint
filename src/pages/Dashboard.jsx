@@ -116,7 +116,7 @@ export default function Dashboard() {
               <div className="sm:border-l sm:border-white/10 sm:pl-4 flex-shrink-0">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="w-4 h-4 text-green-300" />
-                    <span className="text-xs font-black text-green-300 uppercase tracking-widest">PrÃ³xima ReuniÃ£o</span>
+                    <span className="text-xs font-black text-green-300 uppercase tracking-widest">Próxima Reunião</span>
                   </div>
                   <div className="bg-white/10 rounded-xl px-4 py-3 text-center border border-white/15">
                     <p className="text-3xl font-black text-white">{meeting.time}</p>

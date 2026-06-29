@@ -18,7 +18,7 @@ const rarityColors = {
 };
 
 const rarityLabels = {
-  common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Ã‰pico", legendary: "LendÃ¡rio",
+  common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Épico", legendary: "Lendário",
 };
 
 export default function AdminGrantBadge() {
@@ -182,12 +182,12 @@ export default function AdminGrantBadge() {
                 </div>
               </button>
             ))}
-            {filteredBadges.length === 0 && <p className="text-sm text-white/40 text-center py-4">Nenhum emblema disponÃ­vel para conceder.</p>}
+            {filteredBadges.length === 0 && <p className="text-sm text-white/40 text-center py-4">Nenhum emblema disponível para conceder.</p>}
           </div>
 
           <div className="mt-4">
-            <Label className="text-white font-bold">ObservaÃ§Ã£o (opcional)</Label>
-            <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Por que este emblema estÃ¡ sendo concedido?" rows={2} className="mt-1 bg-white/10 border-white/20 text-white resize-none placeholder:text-white/30" />
+            <Label className="text-white font-bold">Observação (opcional)</Label>
+            <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Por que este emblema está sendo concedido?" rows={2} className="mt-1 bg-white/10 border-white/20 text-white resize-none placeholder:text-white/30" />
           </div>
 
           <Button onClick={handleGrant} disabled={!selectedBadgeId || grantMutation.isPending} className="mt-4 bg-white text-blue-700 hover:bg-blue-50 font-black w-full">

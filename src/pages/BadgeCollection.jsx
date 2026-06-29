@@ -10,8 +10,8 @@ import BadgeGrid from "@/components/badges/BadgeGrid";
 
 const CATEGORIES = [
   { value: "all", label: "Todas as Categorias" },
-  { value: "participation", label: "ParticipaÃ§Ã£o" },
-  { value: "game_completion", label: "Games ConcluÃ­dos" },
+  { value: "participation", label: "Participação" },
+  { value: "game_completion", label: "Games Concluídos" },
   { value: "events", label: "Eventos" },
   { value: "founder", label: "Fundador" },
   { value: "special", label: "Especial" },
@@ -24,8 +24,8 @@ const RARITIES = [
   { value: "common", label: "Comum" },
   { value: "uncommon", label: "Incomum" },
   { value: "rare", label: "Raro" },
-  { value: "epic", label: "Ã‰pico" },
-  { value: "legendary", label: "LendÃ¡rio" },
+  { value: "epic", label: "Épico" },
+  { value: "legendary", label: "Lendário" },
 ];
 
 export default function BadgeCollection() {
@@ -64,10 +64,10 @@ export default function BadgeCollection() {
         <div>
           <h1 className="text-2xl font-black text-white uppercase flex items-center gap-2" style={{textShadow: "2px 2px 0 rgba(0,0,0,0.3)"}}>
             <Trophy className="w-6 h-6" />
-            ColeÃ§Ã£o de Emblemas
+            Coleção de Emblemas
           </h1>
           <p className="text-white/60 text-sm mt-1 font-medium">
-            {userBadges.length} conquistados Â· {badges.length} no total
+            {userBadges.length} conquistados · {badges.length} no total
           </p>
         </div>
       </div>
