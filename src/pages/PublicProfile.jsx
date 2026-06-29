@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
@@ -160,7 +160,7 @@ export default function PublicProfile() {
 
       {featuredBadges.length > 0 && (
         <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
-          <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">⭐ Emblemas em Destaque</h2>
+          <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">Emblemas em Destaque</h2>
           <BadgeGrid
             badges={featuredBadges}
             userBadges={userBadges}
@@ -170,7 +170,7 @@ export default function PublicProfile() {
       )}
 
       <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
-        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">🏅 Emblemas</h2>
+        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">Emblemas</h2>
         <BadgeIconGrid badges={badges} userBadges={userBadges} />
       </div>
     </div>

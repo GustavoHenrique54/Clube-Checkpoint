@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Lock } from "lucide-react";
+import { Lock, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
 const rarityStyles = {
@@ -20,7 +20,7 @@ export default function BadgeCard({ badge, earned = false, earnedDate, featured 
     <motion.div
       whileHover={{ scale: 1.04, y: -3 }}
       transition={{ type: "spring", stiffness: 400, damping: 20 }}
-      className={`bg-white/10 px-4 py-5 rounded-xl relative group hover:bg-white/20 transition-all cursor-pointer backdrop-blur-sm h-full min-h-[190px] flex flex-col justify-between items-center text-center border ${rarity.border} ${earned ? rarity.glow : "opacity-40 grayscale"} ${featured ? "ring-2 ring-yellow-400/60 shadow-lg" : ""}`}
+      className={`bg-white/10 px-4 py-5 rounded-xl relative group hover:bg-white/20 transition-all cursor-pointer backdrop-blur-sm h-full min-h-[190px] flex flex-col justify-between items-center text-center border border-white/10 ${earned ? "" : "opacity-40 grayscale"}`}
     >
       <div className="w-full flex flex-col items-center gap-2.5 flex-grow justify-center">
         <div className="rounded-xl w-16 h-16 flex items-center justify-center bg-white border border-white flex-shrink-0 shadow-sm">
@@ -29,7 +29,7 @@ export default function BadgeCard({ badge, earned = false, earnedDate, featured 
           ) : badge.icon_image ? (
             <img src={badge.icon_image} alt={badge.name} className="w-11 h-11 object-contain" />
           ) : (
-            <span className="text-2xl">🏆</span>
+            <Trophy className="w-8 h-8 text-slate-400" />
           )}
         </div>
         <div>

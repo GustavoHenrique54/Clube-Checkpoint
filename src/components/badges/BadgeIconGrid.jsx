@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Filter, Lock } from "lucide-react";
+import { Filter, Lock, Trophy } from "lucide-react";
 
 const CATEGORIES = [
   { value: "all", label: "Todas as Categorias" },
@@ -100,9 +100,8 @@ export default function BadgeIconGrid({ badges, userBadges = [], showFilters = t
                 <Tooltip key={badge.id}>
                   <TooltipTrigger asChild>
                     <div
-                      className={`w-14 h-14 rounded-xl border flex items-center justify-center cursor-default transition-all flex-shrink-0
-                        ${rarity.border}
-                        ${earned ? `bg-white/10 hover:bg-white/20 ${rarity.glow}` : "bg-white/5 opacity-40 grayscale"}
+                      className={`w-14 h-14 rounded-xl border border-white/10 flex items-center justify-center cursor-default transition-all flex-shrink-0
+                        ${earned ? `bg-white/10 hover:bg-white/20` : "bg-white/5 opacity-40 grayscale"}
                       `}
                     >
                       {isSecret ? (
@@ -110,7 +109,7 @@ export default function BadgeIconGrid({ badges, userBadges = [], showFilters = t
                       ) : badge.icon_image ? (
                         <img src={badge.icon_image} alt={badge.name} className="w-9 h-9 object-contain" />
                       ) : (
-                        <span className="text-2xl">🏆</span>
+                        <Trophy className="w-6 h-6 text-slate-400" />
                       )}
                     </div>
                   </TooltipTrigger>

@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -47,7 +47,7 @@ export default function ClubHub() {
   const [gameForm, setGameForm] = useState({ active_game_title: "", active_game_image: "", active_game_description: "" });
   const [meetingForm, setMeetingForm] = useState({ next_meeting_datetime: "", meeting_location: "" });
   const [newsForm, setNewsForm] = useState({ title: "", excerpt: "", content: "", cover_image: "", is_published: true });
-  const [linkForm, setLinkForm] = useState({ title: "", url: "", description: "", emoji: "🔗" });
+  const [linkForm, setLinkForm] = useState({ title: "", url: "", description: "", emoji: "" });
 
   useEffect(() => {db.auth.me().then(setUser);}, []);
 
@@ -165,7 +165,7 @@ export default function ClubHub() {
 
   const openEditLink = (item = null) => {
     setEditingLink(item);
-    setLinkForm(item ? { title: item.title, url: item.url, description: item.description || "", emoji: item.emoji || "🔗" } : { title: "", url: "", description: "", emoji: "🔗" });
+    setLinkForm(item ? { title: item.title, url: item.url, description: item.description || "", emoji: item.emoji || "" } : { title: "", url: "", description: "", emoji: "" });
     setEditLinkOpen(true);
   };
 
@@ -187,7 +187,7 @@ export default function ClubHub() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
-            🎮 Hub do Clube
+            Hub do Clube
           </h1>
           <p className="text-white/55 text-sm mt-1">Tudo do Clube Checkpoint em um só lugar</p>
         </div>
@@ -199,7 +199,7 @@ export default function ClubHub() {
           onClick={() => setActiveTab("hub")}
           className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "hub" ? "bg-ps-blue text-white" : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"}`}
         >
-          🎮 Hub
+          Hub
         </button>
         <button
           onClick={() => setActiveTab("leaderboard")}
@@ -364,7 +364,7 @@ export default function ClubHub() {
               rel="noopener noreferrer"
               className="flex items-start gap-3 p-4 rounded-md border border-white/10 bg-ps-dark-elevated hover:bg-white/5 transition-all">
 
-                  <span className="text-2xl flex-shrink-0">{link.emoji || "🔗"}</span>
+                  <span className="text-2xl flex-shrink-0">{link.emoji || ""}</span>
                   <div className="min-w-0">
                     <p className="font-bold text-white text-sm truncate">{link.title}</p>
                     {link.description && <p className="text-white/50 text-xs mt-0.5 line-clamp-2">{link.description}</p>}

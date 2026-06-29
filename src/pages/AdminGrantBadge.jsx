@@ -1,11 +1,11 @@
-const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
+import { db } from "@/api/supabaseClient";
 
 import React, { useState, useEffect } from "react";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Shield, Award, ArrowLeft, Search, Check, X } from "lucide-react";
+import { Shield, Award, ArrowLeft, Search, Check, X, Trophy } from "lucide-react";
 import { syncPublicProfile } from "@/lib/syncPublicProfile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -174,7 +174,7 @@ export default function AdminGrantBadge() {
             {filteredBadges.map((b) => (
               <button key={b.id} onClick={() => setSelectedBadgeId(b.id)} className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left ${selectedBadgeId === b.id ? "bg-white/20 border border-white/30" : "hover:bg-white/10"}`}>
                 <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center">
-                  {b.icon_image ? <img src={b.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span className="text-sm">🏆</span>}
+                  {b.icon_image ? <img src={b.icon_image} alt="" className="w-5 h-5 object-contain" /> : <Trophy className="w-5 h-5 text-white/30" />}
                 </div>
                 <div>
                   <p className="text-sm text-white font-bold">{b.name}</p>
@@ -207,7 +207,7 @@ export default function AdminGrantBadge() {
                 <div key={grant.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                      {badge?.icon_image ? <img src={badge.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span className="text-sm">🏆</span>}
+                      {badge?.icon_image ? <img src={badge.icon_image} alt="" className="w-5 h-5 object-contain" /> : <Trophy className="w-5 h-5 text-white/30" />}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white">{badge?.name || "Desconhecido"}</p>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Trophy, Gamepad, Users } from "lucide-react";
+import { Calendar, Trophy, Gamepad, Users, Instagram, MessageSquare, Gamepad2, Camera } from "lucide-react";
 
 function getMembershipDuration(createdDate) {
   if (!createdDate) return "Novo membro";
@@ -23,7 +23,7 @@ const SocialLink = ({ href, icon, label }) => (
     title={label}
     className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs font-bold transition-all border border-white/10"
   >
-    <span>{icon}</span>
+    <span className="flex items-center justify-center">{icon}</span>
     <span className="truncate max-w-[80px]">{label}</span>
   </a>
 );
@@ -41,11 +41,11 @@ export default function ProfileHeader({ user, badgeCount = 0, rareBadgeCount = 0
   { icon: Users, label: "Amigos", value: friendCount }];
 
   const socials = [
-  user.instagram && { href: `https://instagram.com/${user.instagram}`, icon: "📸", label: `@${user.instagram}` },
-  user.discord && { href: "#", icon: "💬", label: user.discord },
-  user.steam && { href: user.steam.startsWith("http") ? user.steam : `https://steamcommunity.com/id/${user.steam}`, icon: "🎮", label: user.steam.startsWith("http") ? "Steam" : user.steam },
-  user.psn_username && { href: "#", icon: "🎮", label: `PSN: ${user.psn_username}` },
-  user.xbox_username && { href: "#", icon: "🎮", label: `Xbox: ${user.xbox_username}` }].
+  user.instagram && { href: `https://instagram.com/${user.instagram}`, icon: <Instagram className="w-3.5 h-3.5" />, label: `@${user.instagram}` },
+  user.discord && { href: "#", icon: <MessageSquare className="w-3.5 h-3.5" />, label: user.discord },
+  user.steam && { href: user.steam.startsWith("http") ? user.steam : `https://steamcommunity.com/id/${user.steam}`, icon: <Gamepad2 className="w-3.5 h-3.5" />, label: user.steam.startsWith("http") ? "Steam" : user.steam },
+  user.psn_username && { href: "#", icon: <Gamepad2 className="w-3.5 h-3.5" />, label: `PSN: ${user.psn_username}` },
+  user.xbox_username && { href: "#", icon: <Gamepad2 className="w-3.5 h-3.5" />, label: `Xbox: ${user.xbox_username}` }].
   filter(Boolean);
 
   return (
@@ -59,7 +59,7 @@ export default function ProfileHeader({ user, badgeCount = 0, rareBadgeCount = 0
         <label className="absolute bottom-2 right-3 cursor-pointer z-10">
             <input type="file" accept="image/*" onChange={onUploadCover} className="hidden" />
             <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-black/60 text-white text-xs font-bold hover:bg-black/80 transition-colors border border-white/20">
-              📷 Alterar capa
+              <Camera className="w-3.5 h-3.5 mr-1" /> Alterar capa
             </div>
           </label>
         }
