@@ -151,7 +151,7 @@ export default function Profile() {
   });
 
   const ProfileRow = ({ profile, children }) => (
-    <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white/5 border border-white/10">
+    <div className="flex items-center justify-between gap-2 p-2.5 rounded-md bg-ps-dark-elevated border border-white/10">
       <div className="flex items-center gap-2 min-w-0">
         <div className="w-8 h-8 rounded-full overflow-hidden bg-blue-900 border border-white/20 flex-shrink-0 flex items-center justify-center">
           {profile?.profile_image ? (
@@ -175,7 +175,7 @@ export default function Profile() {
       <div className="flex-1 min-w-0 space-y-6">
 
       {/* Profile Header Card */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 overflow-hidden">
+      <div className="bg-ps-dark-card border border-white/10 rounded-md overflow-hidden shadow-md">
         <ProfileHeader
           user={user}
           badgeCount={userBadges.length}
@@ -183,24 +183,24 @@ export default function Profile() {
           friendCount={friendCount}
           onUploadCover={handleUploadCover}
         />
-        <div className="px-6 pb-5 flex flex-wrap gap-2">
+        <div className="px-6 pb-5 flex flex-wrap gap-2 bg-ps-dark-card">
           <Link to={createPageUrl("EditProfile")}>
-            <Button variant="outline" size="sm" className="border-white/30 text-white bg-transparent hover:bg-white/10 font-bold">
+            <Button variant="outline" size="sm" className="border-white/20 text-white bg-transparent hover:bg-white/10 rounded-full font-bold px-4">
               <Pencil className="w-4 h-4 mr-1.5" /> Editar Perfil
             </Button>
           </Link>
           <Link to={createPageUrl(`PublicProfile?id=${user.id}`)}>
-            <Button variant="outline" size="sm" className="border-white/30 text-white bg-transparent hover:bg-white/10 font-bold">
+            <Button variant="outline" size="sm" className="border-white/20 text-white bg-transparent hover:bg-white/10 rounded-full font-bold px-4">
               <ExternalLink className="w-4 h-4 mr-1.5" /> Ver Perfil Público
             </Button>
           </Link>
-          <Button variant="outline" size="sm" onClick={() => handleCopyPublicLink(user.id)} className="border-white/30 text-white bg-transparent hover:bg-white/10 font-bold">
+          <Button variant="outline" size="sm" onClick={() => handleCopyPublicLink(user.id)} className="border-white/20 text-white bg-transparent hover:bg-white/10 rounded-full font-bold px-4">
             {copied ? <Check className="w-4 h-4 mr-1.5 text-green-400" /> : <Copy className="w-4 h-4 mr-1.5" />}
             {copied ? "Copiado!" : "Copiar Link"}
           </Button>
           {user.role === "admin" && (
             <Link to="/AdminDashboard">
-              <Button variant="outline" size="sm" className="border-yellow-400/40 text-yellow-300 bg-yellow-400/10 hover:bg-yellow-400/20 font-bold">
+              <Button variant="outline" size="sm" className="border-yellow-500/30 text-yellow-400 bg-yellow-500/5 hover:bg-yellow-500/10 rounded-full font-bold px-4">
                 <Shield className="w-4 h-4 mr-1.5" /> Admin
               </Button>
             </Link>
@@ -209,47 +209,47 @@ export default function Profile() {
       </div>
 
       {/* Featured Badges */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6">
-        <h2 className="text-lg font-black text-white uppercase mb-4" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.3)" }}>⭐ Emblemas em Destaque</h2>
+      <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
+        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">⭐ Emblemas em Destaque</h2>
         {featuredBadges.length === 0 ? (
-          <p className="text-white/40 text-sm italic">Nenhum emblema em destaque. <Link to={createPageUrl("EditProfile")} className="underline text-white/60 hover:text-white">Selecionar no perfil</Link></p>
+          <p className="text-white/40 text-sm italic font-sans">Nenhum emblema em destaque. <Link to={createPageUrl("EditProfile")} className="underline text-white/60 hover:text-white">Selecionar no perfil</Link></p>
         ) : (
           <BadgeGrid badges={featuredBadges} userBadges={userBadges} featuredBadgeIds={user.featured_badges} />
         )}
       </div>
 
       {/* All Badges with filters */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6 space-y-4">
+      <div className="bg-ps-dark-card border border-white/10 rounded-md p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-black text-white uppercase" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.3)" }}>
+          <h2 className="text-lg font-bold text-white uppercase tracking-wide">
             🏅 Meus Emblemas
             <span className="ml-2 text-sm font-bold text-white/50 normal-case">{userBadges.length} / {badges.length}</span>
           </h2>
           <button
             onClick={() => setShowBadgeFilters(!showBadgeFilters)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold uppercase transition-all ${showBadgeFilters ? "bg-white text-blue-700" : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"}`}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${showBadgeFilters ? "bg-ps-blue text-white" : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"}`}
           >
             <Filter className="w-3.5 h-3.5" /> Filtros
           </button>
         </div>
 
         {showBadgeFilters && (
-          <div className="flex flex-wrap gap-2 p-3 bg-white/5 rounded-xl border border-white/10">
+          <div className="flex flex-wrap gap-2 p-3 bg-ps-dark-elevated rounded-md border border-white/10">
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-44 bg-white/10 border-white/20 text-white text-xs h-8">
+              <SelectTrigger className="w-44 bg-white/5 border-white/10 text-white text-xs h-8 rounded-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-blue-900 border-white/20">
+              <SelectContent className="bg-ps-dark-elevated border-white/10">
                 {CATEGORIES.map(c => (
                   <SelectItem key={c.value} value={c.value} className="text-white hover:bg-white/10">{c.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={rarityFilter} onValueChange={setRarityFilter}>
-              <SelectTrigger className="w-40 bg-white/10 border-white/20 text-white text-xs h-8">
+              <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white text-xs h-8 rounded-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-blue-900 border-white/20">
+              <SelectContent className="bg-ps-dark-elevated border-white/10">
                 {RARITIES.map(r => (
                   <SelectItem key={r.value} value={r.value} className="text-white hover:bg-white/10">{r.label}</SelectItem>
                 ))}
@@ -257,7 +257,7 @@ export default function Profile() {
             </Select>
             <button
               onClick={() => setShowEarnedOnly(!showEarnedOnly)}
-              className={`px-3 py-1 rounded-xl text-xs font-bold uppercase transition-all ${showEarnedOnly ? "bg-white text-blue-700" : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"}`}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${showEarnedOnly ? "bg-ps-blue text-white" : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"}`}
             >
               Apenas Conquistados
             </button>
@@ -273,9 +273,9 @@ export default function Profile() {
       <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
 
         {/* Search Profiles */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-5 space-y-3">
-          <h2 className="text-sm font-black text-white uppercase tracking-wide flex items-center gap-2">
-            <Search className="w-4 h-4" /> Buscar Membros
+        <div className="bg-ps-dark-card border border-white/10 rounded-md p-5 space-y-3">
+          <h2 className="text-sm font-bold text-white uppercase tracking-wide flex items-center gap-2">
+            <Search className="w-4 h-4 text-ps-blue" /> Buscar Membros
           </h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
@@ -283,11 +283,11 @@ export default function Profile() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Pesquisar por nome ou @usuario..."
-              className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-white/50"
+              className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-ps-blue rounded-sm"
             />
           </div>
           {searchQuery.trim().length > 0 && (
-            <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+            <div className="bg-ps-dark-elevated rounded-md border border-white/10 overflow-hidden">
               {searchFiltered.length === 0 ? (
                 <p className="text-center py-6 text-white/40 text-sm">Nenhum perfil encontrado para "{searchQuery}"</p>
               ) : (
@@ -319,7 +319,7 @@ export default function Profile() {
         </div>
 
         {/* Friends */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-5 space-y-4">
+        <div className="bg-ps-dark-card border border-white/10 rounded-md p-5 space-y-4">
           <h2 className="text-sm font-black text-white uppercase tracking-wide flex items-center gap-2">
             <Users className="w-4 h-4" /> Amigos
           </h2>

@@ -15,17 +15,18 @@ function getMembershipDuration(createdDate) {
   return `${years} ano${years !== 1 ? "s" : ""} e ${rem} mês${rem !== 1 ? "es" : ""}`;
 }
 
-const SocialLink = ({ href, icon, label }) =>
-<a
-  href={href}
-  target="_blank"
-  rel="noopener noreferrer"
-  title={label}
-  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white text-xs font-bold transition-all border border-white/10">
-
+const SocialLink = ({ href, icon, label }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    title={label}
+    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs font-bold transition-all border border-white/10"
+  >
     <span>{icon}</span>
     <span className="truncate max-w-[80px]">{label}</span>
-  </a>;
+  </a>
+);
 
 export default function ProfileHeader({ user, badgeCount = 0, rareBadgeCount = 0, friendCount = 0, onUploadCover }) {
   const memberSince = user.created_date ?
@@ -50,14 +51,14 @@ export default function ProfileHeader({ user, badgeCount = 0, rareBadgeCount = 0
   return (
     <div className="relative">
       {/* Banner */}
-      <div className="relative h-28 sm:h-36 ckpnt-pattern overflow-hidden" style={{ background: "linear-gradient(135deg, #0f2566 0%, #1d4ed8 80%, #3b82f6 100%)" }}>
+      <div className="relative h-28 sm:h-36 ckpnt-pattern overflow-hidden bg-ps-blue">
         {user.cover_image &&
         <img src={user.cover_image} alt="Capa" className="absolute inset-0 w-full h-full object-cover" />
         }
         {onUploadCover &&
         <label className="absolute bottom-2 right-3 cursor-pointer z-10">
             <input type="file" accept="image/*" onChange={onUploadCover} className="hidden" />
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/50 text-white text-xs font-bold hover:bg-black/70 transition-colors border border-white/20">
+            <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-black/60 text-white text-xs font-bold hover:bg-black/80 transition-colors border border-white/20">
               📷 Alterar capa
             </div>
           </label>
@@ -66,22 +67,22 @@ export default function ProfileHeader({ user, badgeCount = 0, rareBadgeCount = 0
 
       <div className="relative z-10 px-6 pb-6 -mt-12">
         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-          <div className="w-32 h-32 rounded-2xl bg-blue-900 border-4 border-white/20 overflow-hidden flex-shrink-0 shadow-xl">
+          <div className="w-32 h-32 rounded-full bg-ps-dark-canvas border-4 border-ps-dark-canvas overflow-hidden flex-shrink-0 shadow-xl">
             {user.profile_image ?
             <img src={user.profile_image} alt={user.full_name} className="w-full h-full object-cover" /> :
 
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-900">
+            <div className="w-full h-full flex items-center justify-center bg-ps-blue">
                 <span className="text-3xl font-black text-white">{(user.display_name || user.full_name)?.[0]?.toUpperCase() || "?"}</span>
               </div>
             }
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-white mt-12 text-2xl font-black uppercase truncate" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
+            <h1 className="text-white mt-12 text-2xl font-bold uppercase truncate font-display tracking-wide">
               {user.display_name || user.full_name}
             </h1>
-            {user.username && <p className="text-white/70 text-sm font-semibold">@{user.username}</p>}
-            <div className="flex items-center gap-1.5 mt-1 text-white/60 text-sm">
-              <Calendar className="w-3.5 h-3.5" />
+            {user.username && <p className="text-white/60 text-sm font-semibold">@{user.username}</p>}
+            <div className="flex items-center gap-1.5 mt-1 text-white/50 text-xs font-mono">
+              <Calendar className="w-3.5 h-3.5 text-ps-blue" />
               <span>Membro desde {memberSince}</span>
               <span className="mx-1">·</span>
               <span>{getMembershipDuration(user.created_date)}</span>
@@ -90,7 +91,7 @@ export default function ProfileHeader({ user, badgeCount = 0, rareBadgeCount = 0
         </div>
 
         {user.bio &&
-        <p className="mt-4 text-white/75 text-sm leading-relaxed max-w-2xl">{user.bio}</p>
+        <p className="mt-4 text-white/70 text-sm leading-relaxed max-w-2xl">{user.bio}</p>
         }
 
         {socials.length > 0 &&
@@ -103,10 +104,10 @@ export default function ProfileHeader({ user, badgeCount = 0, rareBadgeCount = 0
 
         <div className="grid grid-cols-5 gap-3 mt-5">
           {stats.map((stat) =>
-          <div key={stat.label} className="bg-white/10 rounded-xl p-3 text-center border border-white/10 backdrop-blur-sm">
-              <stat.icon className="w-4 h-4 text-white mx-auto mb-1" />
-              <p className="text-lg font-black text-white">{stat.value}</p>
-              <p className="text-[11px] text-white/55 font-medium">{stat.label}</p>
+          <div key={stat.label} className="bg-ps-dark-card rounded-md p-3 text-center border border-white/10">
+              <stat.icon className="w-4 h-4 text-ps-blue mx-auto mb-1" />
+              <p className="text-lg font-bold text-white">{stat.value}</p>
+              <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider">{stat.label}</p>
             </div>
           )}
         </div>

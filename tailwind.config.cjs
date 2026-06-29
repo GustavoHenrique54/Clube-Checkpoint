@@ -5,11 +5,25 @@ module.exports = {
   theme: {
   	extend: {
   		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			lg: '16px',
+  			md: '8px',
+  			sm: '4px',
+  			full: '9999px',
   		},
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        display: ['Roboto', 'Inter', 'sans-serif'],
+      },
   		colors: {
+        'ps-blue': '#0070d1',
+        'ps-blue-pressed': '#0064b7',
+        'ps-commerce': '#d53b00',
+        'ps-commerce-pressed': '#aa2f00',
+        'ps-dark-canvas': '#000000',
+        'ps-dark-elevated': '#121314',
+        'ps-dark-card': '#181818',
+        'ps-light-canvas': '#ffffff',
+        'ps-light-card': '#f5f7fa',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

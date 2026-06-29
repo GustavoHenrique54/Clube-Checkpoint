@@ -13,7 +13,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from
 "@/components/ui/dialog";
 import {
-  Pencil, Plus, Trash2, ExternalLink, Gamepad2, Calendar,
+  Pencil, Plus, Trash2, ExternalLink,
   Link as LinkIcon, Newspaper, Save, MapPin, Trophy, Medal, Crown, ChevronLeft, ChevronRight } from
 "lucide-react";
 
@@ -87,10 +87,10 @@ export default function ClubHub() {
   };
 
   const getRankBg = (index) => {
-    if (index === 0) return "bg-yellow-400/10 border-yellow-400/30";
+    if (index === 0) return "bg-yellow-400/10 border-yellow-400/20";
     if (index === 1) return "bg-slate-300/10 border-slate-300/20";
     if (index === 2) return "bg-amber-600/10 border-amber-600/20";
-    return "bg-white/5 border-white/10";
+    return "bg-ps-dark-card border-white/5";
   };
 
   const invalidate = () => {
@@ -197,13 +197,13 @@ export default function ClubHub() {
       <div className="flex gap-2">
         <button
           onClick={() => setActiveTab("hub")}
-          className={`px-4 py-2 rounded-xl text-sm font-black uppercase transition-all ${activeTab === "hub" ? "bg-white text-blue-700" : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"}`}
+          className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "hub" ? "bg-ps-blue text-white" : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"}`}
         >
           🎮 Hub
         </button>
         <button
           onClick={() => setActiveTab("leaderboard")}
-          className={`px-4 py-2 rounded-xl text-sm font-black uppercase transition-all flex items-center gap-1.5 ${activeTab === "leaderboard" ? "bg-white text-blue-700" : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"}`}
+          className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${activeTab === "leaderboard" ? "bg-ps-blue text-white" : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"}`}
         >
           <Trophy className="w-4 h-4" /> Placar
         </button>
@@ -211,7 +211,7 @@ export default function ClubHub() {
 
       {activeTab === "leaderboard" && (
         <div className="space-y-4">
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-4 flex gap-4 sm:gap-6 text-center flex-wrap">
+          <div className="bg-ps-dark-card border border-white/10 rounded-md p-4 flex gap-4 sm:gap-6 text-center flex-wrap">
             {[
               { label: "Comum", pts: "5 pts", color: "text-white" },
               { label: "Incomum", pts: "10 pts", color: "text-green-400" },
@@ -232,7 +232,7 @@ export default function ClubHub() {
                 <Link
                   key={profile.id}
                   to={createPageUrl(`PublicProfile?id=${profile.user_id}`)}
-                  className={`flex items-center gap-4 p-4 rounded-xl border transition-all hover:bg-white/15 ${getRankBg(gi)}`}
+                  className={`flex items-center gap-4 p-4 rounded-md border transition-all hover:bg-white/5 ${getRankBg(gi)}`}
                 >
                   <div className="flex items-center justify-center w-7 flex-shrink-0">
                     {getRankIcon(gi)}
@@ -264,11 +264,11 @@ export default function ClubHub() {
           </div>
           {leaderTotalPages > 1 && (
             <div className="flex items-center justify-center gap-3">
-              <Button size="sm" variant="outline" onClick={() => setLeaderboardPage(p => Math.max(1, p - 1))} disabled={leaderboardPage === 1} className="border-white/30 text-white bg-transparent hover:bg-white/10 disabled:opacity-30">
+              <Button size="sm" variant="outline" onClick={() => setLeaderboardPage(p => Math.max(1, p - 1))} disabled={leaderboardPage === 1} className="border-white/20 text-white bg-transparent hover:bg-white/10 disabled:opacity-30 rounded-full px-4 py-1.5 text-xs font-bold">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               <span className="text-sm text-white/60 font-bold">Página {leaderboardPage} de {leaderTotalPages}</span>
-              <Button size="sm" variant="outline" onClick={() => setLeaderboardPage(p => Math.min(leaderTotalPages, p + 1))} disabled={leaderboardPage === leaderTotalPages} className="border-white/30 text-white bg-transparent hover:bg-white/10 disabled:opacity-30">
+              <Button size="sm" variant="outline" onClick={() => setLeaderboardPage(p => Math.min(leaderTotalPages, p + 1))} disabled={leaderboardPage === leaderTotalPages} className="border-white/20 text-white bg-transparent hover:bg-white/10 disabled:opacity-30 rounded-full px-4 py-1.5 text-xs font-bold">
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
@@ -278,30 +278,29 @@ export default function ClubHub() {
 
       {activeTab === "hub" && <>
       {/* Active Game + Meeting */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Active Game — vertical cover */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 overflow-hidden relative group flex flex-col justify-center flex-1">
+        <div className="bg-ps-dark-card border border-white/10 rounded-md overflow-hidden relative group flex flex-col justify-center flex-1">
           {isAdmin &&
-          <button onClick={openEditGame} className="absolute top-3 right-3 z-10 p-1.5 rounded-lg bg-black/40 text-white/70 hover:text-white hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100">
+          <button onClick={openEditGame} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/40 text-white/70 hover:text-white hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100">
               <Pencil className="w-4 h-4" />
             </button>
           }
           <div className="mx-1 my-5 px-5 flex items-center gap-4 h-full w-full">
             {hub?.active_game_image &&
-            <div className="shrink-0 w-28 flex items-center justify-center" style={{ aspectRatio: "2/3" }}>
+            <div className="shrink-0 w-24 flex items-center justify-center" style={{ aspectRatio: "2/3" }}>
                 <img src={hub.active_game_image} alt={hub.active_game_title} className="w-full h-auto object-contain rounded-md" />
               </div>
             }
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-2">
-                <Gamepad2 className="w-4 h-4 text-blue-300" />
-                <span className="text-xs font-black text-blue-300 uppercase tracking-widest">Jogo Ativo</span>
+                <span className="bg-ps-blue text-white rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">Jogo Ativo</span>
               </div>
               {hub?.active_game_title ?
               <>
-                  <h2 className="text-xl font-black text-white leading-tight">{hub.active_game_title}</h2>
+                  <h2 className="text-lg font-bold text-white leading-tight">{hub.active_game_title}</h2>
                   {hub.active_game_description &&
-                <p className="text-white/65 text-sm mt-2 leading-relaxed">{hub.active_game_description}</p>
+                <p className="text-white/60 text-xs mt-2 leading-relaxed">{hub.active_game_description}</p>
                 }
                 </> :
 
@@ -312,24 +311,23 @@ export default function ClubHub() {
         </div>
 
         {/* Next Meeting */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-5 relative group">
+        <div className="bg-ps-dark-card border border-white/10 rounded-md p-5 relative group">
           {isAdmin &&
-          <button onClick={openEditMeeting} className="absolute top-3 right-3 z-10 p-1.5 rounded-lg bg-black/20 text-white/70 hover:text-white hover:bg-black/40 transition-all opacity-0 group-hover:opacity-100">
+          <button onClick={openEditMeeting} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/20 text-white/70 hover:text-white hover:bg-black/40 transition-all opacity-0 group-hover:opacity-100">
               <Pencil className="w-4 h-4" />
             </button>
           }
           <div className="flex items-center gap-2 mb-4">
-            <Calendar className="w-4 h-4 text-green-300" />
-            <span className="text-xs font-black text-green-300 uppercase tracking-widest">Próxima Reunião</span>
+            <span className="bg-green-600 text-white rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">Próxima Reunião</span>
           </div>
           {meeting ?
           <div className="space-y-3">
-              <div className="bg-white/10 border border-white/15 rounded-2xl px-5 py-4 text-center">
-                <p className="text-5xl font-black text-white" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>{meeting.time}</p>
-                <p className="text-white/70 font-semibold capitalize mt-2 text-sm">{meeting.date}</p>
+              <div className="bg-ps-dark-elevated border border-white/10 rounded-md px-5 py-4 text-center">
+                <p className="text-4xl font-bold text-white">{meeting.time}</p>
+                <p className="text-white/60 capitalize mt-2 text-xs font-semibold">{meeting.date}</p>
               </div>
               {hub?.meeting_location &&
-            <div className="flex items-center gap-1.5 text-white/55 text-sm px-1">
+            <div className="flex items-center gap-1.5 text-white/50 text-xs px-1">
                   <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                   <span>{hub.meeting_location}</span>
                 </div>
@@ -342,14 +340,14 @@ export default function ClubHub() {
       </div>
 
       {/* Links */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6">
+      <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <LinkIcon className="w-5 h-5 text-white" />
-            <h2 className="text-lg font-black text-white uppercase" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.3)" }}>Links Úteis</h2>
+            <h2 className="text-base font-bold text-white uppercase tracking-wide">Links Úteis</h2>
           </div>
           {isAdmin &&
-          <Button size="sm" onClick={() => openEditLink()} className="bg-white text-blue-700 hover:bg-blue-50 font-bold">
+          <Button size="sm" onClick={() => openEditLink()} className="bg-ps-blue text-white hover:bg-ps-blue-pressed rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider border-none">
               <Plus className="w-4 h-4 mr-1" /> Novo Link
             </Button>
           }
@@ -357,14 +355,14 @@ export default function ClubHub() {
         {links.length === 0 ?
         <p className="text-white/40 text-sm italic">Nenhum link cadastrado ainda.</p> :
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {links.map((link) =>
           <div key={link.id} className="relative group/link">
                 <a
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-start gap-3 p-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/15 transition-all">
+              className="flex items-start gap-3 p-4 rounded-md border border-white/10 bg-ps-dark-elevated hover:bg-white/5 transition-all">
 
                   <span className="text-2xl flex-shrink-0">{link.emoji || "🔗"}</span>
                   <div className="min-w-0">
@@ -390,14 +388,14 @@ export default function ClubHub() {
       </div>
 
       {/* News */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6">
+      <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <Newspaper className="w-5 h-5 text-white" />
-            <h2 className="text-lg font-black text-white uppercase" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.3)" }}>Notícias</h2>
+            <h2 className="text-base font-bold text-white uppercase tracking-wide">Notícias</h2>
           </div>
           {isAdmin &&
-          <Button size="sm" onClick={() => openEditNews()} className="bg-white text-blue-700 hover:bg-blue-50 font-bold">
+          <Button size="sm" onClick={() => openEditNews()} className="bg-ps-blue text-white hover:bg-ps-blue-pressed rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider border-none">
               <Plus className="w-4 h-4 mr-1" /> Nova Notícia
             </Button>
           }
@@ -410,7 +408,7 @@ export default function ClubHub() {
           <div key={item.id} className="relative group/card">
                 <button
               onClick={() => setViewingNews(item)}
-              className="w-full text-left rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 transition-all overflow-hidden">
+              className="w-full text-left rounded-md border border-white/10 bg-ps-dark-elevated hover:bg-white/5 transition-all overflow-hidden">
 
                   {item.cover_image &&
               <div className="h-32 overflow-hidden">
@@ -418,9 +416,9 @@ export default function ClubHub() {
                     </div>
               }
                   <div className="p-4">
-                    <h3 className="font-black text-white text-sm leading-tight">{item.title}</h3>
-                    {item.excerpt && <p className="text-white/55 text-xs mt-1.5 line-clamp-2">{item.excerpt}</p>}
-                    <p className="text-white/35 text-xs mt-2">{new Date(item.created_date).toLocaleDateString("pt-BR")}</p>
+                    <h3 className="font-bold text-white text-sm leading-tight group-hover:text-ps-blue transition-colors">{item.title}</h3>
+                    {item.excerpt && <p className="text-white/60 text-xs mt-1.5 line-clamp-2">{item.excerpt}</p>}
+                    <p className="text-white/40 text-[10px] mt-2 font-mono">{new Date(item.created_date).toLocaleDateString("pt-BR")}</p>
                     {!item.is_published && isAdmin &&
                 <span className="text-xs text-yellow-400 font-bold mt-1 block">● Rascunho</span>
                 }
@@ -446,15 +444,15 @@ export default function ClubHub() {
 
       {/* View News */}
       <Dialog open={!!viewingNews} onOpenChange={() => setViewingNews(null)}>
-        <DialogContent className="bg-blue-950 border-white/20 text-white max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-2xl max-h-[80vh] overflow-y-auto rounded-md">
           {viewingNews &&
           <>
               {viewingNews.cover_image &&
-            <img src={viewingNews.cover_image} alt={viewingNews.title} className="w-full h-48 object-cover rounded-xl mb-2" />
+            <img src={viewingNews.cover_image} alt={viewingNews.title} className="w-full h-48 object-cover rounded-md mb-2" />
             }
               <DialogHeader>
-                <DialogTitle className="text-white font-black text-xl">{viewingNews.title}</DialogTitle>
-                <p className="text-white/45 text-xs">{new Date(viewingNews.created_date).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}</p>
+                <DialogTitle className="text-white font-bold text-lg">{viewingNews.title}</DialogTitle>
+                <p className="text-white/40 text-xs font-mono">{new Date(viewingNews.created_date).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}</p>
               </DialogHeader>
               <div className="mt-2 text-white/80 text-sm leading-relaxed whitespace-pre-wrap">{viewingNews.content}</div>
             </>
@@ -464,35 +462,35 @@ export default function ClubHub() {
 
       {/* Edit News */}
       <Dialog open={editNewsOpen} onOpenChange={setEditNewsOpen}>
-        <DialogContent className="bg-blue-950 border-white/20 text-white max-w-xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-xl max-h-[85vh] overflow-y-auto rounded-md">
           <DialogHeader>
-            <DialogTitle className="text-white">{editingNews ? "Editar Notícia" : "Nova Notícia"}</DialogTitle>
+            <DialogTitle className="text-white font-bold">{editingNews ? "Editar Notícia" : "Nova Notícia"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
               <Label className="text-white/80 text-sm">Título *</Label>
-              <Input value={newsForm.title} onChange={(e) => setNewsForm((f) => ({ ...f, title: e.target.value }))} className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={newsForm.title} onChange={(e) => setNewsForm((f) => ({ ...f, title: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">Resumo (aparece no card)</Label>
-              <Input value={newsForm.excerpt} onChange={(e) => setNewsForm((f) => ({ ...f, excerpt: e.target.value }))} className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={newsForm.excerpt} onChange={(e) => setNewsForm((f) => ({ ...f, excerpt: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">Conteúdo completo *</Label>
-              <Textarea value={newsForm.content} onChange={(e) => setNewsForm((f) => ({ ...f, content: e.target.value }))} rows={6} className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30 resize-none" />
+              <Textarea value={newsForm.content} onChange={(e) => setNewsForm((f) => ({ ...f, content: e.target.value }))} rows={6} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 resize-none rounded-sm" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">URL da imagem de capa (opcional)</Label>
-              <Input value={newsForm.cover_image} onChange={(e) => setNewsForm((f) => ({ ...f, cover_image: e.target.value }))} placeholder="https://..." className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={newsForm.cover_image} onChange={(e) => setNewsForm((f) => ({ ...f, cover_image: e.target.value }))} placeholder="https://..." className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={newsForm.is_published} onChange={(e) => setNewsForm((f) => ({ ...f, is_published: e.target.checked }))} className="w-4 h-4" />
+              <input type="checkbox" checked={newsForm.is_published} onChange={(e) => setNewsForm((f) => ({ ...f, is_published: e.target.checked }))} className="w-4 h-4 rounded-sm" />
               <span className="text-white/80 text-sm">Publicar agora</span>
             </label>
           </div>
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setEditNewsOpen(false)} className="border-white/30 text-white bg-transparent">Cancelar</Button>
-            <Button onClick={() => saveNews.mutate(newsForm)} disabled={saveNews.isPending} className="bg-white text-blue-700 hover:bg-blue-50 font-bold">
+            <Button variant="outline" onClick={() => setEditNewsOpen(false)} className="border-white/20 text-white bg-transparent rounded-full px-5 py-2 text-xs font-bold">Cancelar</Button>
+            <Button onClick={() => saveNews.mutate(newsForm)} disabled={saveNews.isPending} className="bg-ps-blue text-white hover:bg-ps-blue-pressed rounded-full px-6 py-2 text-xs font-bold uppercase tracking-wider border-none">
               <Save className="w-4 h-4 mr-1" /> Salvar
             </Button>
           </DialogFooter>
@@ -501,27 +499,27 @@ export default function ClubHub() {
 
       {/* Edit Game */}
       <Dialog open={editGameOpen} onOpenChange={setEditGameOpen}>
-        <DialogContent className="bg-blue-950 border-white/20 text-white max-w-md">
+        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-md rounded-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Jogo Ativo</DialogTitle>
+            <DialogTitle className="text-white font-bold">Jogo Ativo</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
               <Label className="text-white/80 text-sm">Nome do Jogo</Label>
-              <Input value={gameForm.active_game_title} onChange={(e) => setGameForm((f) => ({ ...f, active_game_title: e.target.value }))} className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={gameForm.active_game_title} onChange={(e) => setGameForm((f) => ({ ...f, active_game_title: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">URL da Capa</Label>
-              <Input value={gameForm.active_game_image} onChange={(e) => setGameForm((f) => ({ ...f, active_game_image: e.target.value }))} placeholder="https://..." className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={gameForm.active_game_image} onChange={(e) => setGameForm((f) => ({ ...f, active_game_image: e.target.value }))} placeholder="https://..." className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">Descrição / Progresso</Label>
-              <Textarea value={gameForm.active_game_description} onChange={(e) => setGameForm((f) => ({ ...f, active_game_description: e.target.value }))} rows={3} className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30 resize-none" />
+              <Textarea value={gameForm.active_game_description} onChange={(e) => setGameForm((f) => ({ ...f, active_game_description: e.target.value }))} rows={3} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 resize-none rounded-sm" />
             </div>
           </div>
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setEditGameOpen(false)} className="border-white/30 text-white bg-transparent">Cancelar</Button>
-            <Button onClick={() => {saveHub.mutate(gameForm);setEditGameOpen(false);}} className="bg-white text-blue-700 hover:bg-blue-50 font-bold">
+            <Button variant="outline" onClick={() => setEditGameOpen(false)} className="border-white/20 text-white bg-transparent rounded-full px-5 py-2 text-xs font-bold">Cancelar</Button>
+            <Button onClick={() => {saveHub.mutate(gameForm);setEditGameOpen(false);}} className="bg-ps-blue text-white hover:bg-ps-blue-pressed rounded-full px-6 py-2 text-xs font-bold uppercase tracking-wider border-none">
               <Save className="w-4 h-4 mr-1" /> Salvar
             </Button>
           </DialogFooter>
@@ -530,9 +528,9 @@ export default function ClubHub() {
 
       {/* Edit Meeting */}
       <Dialog open={editMeetingOpen} onOpenChange={setEditMeetingOpen}>
-        <DialogContent className="bg-blue-950 border-white/20 text-white max-w-md">
+        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-md rounded-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Próxima Reunião</DialogTitle>
+            <DialogTitle className="text-white font-bold">Próxima Reunião</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
@@ -541,17 +539,16 @@ export default function ClubHub() {
                 type="datetime-local"
                 value={meetingForm.next_meeting_datetime}
                 onChange={(e) => setMeetingForm((f) => ({ ...f, next_meeting_datetime: e.target.value }))}
-                className="mt-1 w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm [color-scheme:dark]" />
-
+                className="mt-1 w-full px-3 py-2 rounded-sm bg-white/5 border border-white/15 text-white text-sm [color-scheme:dark]" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">Local / Link</Label>
-              <Input value={meetingForm.meeting_location} onChange={(e) => setMeetingForm((f) => ({ ...f, meeting_location: e.target.value }))} placeholder="Discord, Zoom, endereço..." className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={meetingForm.meeting_location} onChange={(e) => setMeetingForm((f) => ({ ...f, meeting_location: e.target.value }))} placeholder="Discord, Zoom, endereço..." className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
           </div>
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setEditMeetingOpen(false)} className="border-white/30 text-white bg-transparent">Cancelar</Button>
-            <Button onClick={() => {saveHub.mutate(meetingForm);setEditMeetingOpen(false);}} className="bg-white text-blue-700 hover:bg-blue-50 font-bold">
+            <Button variant="outline" onClick={() => setEditMeetingOpen(false)} className="border-white/20 text-white bg-transparent rounded-full px-5 py-2 text-xs font-bold">Cancelar</Button>
+            <Button onClick={() => {saveHub.mutate(meetingForm);setEditMeetingOpen(false);}} className="bg-ps-blue text-white hover:bg-ps-blue-pressed rounded-full px-6 py-2 text-xs font-bold uppercase tracking-wider border-none">
               <Save className="w-4 h-4 mr-1" /> Salvar
             </Button>
           </DialogFooter>
@@ -560,31 +557,31 @@ export default function ClubHub() {
 
       {/* Edit Link */}
       <Dialog open={editLinkOpen} onOpenChange={setEditLinkOpen}>
-        <DialogContent className="bg-blue-950 border-white/20 text-white max-w-md">
+        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-md rounded-md">
           <DialogHeader>
-            <DialogTitle className="text-white">{editingLink ? "Editar Link" : "Novo Link"}</DialogTitle>
+            <DialogTitle className="text-white font-bold">{editingLink ? "Editar Link" : "Novo Link"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
               <Label className="text-white/80 text-sm">Emoji</Label>
-              <Input value={linkForm.emoji} onChange={(e) => setLinkForm((f) => ({ ...f, emoji: e.target.value }))} className="mt-1 bg-white/10 border-white/20 text-white w-20" />
+              <Input value={linkForm.emoji} onChange={(e) => setLinkForm((f) => ({ ...f, emoji: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white w-20 rounded-sm" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">Título *</Label>
-              <Input value={linkForm.title} onChange={(e) => setLinkForm((f) => ({ ...f, title: e.target.value }))} className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={linkForm.title} onChange={(e) => setLinkForm((f) => ({ ...f, title: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">URL *</Label>
-              <Input value={linkForm.url} onChange={(e) => setLinkForm((f) => ({ ...f, url: e.target.value }))} placeholder="https://..." className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={linkForm.url} onChange={(e) => setLinkForm((f) => ({ ...f, url: e.target.value }))} placeholder="https://..." className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
             <div>
               <Label className="text-white/80 text-sm">Descrição</Label>
-              <Input value={linkForm.description} onChange={(e) => setLinkForm((f) => ({ ...f, description: e.target.value }))} className="mt-1 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
+              <Input value={linkForm.description} onChange={(e) => setLinkForm((f) => ({ ...f, description: e.target.value }))} className="mt-1 bg-white/5 border-white/15 text-white placeholder:text-white/30 rounded-sm" />
             </div>
           </div>
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setEditLinkOpen(false)} className="border-white/30 text-white bg-transparent">Cancelar</Button>
-            <Button onClick={() => saveLink.mutate(linkForm)} disabled={saveLink.isPending} className="bg-white text-blue-700 hover:bg-blue-50 font-bold">
+            <Button variant="outline" onClick={() => setEditLinkOpen(false)} className="border-white/20 text-white bg-transparent rounded-full px-5 py-2 text-xs font-bold">Cancelar</Button>
+            <Button onClick={() => saveLink.mutate(linkForm)} disabled={saveLink.isPending} className="bg-ps-blue text-white hover:bg-ps-blue-pressed rounded-full px-6 py-2 text-xs font-bold uppercase tracking-wider border-none">
               <Save className="w-4 h-4 mr-1" /> Salvar
             </Button>
           </DialogFooter>

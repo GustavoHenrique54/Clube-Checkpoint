@@ -125,12 +125,12 @@ export default function PublicProfile() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 overflow-hidden">
+      <div className="bg-ps-dark-card border border-white/10 rounded-md overflow-hidden shadow-md">
         <ProfileHeader user={user} badgeCount={userBadges.length} rareBadgeCount={rareBadgeCount} friendCount={profileFriends.length} />
-        <div className="px-6 pb-4 flex flex-wrap gap-3">
+        <div className="px-6 pb-4 flex flex-wrap gap-3 bg-ps-dark-card">
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-white/70 hover:text-white hover:bg-white/20 transition-all text-xs font-bold"
+            className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/20 text-white/75 hover:text-white hover:bg-white/10 transition-all text-xs font-bold"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
             {copied ? "Link copiado!" : "Copiar link do perfil"}
@@ -138,19 +138,19 @@ export default function PublicProfile() {
 
           {!isOwnProfile && currentUser && (
             isFriend ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/20 border border-green-400/30 text-green-400 text-xs font-bold">
+              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold">
                 <UserCheck className="w-3.5 h-3.5" /> Amigos
               </div>
             ) : isPendingSent ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-white/50 text-xs font-bold">
+              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-bold">
                 <Clock className="w-3.5 h-3.5" /> Solicitação enviada
               </div>
             ) : isPendingReceived ? (
-              <Button size="sm" onClick={() => acceptRequestMutation.mutate(friendRequest.id)} className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs h-7">
+              <Button size="sm" onClick={() => acceptRequestMutation.mutate(friendRequest.id)} className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs h-8 rounded-full px-4">
                 <UserCheck className="w-3.5 h-3.5 mr-1" /> Aceitar Amizade
               </Button>
             ) : (
-              <Button size="sm" onClick={() => sendRequestMutation.mutate()} className="bg-white/15 hover:bg-white/25 text-white font-bold text-xs h-7 border border-white/20">
+              <Button size="sm" onClick={() => sendRequestMutation.mutate()} className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold text-xs h-8 rounded-full px-4 border-none shadow-md">
                 <UserPlus className="w-3.5 h-3.5 mr-1" /> Adicionar Amigo
               </Button>
             )
@@ -159,8 +159,8 @@ export default function PublicProfile() {
       </div>
 
       {featuredBadges.length > 0 && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6">
-          <h2 className="text-lg font-black text-white uppercase mb-4" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.3)" }}>⭐ Emblemas em Destaque</h2>
+        <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
+          <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">⭐ Emblemas em Destaque</h2>
           <BadgeGrid
             badges={featuredBadges}
             userBadges={userBadges}
@@ -169,8 +169,8 @@ export default function PublicProfile() {
         </div>
       )}
 
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/15 p-6">
-        <h2 className="text-lg font-black text-white uppercase mb-4" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.3)" }}>🏅 Emblemas</h2>
+      <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
+        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">🏅 Emblemas</h2>
         <BadgeIconGrid badges={badges} userBadges={userBadges} />
       </div>
     </div>

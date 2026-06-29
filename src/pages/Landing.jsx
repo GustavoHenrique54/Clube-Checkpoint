@@ -53,27 +53,18 @@ export default function Landing() {
   const publishedNews = news.filter((n) => n.is_published).slice(0, 3);
 
   // Inject custom fonts
-  const gradientFrom = config?.gradient_from || "#0f2566";
-  const gradientMid = config?.gradient_mid || "#1d4ed8";
-  const gradientTo = config?.gradient_to || "#3b82f6";
-  const bgStyle = { background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientMid} 60%, ${gradientTo} 100%)` };
-
   const subtitleStyle = {
-    fontFamily: config?.subtitle_font_url ? "'CustomSubtitle', serif" : "'Georgia', serif",
-    letterSpacing: "0.05em",
+    fontFamily: config?.subtitle_font_url ? "'CustomSubtitle', serif" : undefined,
     fontSize: config?.subtitle_size || undefined
   };
 
   const titleStyle = {
     fontFamily: config?.title_font_url ? "'CustomTitle', sans-serif" : undefined,
-    textShadow: "4px 4px 0 rgba(0,0,0,0.35), 8px 8px 0 rgba(0,0,0,0.15)",
-    letterSpacing: "-0.02em",
-    WebkitTextStroke: "2px rgba(0,0,0,0.15)",
     fontSize: config?.title_size || undefined
   };
 
   return (
-    <div className="min-h-screen ckpnt-pattern" style={bgStyle}>
+    <div className="min-h-screen text-white font-sans bg-ps-dark-canvas overflow-x-hidden">
       {config?.subtitle_font_url &&
       <style>{`@font-face { font-family: 'CustomSubtitle'; src: url('${config.subtitle_font_url}'); }`}</style>
       }
@@ -81,9 +72,9 @@ export default function Landing() {
       <style>{`@font-face { font-family: 'CustomTitle'; src: url('${config.title_font_url}'); }`}</style>
       }
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 sm:pt-40 sm:pb-32 text-center">
+      {/* Hero Chapter (Dark Canvas) */}
+      <section className="relative overflow-hidden bg-ps-dark-canvas border-b border-white/10 py-24 sm:py-32 flex items-center justify-center">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -91,179 +82,169 @@ export default function Landing() {
 
             {/* Club Logo Block */}
             <div className="mb-10">
-              <p className="text-white text-5xl font-thin text-left tracking-[0.15em] sm:text-8xl md:text-6xl whitespace-nowrap !tracking-[0.04em] ![text-shadow:none] ![-webkit-text-stroke:0] px-16 md:px-64" style={subtitleStyle}>
+              <p 
+                className="text-white text-5xl font-light text-center tracking-[0.05em] sm:text-7xl md:text-5xl font-display uppercase" 
+                style={subtitleStyle}
+              >
                 {config?.hero_subtitle || "clube"}
               </p>
-              <h1 className="text-white text-7xl font-thin tracking-[0.15em] sm:text-2xl md:text-8xl whitespace-nowrap !tracking-[0.04em] ![text-shadow:none] ![-webkit-text-stroke:0]"
-
-              style={titleStyle}>
-
+              <h1 
+                className="text-white text-6xl font-light tracking-[0.02em] sm:text-8xl md:text-9xl font-display uppercase"
+                style={titleStyle}
+              >
                 {config?.hero_title || "CHECKPOINT"}
               </h1>
-              <p
-                className="mt-3 text-white font-bold uppercase tracking-widest text-base sm:text-lg"
-                style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.4)" }}>
-
+              <p className="mt-4 text-ps-blue font-bold uppercase tracking-widest text-sm sm:text-base">
                 {config?.hero_tagline || 'O CLUBE "DO LIVRO" DE GAMES'}
               </p>
             </div>
 
-            <p className="mt-6 text-lg text-white/75 max-w-lg mx-auto leading-relaxed">
+            <p className="mt-6 text-base sm:text-lg text-white/70 max-w-lg mx-auto leading-relaxed font-sans">
               {config?.hero_description || "Jogue junto, discuta seus games favoritos e construa sua coleção de conquistas no clube."}
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               {user ?
               <>
-                  <Link to={createPageUrl("Profile")}>
-                    <Button size="lg" className="bg-white text-blue-700 px-10 py-2 text-base font-black uppercase tracking-wide rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-blue-50 h-13 shadow-lg">
-                      Meu Perfil <ArrowRight className="w-5 h-5 ml-2" />
-                    </Button>
-                  </Link>
-                  <Link to={createPageUrl("ClubHub")}>
-                    <Button size="lg" variant="outline" className="bg-transparent text-white px-12 py-2 text-base font-bold rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground border-white/40 hover:bg-white/10 h-13">
-                      Hub do Clube
-                    </Button>
-                  </Link>
-                </> :
-
+                <Link to={createPageUrl("Profile")}>
+                  <Button className="bg-ps-blue text-white hover:bg-ps-blue-pressed px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-full inline-flex items-center justify-center gap-2 transition-all h-12 shadow-md border-none">
+                    Meu Perfil <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Link to={createPageUrl("ClubHub")}>
+                  <Button className="bg-transparent border border-white/20 text-white hover:bg-white/10 px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-full inline-flex items-center justify-center gap-2 transition-all h-12">
+                    Hub do Clube
+                  </Button>
+                </Link>
+              </> :
               <>
-                  <Button
-                  size="lg"
+                <Button
                   onClick={() => db.auth.redirectToLogin()}
-                  className="bg-white text-blue-700 hover:bg-blue-50 font-black px-10 h-13 text-base uppercase tracking-wide shadow-lg">
-
-                    Entrar no Clube
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                  <Button
-                  size="lg"
-                  variant="outline"
+                  className="bg-ps-blue text-white hover:bg-ps-blue-pressed px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-full inline-flex items-center justify-center gap-2 transition-all h-12 shadow-md border-none"
+                >
+                  Entrar no Clube <ArrowRight className="w-4 h-4" />
+                </Button>
+                <Button
                   onClick={() => db.auth.redirectToLogin()}
-                  className="border-white/40 text-white bg-transparent hover:bg-white/10 px-10 h-13 text-base font-bold">
-
-                    Já tenho conta
-                  </Button>
-                </>
+                  className="bg-transparent border border-white/20 text-white hover:bg-white/10 px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-full inline-flex items-center justify-center gap-2 transition-all h-12"
+                >
+                  Já tenho conta
+                </Button>
+              </>
               }
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-white/10 max-w-5xl mx-auto" />
-
-      {/* Features */}
-      <section className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-14">
-          <h2
-            className="text-3xl sm:text-4xl font-black text-white uppercase"
-            style={{ textShadow: "3px 3px 0 rgba(0,0,0,0.25)" }}>
-
-            {config?.features_title || "Como Funciona"}
-          </h2>
-          <p className="text-white/65 mt-3 max-w-md mx-auto">
-            {config?.features_subtitle || "Entre no clube, participe das atividades e veja seu perfil crescer."}
-          </p>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {features.map((feature, i) =>
-          <motion.div
-            key={feature.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-6 hover:bg-white/15 transition-all group">
-
-              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-4 group-hover:bg-white/30 transition-colors">
-                <feature.icon className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-base font-bold text-white">{feature.title}</h3>
-              <p className="text-sm text-white/65 mt-2 leading-relaxed">{feature.description}</p>
-            </motion.div>
-          )}
+      {/* Features Chapter (Light Canvas) */}
+      <section className="bg-ps-light-canvas text-ps-dark-canvas py-24 border-b border-gray-200">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-display font-light uppercase tracking-wide text-ps-dark-canvas">
+              {config?.features_title || "Como Funciona"}
+            </h2>
+            <p className="text-black/60 mt-3 max-w-md mx-auto text-sm">
+              {config?.features_subtitle || "Entre no clube, participe das atividades e veja seu perfil crescer."}
+            </p>
+          </div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, i) =>
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="bg-ps-light-card border border-gray-200/50 rounded-md p-6 hover:shadow-md transition-all group"
+              >
+                <div className="w-12 h-12 rounded-full bg-ps-blue/10 flex items-center justify-center mb-4 group-hover:bg-ps-blue/20 transition-colors">
+                  <feature.icon className="w-6 h-6 text-ps-blue" />
+                </div>
+                <h3 className="text-base font-bold text-ps-dark-canvas uppercase tracking-wide">{feature.title}</h3>
+                <p className="text-sm text-black/60 mt-2 leading-relaxed">{feature.description}</p>
+              </motion.div>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Latest News */}
+      {/* Latest News Chapter (Dark Canvas Elevated) */}
       {publishedNews.length > 0 &&
-      <>
-          <div className="w-full h-px bg-white/10 max-w-5xl mx-auto" />
-          <section className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="flex items-center gap-3 mb-8">
-              <Newspaper className="w-6 h-6 text-white" />
-              <h2 className="text-2xl sm:text-3xl font-black text-white uppercase" style={{ textShadow: "3px 3px 0 rgba(0,0,0,0.25)" }}>
+        <section className="bg-ps-dark-elevated py-24 border-b border-white/5">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-3 mb-12 justify-center sm:justify-start">
+              <Newspaper className="w-6 h-6 text-ps-blue" />
+              <h2 className="text-2xl sm:text-3xl font-display font-light text-white uppercase tracking-wide">
                 {config?.news_section_title || "Últimas Notícias"}
               </h2>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {publishedNews.map((item, i) =>
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-              className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl overflow-hidden hover:bg-white/15 transition-all group">
-
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="bg-ps-dark-card border border-white/10 rounded-md overflow-hidden hover:bg-white/5 transition-all group"
+                >
                   {item.cover_image &&
-              <div className="h-36 overflow-hidden">
+                    <div className="h-40 overflow-hidden relative">
                       <img src={item.cover_image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     </div>
-              }
+                  }
                   <div className="p-5">
-                    <p className="text-white/40 text-xs mb-2">
+                    <p className="text-white/40 text-xs mb-2 font-mono">
                       {new Date(item.created_date).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}
                     </p>
-                    <h3 className="font-black text-white text-sm leading-tight">{item.title}</h3>
+                    <h3 className="font-bold text-white text-base leading-tight mt-1 group-hover:text-ps-blue transition-colors line-clamp-2">{item.title}</h3>
                     {item.excerpt && <p className="text-white/60 text-xs mt-2 line-clamp-2">{item.excerpt}</p>}
                   </div>
                 </motion.div>
-            )}
+              )}
             </div>
-            <div className="mt-6 text-center">
+            
+            <div className="mt-12 text-center">
               <Link to={createPageUrl("ClubHub")}>
-                <Button variant="outline" className="border-white/30 text-white bg-transparent hover:bg-white/10 font-bold">
-                  Ver todas as notícias <ArrowRight className="w-4 h-4 ml-1" />
+                <Button className="bg-transparent border border-white/20 text-white hover:bg-white/10 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all">
+                  Ver todas as notícias <ArrowRight className="w-4 h-4 ml-1 inline" />
                 </Button>
               </Link>
             </div>
-          </section>
-        </>
+          </div>
+        </section>
       }
 
-      {/* CTA */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="relative rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 p-12 text-center">
-          <h2
-            className="text-3xl font-black text-white uppercase"
-            style={{ textShadow: "3px 3px 0 rgba(0,0,0,0.25)" }}>
-
+      {/* CTA Chapter (PlayStation Blue Band) */}
+      <section className="bg-ps-blue py-20 text-center text-white relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-display font-light uppercase tracking-wide">
             {config?.cta_title || "Pronto para Começar?"}
           </h2>
-          <p className="text-white/70 mt-4 max-w-md mx-auto">
+          <p className="text-white/80 mt-4 max-w-md mx-auto text-sm leading-relaxed">
             {config?.cta_description || "Crie seu perfil e comece a colecionar emblemas que contam a história das suas aventuras gamer."}
           </p>
           <Button
-            size="lg"
-            onClick={() => db.auth.redirectToLogin()} className="bg-white text-blue-700 mt-8 px-10 py-8 text-base font-black uppercase tracking-wide rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-10 hover:bg-blue-50 shadow-lg">
-
+            onClick={() => db.auth.redirectToLogin()} 
+            className="bg-white text-ps-blue hover:bg-gray-100 mt-8 px-10 py-3 text-sm font-bold uppercase tracking-wider rounded-full inline-flex items-center justify-center gap-2 transition-all h-12 shadow-md border-none"
+          >
             {config?.cta_button_text || "Começar Agora"}
-            <ArrowRight className="w-5 h-5 ml-2" />
+            <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 py-8">
+      <footer className="bg-ps-dark-canvas py-12 text-white border-t border-white/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-col leading-none">
-            <span className="text-[10px] text-white/60 italic" style={subtitleStyle}>clube</span>
-            <span className="font-black text-white uppercase text-sm" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.3)" }}>CHECKPOINT</span>
+            <span className="text-[10px] text-white/55 uppercase tracking-widest font-mono">clube</span>
+            <span className="font-display font-light text-white text-lg tracking-wider">CHECKPOINT</span>
           </div>
-          <p className="text-sm text-white/40">© {new Date().getFullYear()} Clube Checkpoint. Todos os direitos reservados.</p>
+          <p className="text-xs text-white/40 font-mono">© {new Date().getFullYear()} Clube Checkpoint. Todos os direitos reservados.</p>
         </div>
       </footer>
-    </div>);
-
+    </div>
+  );
 }

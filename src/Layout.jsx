@@ -52,8 +52,8 @@ export default function Layout({ children, currentPageName }) {
 
   if (isPublicPage) {
     return (
-      <div className="min-h-screen ckpnt-pattern" style={{ background: "linear-gradient(135deg,  #0f2566 0%,  #1d4ed8 60%,  #3b82f6 100%)" }}>
-        <nav className="fixed top-0 w-full z-50 bg-blue-900/60 backdrop-blur-xl border-b border-white/10">
+      <div className="min-h-screen bg-ps-dark-canvas text-white ckpnt-pattern">
+        <nav className="fixed top-0 w-full z-50 bg-ps-dark-canvas/80 backdrop-blur-xl border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               <div className="flex flex-col leading-none">
@@ -65,12 +65,12 @@ export default function Layout({ children, currentPageName }) {
               {user ? (
                 <>
                   <Link to="/perfil">
-                    <button className="px-4 py-2 rounded-xl border border-white/30 text-white hover:bg-white/10 bg-white/10 text-sm font-bold transition-all">
+                    <button className="px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white/10 bg-white/5 text-sm font-bold transition-all">
                       Perfil
                     </button>
                   </Link>
                   <Link to="/hub">
-                    <button className="px-4 py-2 rounded-xl bg-white text-blue-700 hover:bg-blue-50 text-sm font-bold transition-all">
+                    <button className="px-5 py-2 rounded-full bg-ps-blue text-white hover:bg-ps-blue-pressed text-sm font-bold transition-all">
                       Entrar no Hub
                     </button>
                   </Link>
@@ -78,7 +78,7 @@ export default function Layout({ children, currentPageName }) {
               ) : (
                 <button
                   onClick={() => db.auth.redirectToLogin(window.location.href)}
-                  className="px-4 py-2 rounded-xl bg-white text-blue-700 hover:bg-blue-50 text-sm font-bold transition-all"
+                  className="px-5 py-2 rounded-full bg-ps-blue text-white hover:bg-ps-blue-pressed text-sm font-bold transition-all"
                 >
                   Login
                 </button>
@@ -86,7 +86,7 @@ export default function Layout({ children, currentPageName }) {
             </div>
           </div>
         </nav>
-        <div className="pt-20">
+        <div className="pt-16">
           {children}
         </div>
       </div>
@@ -108,19 +108,19 @@ export default function Layout({ children, currentPageName }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col md:flex-row">
+    <div className="min-h-screen bg-ps-dark-canvas text-white flex flex-col md:flex-row">
       {/* Mobile Navbar */}
-      <div className="md:hidden flex items-center justify-between px-4 h-16 bg-slate-900 border-b border-white/10 fixed top-0 w-full z-45">
+      <div className="md:hidden flex items-center justify-between px-4 h-16 bg-ps-dark-elevated border-b border-white/10 fixed top-0 w-full z-40">
         <Link to="/hub" className="flex items-center gap-2">
           <span className="text-lg font-black tracking-tight text-white uppercase">CHECKPOINT</span>
         </Link>
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-white hover:bg-white/10 rounded-xl">
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-white hover:bg-white/10 rounded-full">
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
       {/* Sidebar for Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-slate-900 border-r border-white/10 h-screen sticky top-0">
+      <aside className="hidden md:flex flex-col w-64 bg-ps-dark-elevated border-r border-white/10 h-screen sticky top-0">
         <div className="p-6">
           <Link to="/hub" className="flex items-center gap-2">
             <span className="text-xl font-black tracking-tight text-white uppercase">CHECKPOINT</span>
@@ -134,8 +134,8 @@ export default function Layout({ children, currentPageName }) {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold uppercase transition-all ${
-                  isActive ? "bg-white text-blue-900" : "text-white/60 hover:text-white hover:bg-white/5"
+                className={`flex items-center gap-3 px-4 py-3 rounded-full text-sm font-bold uppercase transition-all ${
+                  isActive ? "bg-ps-blue text-white" : "text-white/60 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -146,7 +146,7 @@ export default function Layout({ children, currentPageName }) {
         </nav>
         <div className="p-4 border-t border-white/10 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-blue-900 border-2 border-white/20 overflow-hidden flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-ps-blue border-2 border-white/20 overflow-hidden flex items-center justify-center flex-shrink-0">
               {user?.profile_image ? (
                 <img src={user.profile_image} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -162,7 +162,7 @@ export default function Layout({ children, currentPageName }) {
               )}
             </div>
           </div>
-          <button onClick={handleLogout} className="p-2 text-white/50 hover:text-white hover:bg-white/5 rounded-xl flex-shrink-0">
+          <button onClick={handleLogout} className="p-2 text-white/50 hover:text-white hover:bg-white/5 rounded-full flex-shrink-0">
             <LogOut className="w-5 h-5" />
           </button>
         </div>
@@ -170,7 +170,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-40 md:hidden flex flex-col pt-20 px-6 space-y-4">
+        <div className="fixed inset-0 bg-ps-dark-canvas/95 backdrop-blur-md z-30 md:hidden flex flex-col pt-20 px-6 space-y-4">
           {navigation.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.href;
@@ -179,8 +179,8 @@ export default function Layout({ children, currentPageName }) {
                 key={item.name}
                 to={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-bold uppercase transition-all ${
-                  isActive ? "bg-white text-blue-900" : "text-white/60 hover:text-white hover:bg-white/5"
+                className={`flex items-center gap-3 px-4 py-4 rounded-full text-lg font-bold uppercase transition-all ${
+                  isActive ? "bg-ps-blue text-white" : "text-white/60 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <Icon className="w-6 h-6" />
@@ -193,7 +193,7 @@ export default function Layout({ children, currentPageName }) {
               setMobileMenuOpen(false);
               handleLogout();
             }}
-            className="flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-bold uppercase text-red-400 hover:bg-red-500/10 transition-all"
+            className="flex items-center gap-3 px-4 py-4 rounded-full text-lg font-bold uppercase text-red-400 hover:bg-red-500/10 transition-all border border-red-500/20"
           >
             <LogOut className="w-6 h-6" />
             Sair
