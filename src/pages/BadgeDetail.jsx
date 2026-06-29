@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 
@@ -83,7 +83,7 @@ export default function BadgeDetail() {
             {badge.icon_image ? (
               <img src={badge.icon_image} alt={badge.name} className="w-14 h-14 object-contain" />
             ) : (
-              <span className="text-4xl">ðŸ†</span>
+              <span className="text-4xl">🏆</span>
             )}
           </div>
           <h1 className="text-2xl font-black text-white mt-4 uppercase" style={{textShadow: "2px 2px 0 rgba(0,0,0,0.3)"}}>{badge.name}</h1>

@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 
@@ -13,7 +13,7 @@ const features = [
 {
   icon: Trophy,
   title: "Conquistas Colecionáveis",
-  description: "Ganhe emblemas por cada marco â€” games concluídos, encontros e conquistas especiais."
+  description: "Ganhe emblemas por cada marco — games concluídos, encontros e conquistas especiais."
 },
 {
   icon: Users,
@@ -23,7 +23,7 @@ const features = [
 {
   icon: Star,
   title: "Sistema de Raridade",
-  description: "De Comum a Lendário â€” os emblemas têm raridades que refletem sua dedicação."
+  description: "De Comum a Lendário — os emblemas têm raridades que refletem sua dedicação."
 },
 {
   icon: Shield,

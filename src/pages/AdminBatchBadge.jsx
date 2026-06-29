@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 
@@ -285,7 +285,7 @@ export default function AdminBatchBadge() {
                     className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left ${isSelected ? "bg-white/20 border border-white/30" : "hover:bg-white/10"}`}
                   >
                     <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
-                      {b.icon_image ? <img src={b.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span className="text-sm">ðŸ†</span>}
+                      {b.icon_image ? <img src={b.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span className="text-sm">🏆</span>}
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm text-white font-bold truncate">{b.name}</p>
@@ -307,7 +307,7 @@ export default function AdminBatchBadge() {
             <p className="text-white font-bold text-sm">
               {selectedUsers.length > 0 && selectedBadges.length > 0 ? (
                 mode === "grant"
-                  ? `Conceder ${selectedBadges.length} emblema(s) para ${selectedUsers.length} membro(s) â€” ${selectedUsers.length * selectedBadges.length} operações`
+                  ? `Conceder ${selectedBadges.length} emblema(s) para ${selectedUsers.length} membro(s) — ${selectedUsers.length * selectedBadges.length} operações`
                   : `Revogar ${selectedBadges.length} emblema(s) de ${selectedUsers.length} membro(s)`
               ) : (
                 <span className="text-white/40">Selecione membros e emblemas para continuar.</span>

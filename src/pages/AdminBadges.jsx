@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 
@@ -109,7 +109,7 @@ export default function AdminBadges() {
           <div key={badge.id} className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/15 p-4 flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
-                {badge.icon_image ? <img src={badge.icon_image} alt="" className="w-7 h-7 object-contain" /> : <span className="text-lg">ðŸ†</span>}
+                {badge.icon_image ? <img src={badge.icon_image} alt="" className="w-7 h-7 object-contain" /> : <span className="text-lg">🏆</span>}
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-black text-white truncate uppercase">{badge.name}</p>
@@ -117,7 +117,7 @@ export default function AdminBadges() {
                   <span className={`text-xs font-bold ${rarityColors[badge.rarity]}`}>{rarityLabels[badge.rarity]}</span>
                   <span className="text-white/25">·</span>
                   <span className="text-xs text-white/50">{categoryLabels[badge.category]}</span>
-                  {badge.is_secret && <span className="text-xs text-white/40">· ðŸ”’</span>}
+                  {badge.is_secret && <span className="text-xs text-white/40">· 🔒</span>}
                 </div>
               </div>
             </div>
@@ -146,7 +146,7 @@ export default function AdminBadges() {
               <Label className="text-white font-bold">Ícone do Emblema</Label>
               <div className="flex items-center gap-3 mt-1.5">
                 <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
-                  {form.icon_image ? <img src={form.icon_image} alt="" className="w-8 h-8 object-contain" /> : <span className="text-xl">ðŸ†</span>}
+                  {form.icon_image ? <img src={form.icon_image} alt="" className="w-8 h-8 object-contain" /> : <span className="text-xl">🏆</span>}
                 </div>
                 <label className="cursor-pointer">
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />

@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -47,7 +47,7 @@ export default function ClubHub() {
   const [gameForm, setGameForm] = useState({ active_game_title: "", active_game_image: "", active_game_description: "" });
   const [meetingForm, setMeetingForm] = useState({ next_meeting_datetime: "", meeting_location: "" });
   const [newsForm, setNewsForm] = useState({ title: "", excerpt: "", content: "", cover_image: "", is_published: true });
-  const [linkForm, setLinkForm] = useState({ title: "", url: "", description: "", emoji: "ðŸ”—" });
+  const [linkForm, setLinkForm] = useState({ title: "", url: "", description: "", emoji: "🔗" });
 
   useEffect(() => {db.auth.me().then(setUser);}, []);
 
@@ -165,7 +165,7 @@ export default function ClubHub() {
 
   const openEditLink = (item = null) => {
     setEditingLink(item);
-    setLinkForm(item ? { title: item.title, url: item.url, description: item.description || "", emoji: item.emoji || "ðŸ”—" } : { title: "", url: "", description: "", emoji: "ðŸ”—" });
+    setLinkForm(item ? { title: item.title, url: item.url, description: item.description || "", emoji: item.emoji || "🔗" } : { title: "", url: "", description: "", emoji: "🔗" });
     setEditLinkOpen(true);
   };
 
@@ -187,7 +187,7 @@ export default function ClubHub() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
-            ðŸŽ® Hub do Clube
+            🎮 Hub do Clube
           </h1>
           <p className="text-white/55 text-sm mt-1">Tudo do Clube Checkpoint em um só lugar</p>
         </div>
@@ -199,7 +199,7 @@ export default function ClubHub() {
           onClick={() => setActiveTab("hub")}
           className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "hub" ? "bg-ps-blue text-white" : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"}`}
         >
-          ðŸŽ® Hub
+          🎮 Hub
         </button>
         <button
           onClick={() => setActiveTab("leaderboard")}
@@ -279,7 +279,7 @@ export default function ClubHub() {
       {activeTab === "hub" && <>
       {/* Active Game + Meeting */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Active Game â€” vertical cover */}
+        {/* Active Game — vertical cover */}
         <div className="bg-ps-dark-card border border-white/10 rounded-md overflow-hidden relative group flex flex-col justify-center flex-1">
           {isAdmin &&
           <button onClick={openEditGame} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/40 text-white/70 hover:text-white hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100">
@@ -364,7 +364,7 @@ export default function ClubHub() {
               rel="noopener noreferrer"
               className="flex items-start gap-3 p-4 rounded-md border border-white/10 bg-ps-dark-elevated hover:bg-white/5 transition-all">
 
-                  <span className="text-2xl flex-shrink-0">{link.emoji || "ðŸ”—"}</span>
+                  <span className="text-2xl flex-shrink-0">{link.emoji || "🔗"}</span>
                   <div className="min-w-0">
                     <p className="font-bold text-white text-sm truncate">{link.title}</p>
                     {link.description && <p className="text-white/50 text-xs mt-0.5 line-clamp-2">{link.description}</p>}
@@ -420,7 +420,7 @@ export default function ClubHub() {
                     {item.excerpt && <p className="text-white/60 text-xs mt-1.5 line-clamp-2">{item.excerpt}</p>}
                     <p className="text-white/40 text-[10px] mt-2 font-mono">{new Date(item.created_date).toLocaleDateString("pt-BR")}</p>
                     {!item.is_published && isAdmin &&
-                <span className="text-xs text-yellow-400 font-bold mt-1 block">â— Rascunho</span>
+                <span className="text-xs text-yellow-400 font-bold mt-1 block">● Rascunho</span>
                 }
                   </div>
                 </button>

@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 
@@ -211,7 +211,7 @@ export default function EditProfile() {
         <h2 className="text-sm font-black text-white/70 uppercase tracking-wide">Links & Redes</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <Label className="text-white font-bold text-sm">ðŸ“¸ Instagram</Label>
+            <Label className="text-white font-bold text-sm">📸 Instagram</Label>
             <div className="relative mt-1.5">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm">@</span>
               <Input
@@ -223,7 +223,7 @@ export default function EditProfile() {
             </div>
           </div>
           <div>
-            <Label className="text-white font-bold text-sm">ðŸ’¬ Discord</Label>
+            <Label className="text-white font-bold text-sm">💬 Discord</Label>
             <Input
               value={form.discord}
               onChange={(e) => setForm({ ...form, discord: e.target.value })}
@@ -232,7 +232,7 @@ export default function EditProfile() {
             />
           </div>
           <div>
-            <Label className="text-white font-bold text-sm">ðŸŽ® Steam</Label>
+            <Label className="text-white font-bold text-sm">🎮 Steam</Label>
             <Input
               value={form.steam}
               onChange={(e) => setForm({ ...form, steam: e.target.value })}
@@ -241,7 +241,7 @@ export default function EditProfile() {
             />
           </div>
           <div>
-            <Label className="text-white font-bold text-sm">ðŸŽ® PSN</Label>
+            <Label className="text-white font-bold text-sm">🎮 PSN</Label>
             <Input
               value={form.psn_username}
               onChange={(e) => setForm({ ...form, psn_username: e.target.value })}
@@ -250,7 +250,7 @@ export default function EditProfile() {
             />
           </div>
           <div>
-            <Label className="text-white font-bold text-sm">ðŸŽ® Xbox</Label>
+            <Label className="text-white font-bold text-sm">🎮 Xbox</Label>
             <Input
               value={form.xbox_username}
               onChange={(e) => setForm({ ...form, xbox_username: e.target.value })}
@@ -292,7 +292,7 @@ export default function EditProfile() {
                       {badge.icon_image ? (
                         <img src={badge.icon_image} alt="" className="w-5 h-5 object-contain" />
                       ) : (
-                        <span className="text-sm">ðŸ†</span>
+                        <span className="text-sm">🏆</span>
                       )}
                     </div>
                     <span className="text-sm font-bold text-white truncate">{badge.name}</span>

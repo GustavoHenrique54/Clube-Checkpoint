@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 
@@ -210,7 +210,7 @@ export default function Profile() {
 
       {/* Featured Badges */}
       <div className="bg-ps-dark-card border border-white/10 rounded-md p-6">
-        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">â­ Emblemas em Destaque</h2>
+        <h2 className="text-lg font-bold text-white uppercase mb-4 tracking-wide">⭐ Emblemas em Destaque</h2>
         {featuredBadges.length === 0 ? (
           <p className="text-white/40 text-sm italic font-sans">Nenhum emblema em destaque. <Link to={createPageUrl("EditProfile")} className="underline text-white/60 hover:text-white">Selecionar no perfil</Link></p>
         ) : (
@@ -222,7 +222,7 @@ export default function Profile() {
       <div className="bg-ps-dark-card border border-white/10 rounded-md p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-white uppercase tracking-wide">
-            ðŸ… Meus Emblemas
+            🏅 Meus Emblemas
             <span className="ml-2 text-sm font-bold text-white/50 normal-case">{userBadges.length} / {badges.length}</span>
           </h2>
           <button

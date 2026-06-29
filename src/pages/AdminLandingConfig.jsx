@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 
@@ -184,7 +184,7 @@ export default function AdminLandingConfig() {
             <Label className="text-white/70 text-xs font-bold uppercase tracking-wide">{label}</Label>
             {form[nameKey] && (
               <div className="flex items-center justify-between px-3 py-2 bg-white/10 rounded-lg border border-white/15">
-                <span className="text-white text-sm font-semibold">âœ“ {form[nameKey]}</span>
+                <span className="text-white text-sm font-semibold">✓ {form[nameKey]}</span>
                 <button onClick={() => setForm(f => ({ ...f, [urlKey]: null, [nameKey]: null }))} className="text-white/40 hover:text-red-400 text-xs font-bold transition-colors">
                   Remover
                 </button>

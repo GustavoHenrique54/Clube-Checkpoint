@@ -1,4 +1,4 @@
-import { db } from "@/api/supabaseClient";
+const db = globalThis.__B44_DB__ || { auth:{ isAuthenticated: async()=>false, me: async()=>null }, entities:new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } };
 
 import React, { useState, useEffect } from "react";
 
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
                 <div key={ub.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                      {badge?.icon_image ? <img src={badge.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span>ðŸ†</span>}
+                      {badge?.icon_image ? <img src={badge.icon_image} alt="" className="w-5 h-5 object-contain" /> : <span>🏆</span>}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white">{badge?.name || "Desconhecido"}</p>
