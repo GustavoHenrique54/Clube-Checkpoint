@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { db } from "@/api/supabaseClient";
-import { Search, Plus, Trash2, Library, Key, ExternalLink, RefreshCw, AlertCircle, AlertTriangle } from "lucide-react";
+import { Search, Plus, Trash2, Library, Key, ExternalLink, RefreshCw, AlertCircle, AlertTriangle, List, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 
 // Default placeholder games in case the database table doesn't exist yet
@@ -57,6 +58,12 @@ export default function ConsideredGames() {
   const [manualCover, setManualCover] = useState("");
   const [selectedResult, setSelectedResult] = useState(null);
   const [formError, setFormError] = useState("");
+
+  // Batch Form State
+  const [activeAddTab, setActiveAddTab] = useState("single"); // "single" or "batch"
+  const [batchText, setBatchText] = useState("");
+  const [isProcessingBatch, setIsProcessingBatch] = useState(false);
+  const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0, logs: [] });
 
   const queryClient = useQueryClient();
 
@@ -202,6 +209,99 @@ export default function ConsideredGames() {
     setManualYear("");
     setManualCover("");
     setFormError("");
+    setBatchText("");
+    setActiveAddTab("single");
+    setIsProcessingBatch(false);
+    setBatchProgress({ current: 0, total: 0, logs: [] });
+  };
+
+  const handleBatchAdd = async () => {
+    const lines = batchText.split("\n").map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) {
+      setFormError("Insira pelo menos um nome de jogo.");
+      return;
+    }
+    setFormError("");
+    setIsProcessingBatch(true);
+    setBatchProgress({ current: 0, total: lines.length, logs: [] });
+
+    const activeKey = rawgKey.trim() || import.meta.env.VITE_RAWG_API_KEY || "";
+
+    for (let i = 0; i < lines.length; i++) {
+      const gameTitle = lines[i];
+      let cover = null;
+      let year = null;
+      let success = false;
+
+      // Update log to show we are searching
+      setBatchProgress(prev => ({
+        ...prev,
+        current: i + 1,
+        logs: [...prev.logs, { title: gameTitle, status: "searching", message: "Buscando informações online..." }]
+      }));
+
+      if (activeKey) {
+        try {
+          const res = await fetch(`https://api.rawg.io/api/games?search=${encodeURIComponent(gameTitle)}&key=${activeKey}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.results && data.results.length > 0) {
+              const bestMatch = data.results[0];
+              cover = bestMatch.background_image || null;
+              year = bestMatch.released ? bestMatch.released.substring(0, 4) : null;
+              success = true;
+            }
+          }
+        } catch (e) {
+          console.error(`Error searching ${gameTitle}:`, e);
+        }
+      }
+
+      const newId = Math.random().toString(36).substring(2, 11);
+      const newGame = {
+        id: newId,
+        title: gameTitle,
+        cover_image: cover,
+        release_year: year
+      };
+
+      try {
+        if (isUsingFallback) {
+          const local = localStorage.getItem("__considered_games__");
+          const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_GAMES;
+          localStorage.setItem("__considered_games__", JSON.stringify([newGame, ...currentList]));
+        } else {
+          await db.entities.ConsideredGame.create(newGame);
+        }
+
+        setBatchProgress(prev => {
+          const newLogs = [...prev.logs];
+          newLogs[newLogs.length - 1] = {
+            title: gameTitle,
+            status: "success",
+            message: success ? `Adicionado com sucesso (${year})` : "Adicionado sem capa (busca falhou/sem chave)"
+          };
+          return { ...prev, logs: newLogs };
+        });
+      } catch (err) {
+        console.error("Error creating in batch:", err);
+        setBatchProgress(prev => {
+          const newLogs = [...prev.logs];
+          newLogs[newLogs.length - 1] = {
+            title: gameTitle,
+            status: "error",
+            message: `Erro ao salvar: ${err.message || err}`
+          };
+          return { ...prev, logs: newLogs };
+        });
+      }
+
+      // Small delay of 200ms to avoid hammering RAWG API
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["consideredGames"] });
+    setIsProcessingBatch(false);
   };
 
   const filteredGames = games.filter(g => 
@@ -257,6 +357,7 @@ export default function ConsideredGames() {
                       <button 
                         onClick={() => setShowKeyInfo(!showKeyInfo)} 
                         className="text-[10px] text-ps-blue hover:underline"
+                        type="button"
                       >
                         Como obter?
                       </button>
@@ -275,85 +376,158 @@ export default function ConsideredGames() {
                     />
                   </div>
 
-                  {/* Auto Search Form */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-white/60 uppercase tracking-wider">Busca Automática</label>
-                    <div className="flex gap-2">
-                      <Input
-                        value={searchGameName}
-                        onChange={(e) => setSearchGameName(e.target.value)}
-                        placeholder="Pesquisar título do jogo online..."
-                        className="bg-white/5 border-white/10 text-white text-sm placeholder:text-white/40"
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchApi()}
-                      />
-                      <Button 
-                        onClick={handleSearchApi} 
-                        disabled={isSearchingApi}
-                        className="bg-white/10 hover:bg-white/20 text-white border border-white/20 h-9"
-                      >
-                        {isSearchingApi ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Buscar"}
-                      </Button>
-                    </div>
+                  {/* Tabs */}
+                  <div className="flex border-b border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => { setActiveAddTab("single"); setFormError(""); }}
+                      className={`flex-1 py-2 text-center text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeAddTab === "single" ? "border-ps-blue text-white" : "border-transparent text-white/50 hover:text-white"}`}
+                    >
+                      Unitário
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setActiveAddTab("batch"); setFormError(""); }}
+                      className={`flex-1 py-2 text-center text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${activeAddTab === "batch" ? "border-ps-blue text-white" : "border-transparent text-white/50 hover:text-white"}`}
+                    >
+                      Em Lote (Lista)
+                    </button>
                   </div>
 
-                  {/* Search Results list */}
-                  {searchResults.length > 0 && (
-                    <div className="bg-black/30 border border-white/10 rounded-lg overflow-hidden divide-y divide-white/5">
-                      {searchResults.map((game) => (
-                        <button
-                          key={game.id}
-                          onClick={() => handleSelectGameResult(game)}
-                          className={`w-full flex items-center gap-3 p-2 text-left hover:bg-white/5 transition-colors ${selectedResult?.id === game.id ? "bg-ps-blue/20" : ""}`}
-                        >
-                          <div className="w-8 h-10 bg-white/10 rounded overflow-hidden flex-shrink-0">
-                            {game.background_image ? (
-                              <img src={game.background_image} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[10px]">🎮</div>
-                            )}
-                          </div>
-                          <div>
-                            <p className="text-xs font-bold text-white leading-tight">{game.name}</p>
-                            <p className="text-[10px] text-white/55 mt-0.5">{game.released ? game.released.substring(0, 4) : "Ano desconhecido"}</p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Manual Fields preview / Entry */}
-                  <div className="border-t border-white/5 pt-3 space-y-3">
-                    <label className="text-xs font-bold text-white/60 uppercase tracking-wider block">Confirmar Dados do Jogo</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="col-span-2 space-y-1">
-                        <label className="text-[10px] font-bold text-white/40 uppercase">Título</label>
-                        <Input
-                          value={manualTitle}
-                          onChange={(e) => setManualTitle(e.target.value)}
-                          placeholder="Ex: Super Mario"
-                          className="bg-white/5 border-white/10 text-white text-xs h-8"
-                        />
-                      </div>
+                  {activeAddTab === "single" ? (
+                    <>
+                      {/* Auto Search Form */}
                       <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-white/40 uppercase">Ano</label>
-                        <Input
-                          value={manualYear}
-                          onChange={(e) => setManualYear(e.target.value)}
-                          placeholder="Ex: 2017"
-                          className="bg-white/5 border-white/10 text-white text-xs h-8"
+                        <label className="text-xs font-bold text-white/60 uppercase tracking-wider">Busca Automática</label>
+                        <div className="flex gap-2">
+                          <Input
+                            value={searchGameName}
+                            onChange={(e) => setSearchGameName(e.target.value)}
+                            placeholder="Pesquisar título do jogo online..."
+                            className="bg-white/5 border-white/10 text-white text-sm placeholder:text-white/40"
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchApi()}
+                          />
+                          <Button 
+                            onClick={handleSearchApi} 
+                            disabled={isSearchingApi}
+                            className="bg-white/10 hover:bg-white/20 text-white border border-white/20 h-9"
+                            type="button"
+                          >
+                            {isSearchingApi ? <RefreshCw className="w-4 h-4 animate-spin" /> : "Buscar"}
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Search Results list */}
+                      {searchResults.length > 0 && (
+                        <div className="bg-black/30 border border-white/10 rounded-lg overflow-hidden divide-y divide-white/5">
+                          {searchResults.map((game) => (
+                            <button
+                              key={game.id}
+                              onClick={() => handleSelectGameResult(game)}
+                              className={`w-full flex items-center gap-3 p-2 text-left hover:bg-white/5 transition-colors ${selectedResult?.id === game.id ? "bg-ps-blue/20" : ""}`}
+                              type="button"
+                            >
+                              <div className="w-8 h-10 bg-white/10 rounded overflow-hidden flex-shrink-0">
+                                {game.background_image ? (
+                                  <img src={game.background_image} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-[10px]">🎮</div>
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-white leading-tight">{game.name}</p>
+                                <p className="text-[10px] text-white/55 mt-0.5">{game.released ? game.released.substring(0, 4) : "Ano desconhecido"}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Manual Fields preview / Entry */}
+                      <div className="border-t border-white/5 pt-3 space-y-3">
+                        <label className="text-xs font-bold text-white/60 uppercase tracking-wider block">Confirmar Dados do Jogo</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="col-span-2 space-y-1">
+                            <label className="text-[10px] font-bold text-white/40 uppercase">Título</label>
+                            <Input
+                              value={manualTitle}
+                              onChange={(e) => setManualTitle(e.target.value)}
+                              placeholder="Ex: Super Mario"
+                              className="bg-white/5 border-white/10 text-white text-xs h-8"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-white/40 uppercase">Ano</label>
+                            <Input
+                              value={manualYear}
+                              onChange={(e) => setManualYear(e.target.value)}
+                              placeholder="Ex: 2017"
+                              className="bg-white/5 border-white/10 text-white text-xs h-8"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-white/40 uppercase">URL da Imagem de Capa</label>
+                          <Input
+                            value={manualCover}
+                            onChange={(e) => setManualCover(e.target.value)}
+                            placeholder="https://..."
+                            className="bg-white/5 border-white/10 text-white text-xs h-8"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Batch text area */}
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-white/60 uppercase tracking-wider">Jogos (um por linha)</label>
+                        <Textarea
+                          value={batchText}
+                          onChange={(e) => setBatchText(e.target.value)}
+                          placeholder={`Super Mario Odyssey\nAlan Wake 2\nGrand Theft Auto V`}
+                          rows={6}
+                          disabled={isProcessingBatch}
+                          className="bg-white/5 border-white/10 text-white placeholder:text-white/20 text-xs font-mono"
                         />
                       </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-white/40 uppercase">URL da Imagem de Capa</label>
-                      <Input
-                        value={manualCover}
-                        onChange={(e) => setManualCover(e.target.value)}
-                        placeholder="https://..."
-                        className="bg-white/5 border-white/10 text-white text-xs h-8"
-                      />
-                    </div>
-                  </div>
+
+                      {/* Progress and logs */}
+                      {batchProgress.total > 0 && (
+                        <div className="bg-black/40 border border-white/10 rounded-lg p-3 space-y-2 text-xs">
+                          <div className="flex justify-between items-center text-white/60 font-bold uppercase text-[10px]">
+                            <span>Progresso da Importação</span>
+                            <span>{batchProgress.current} / {batchProgress.total}</span>
+                          </div>
+                          {/* Progress Bar */}
+                          <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                            <div 
+                              className="bg-ps-blue h-full transition-all duration-300"
+                              style={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}
+                            />
+                          </div>
+                          {/* Logs list */}
+                          <div className="max-h-36 overflow-y-auto space-y-1.5 mt-2 font-mono text-[10px] divide-y divide-white/5 pr-1">
+                            {batchProgress.logs.map((log, idx) => (
+                              <div key={idx} className="flex justify-between items-start pt-1.5 first:pt-0 gap-2">
+                                <span className="text-white font-bold truncate max-w-[200px]">{log.title}</span>
+                                {log.status === "searching" && (
+                                  <span className="text-ps-blue flex items-center gap-1"><RefreshCw className="w-2.5 h-2.5 animate-spin" /> Buscando...</span>
+                                )}
+                                {log.status === "success" && (
+                                  <span className="text-green-400 flex items-center gap-1"><Check className="w-2.5 h-2.5 flex-shrink-0" /> {log.message}</span>
+                                )}
+                                {log.status === "error" && (
+                                  <span className="text-red-400 flex items-center gap-1"><X className="w-2.5 h-2.5 flex-shrink-0" /> {log.message}</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
 
                   {formError && (
                     <div className="text-red-400 text-xs flex items-center gap-1.5 bg-red-500/10 p-2.5 rounded-lg border border-red-500/25">
@@ -364,12 +538,27 @@ export default function ConsideredGames() {
                 </div>
 
                 <DialogFooter className="border-t border-white/5 pt-3">
-                  <Button variant="ghost" onClick={() => { setShowAdminDialog(false); resetForm(); }} className="text-white hover:bg-white/5">
-                    Cancelar
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => { setShowAdminDialog(false); resetForm(); }} 
+                    className="text-white hover:bg-white/5"
+                    disabled={isProcessingBatch}
+                  >
+                    {isProcessingBatch ? "Executando..." : "Cancelar"}
                   </Button>
-                  <Button onClick={handleAddGame} disabled={addMutation.isPending} className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold">
-                    Adicionar Jogo
-                  </Button>
+                  {activeAddTab === "single" ? (
+                    <Button onClick={handleAddGame} disabled={addMutation.isPending} className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold">
+                      Adicionar Jogo
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={handleBatchAdd} 
+                      disabled={isProcessingBatch} 
+                      className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold"
+                    >
+                      {isProcessingBatch ? <span className="flex items-center gap-1.5"><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Importando...</span> : "Importar Lista"}
+                    </Button>
+                  )}
                 </DialogFooter>
               </DialogContent>
             </Dialog>
