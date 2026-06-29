@@ -130,6 +130,7 @@ export const db = {
       if (profile) {
         return {
           ...user,
+          id: profile.id, // Override with original 24-character profile ID for relation mapping
           role: profile.role,
           username: profile.username,
           display_name: profile.display_name,
@@ -163,7 +164,7 @@ export const db = {
         console.error("Error updating profile:", error);
         throw error;
       }
-      return { ...user, ...updated };
+      return { ...user, ...updated, id: updated.id };
     },
     logout: async () => {
       await supabase.auth.signOut();
