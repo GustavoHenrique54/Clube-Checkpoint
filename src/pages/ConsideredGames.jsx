@@ -57,7 +57,7 @@ async function fetchWikipediaCover(gameTitle) {
     const pageTitle = results[0].title;
     
     // 2. Get the page image (thumbnail) for that page
-    const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`;
+    const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=600&pilicense=any&format=json&origin=*`;
     const imgRes = await fetch(imgUrl);
     if (!imgRes.ok) return null;
     const imgData = await imgRes.json();
