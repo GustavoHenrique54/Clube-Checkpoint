@@ -12,31 +12,31 @@ const INITIAL_FALLBACK_GAMES = [
   {
     id: "mario-odyssey",
     title: "Super Mario Odyssey",
-    cover_image: "https://media.rawg.io/media/games/7a2/7a211ae2e2c5e1112724c326d24f07b8.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/en/8/8d/Super_Mario_Odyssey_Cover_Art.jpg",
     release_year: "2017"
   },
   {
     id: "zelda-oot",
     title: "The Legend of Zelda: Ocarina of Time",
-    cover_image: "https://media.rawg.io/media/games/fd6/fd6a1e58f1e041796120e2ef58ad7b46.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/en/5/57/The_Legend_of_Zelda_Ocarina_of_Time.jpg",
     release_year: "1998"
   },
   {
     id: "alan-wake-remastered",
     title: "Alan Wake Remastered",
-    cover_image: "https://media.rawg.io/media/games/5cf/5cf7b583d5836a94f6f70d98ca57c6b9.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/en/c/c5/Alan_Wake_box_art.jpg",
     release_year: "2021"
   },
   {
     id: "portal-2",
     title: "Portal 2",
-    cover_image: "https://media.rawg.io/media/games/328/32836170ad2f4109138b8a5192ddb452.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/en/f/f9/Portal2cover.jpg",
     release_year: "2011"
   },
   {
     id: "gta-v",
     title: "Grand Theft Auto V",
-    cover_image: "https://media.rawg.io/media/games/456/456fc5a1178a2fd9e11c8555584e3895.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png",
     release_year: "2013"
   }
 ];
@@ -140,6 +140,54 @@ export default function ConsideredGames() {
       }
     }
   });
+
+  // Auto-upgrade RAWG images to Wikipedia covers for the admin (or fallback)
+  useEffect(() => {
+    if (isLoading || games.length === 0) return;
+    
+    const gamesToUpgrade = games.filter(g => 
+      g.cover_image && g.cover_image.includes("media.rawg.io")
+    );
+    
+    if (gamesToUpgrade.length === 0) return;
+    
+    const upgradeGames = async () => {
+      let updatedAny = false;
+      for (const game of gamesToUpgrade) {
+        console.log("Auto-upgrading cover for:", game.title);
+        const wikiCover = await fetchWikipediaCover(game.title);
+        if (wikiCover && wikiCover !== game.cover_image) {
+          try {
+            if (isUsingFallback) {
+              const local = localStorage.getItem("__considered_games__");
+              if (local) {
+                const list = JSON.parse(local);
+                const idx = list.findIndex(g => g.id === game.id);
+                if (idx !== -1) {
+                  list[idx].cover_image = wikiCover;
+                  localStorage.setItem("__considered_games__", JSON.stringify(list));
+                  updatedAny = true;
+                }
+              }
+            } else {
+              await db.entities.ConsideredGame.update(game.id, { cover_image: wikiCover });
+              updatedAny = true;
+            }
+            console.log("Successfully upgraded cover for:", game.title);
+          } catch (e) {
+            console.error("Failed to auto-upgrade cover for:", game.title, e);
+          }
+        }
+        // Delay 300ms to respect rate limit
+        await new Promise(r => setTimeout(r, 300));
+      }
+      if (updatedAny) {
+        queryClient.invalidateQueries({ queryKey: ["consideredGames"] });
+      }
+    };
+    
+    upgradeGames();
+  }, [games, isLoading, isUsingFallback, queryClient]);
 
   const isAdmin = user?.role === "admin";
 
@@ -813,18 +861,18 @@ CREATE POLICY "Allow anon delete" ON public.considered_games FOR DELETE USING (t
           {filteredGames.map((game) => (
             <div 
               key={game.id} 
-              className="group relative flex flex-col rounded-xl overflow-hidden bg-ps-dark-card border border-white/10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-default"
+              className="group relative flex flex-col transition-all duration-300 hover:-translate-y-2 cursor-default"
             >
               {/* Cover container */}
-              <div className="w-full bg-white/5 relative overflow-hidden flex items-end justify-center border-b border-white/5 flex-shrink-0">
+              <div className="w-full relative overflow-hidden rounded-xl shadow-md group-hover:shadow-2xl transition-all duration-300 flex items-end justify-center flex-shrink-0">
                 {game.cover_image ? (
                   <img 
                     src={game.cover_image} 
                     alt={game.title} 
-                    className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-auto object-contain rounded-xl"
                   />
                 ) : (
-                  <div className="aspect-[2/3] w-full flex flex-col items-center justify-center gap-2 text-white/20">
+                  <div className="aspect-[2/3] w-full flex flex-col items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-xl text-white/20">
                     <Library className="w-10 h-10" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>
                   </div>
@@ -832,7 +880,7 @@ CREATE POLICY "Allow anon delete" ON public.considered_games FOR DELETE USING (t
 
                 {/* Dark overlay with delete option in admin mode */}
                 {isAdmin && (
-                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200 rounded-xl">
                     <Button
                       onClick={() => {
                         if (confirm(`Deseja remover ${game.title} da prateleira?`)) {
@@ -849,13 +897,13 @@ CREATE POLICY "Allow anon delete" ON public.considered_games FOR DELETE USING (t
               </div>
 
               {/* Game Metadata details */}
-              <div className="p-3 flex-grow flex flex-col justify-between">
+              <div className="pt-3 text-center">
                 <div>
-                  <h3 className="font-bold text-white text-sm line-clamp-2 leading-tight group-hover:text-ps-blue transition-colors duration-200" title={game.title}>
+                  <h3 className="font-bold text-white text-xs line-clamp-1 group-hover:text-ps-blue transition-colors duration-200" title={game.title}>
                     {game.title}
                   </h3>
                   {game.release_year && (
-                    <p className="text-[10px] text-white/50 font-bold uppercase mt-1 font-mono">{game.release_year}</p>
+                    <p className="text-[9px] text-white/40 font-bold uppercase mt-0.5 font-mono">{game.release_year}</p>
                   )}
                 </div>
               </div>
