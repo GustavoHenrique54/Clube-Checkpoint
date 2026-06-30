@@ -133,6 +133,21 @@ class SupabaseEntity {
     }
   }
 
+  async createMany(dataArray) {
+    try {
+      const payloads = dataArray.map(data => {
+        const newId = data.id || Math.random().toString(36).substring(2, 11) + Math.random().toString(36).substring(2, 11) + Math.random().toString(36).substring(2, 8);
+        return this._formatIn({ id: newId, ...data });
+      });
+      const { data: created, error } = await supabase.from(this.tableName).insert(payloads).select();
+      if (error) throw error;
+      return (created || []).map(r => this._formatOut(r));
+    } catch (e) {
+      console.error(`Error creating multiple entities of ${this.entityName}:`, e);
+      throw e;
+    }
+  }
+
   async update(id, data) {
     try {
       const payload = this._formatIn(data);

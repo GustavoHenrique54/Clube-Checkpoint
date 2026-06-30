@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { db } from "@/api/supabaseClient";
-import { Search, Plus, Trash2, Library, Key, ExternalLink, RefreshCw, AlertCircle, AlertTriangle, List, Check, X } from "lucide-react";
+import { Search, Plus, Trash2, Library, Key, ExternalLink, RefreshCw, AlertCircle, AlertTriangle, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -62,6 +62,10 @@ export default function ConsideredGames() {
   // Batch Form State
   const [activeAddTab, setActiveAddTab] = useState("single"); // "single" or "batch"
   const [batchText, setBatchText] = useState("");
+  const [shouldSearchRawg, setShouldSearchRawg] = useState(() => {
+    const activeKey = localStorage.getItem("rawg_api_key") || import.meta.env.VITE_RAWG_API_KEY || "";
+    return !!activeKey.trim();
+  });
   const [isProcessingBatch, setIsProcessingBatch] = useState(false);
   const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0, logs: [] });
 
@@ -216,19 +220,87 @@ export default function ConsideredGames() {
   };
 
   const handleBatchAdd = async () => {
-    const lines = batchText.split("\n").map(l => l.trim()).filter(Boolean);
-    if (lines.length === 0) {
+    // Parser de Lote Inteligente
+    let gameTitles = [];
+    
+    // Check if the input has no newlines but contains commas or semicolons
+    if (!batchText.includes("\n") && (batchText.includes(",") || batchText.includes(";"))) {
+      const separator = batchText.includes(";") ? ";" : ",";
+      gameTitles = batchText.split(separator);
+    } else {
+      gameTitles = batchText.split("\n");
+    }
+
+    gameTitles = gameTitles
+      .map(item => {
+        let cleaned = item.trim();
+        // Clean leading list markers like: "- ", "* ", "• ", "1. ", "1 - ", etc.
+        cleaned = cleaned.replace(/^[-*•]\s+/, ""); // remove bullet points
+        cleaned = cleaned.replace(/^\d+[\s.-]+/, ""); // remove numbers like "1. ", "1 - "
+        return cleaned.trim();
+      })
+      .filter(Boolean);
+
+    if (gameTitles.length === 0) {
       setFormError("Insira pelo menos um nome de jogo.");
       return;
     }
     setFormError("");
     setIsProcessingBatch(true);
-    setBatchProgress({ current: 0, total: lines.length, logs: [] });
+    setBatchProgress({ current: 0, total: gameTitles.length, logs: [] });
 
     const activeKey = rawgKey.trim() || import.meta.env.VITE_RAWG_API_KEY || "";
 
-    for (let i = 0; i < lines.length; i++) {
-      const gameTitle = lines[i];
+    // 1. FAST BATCH ADD (No RAWG Search)
+    if (!shouldSearchRawg) {
+      const newGames = gameTitles.map(title => ({
+        id: Math.random().toString(36).substring(2, 11),
+        title,
+        cover_image: null,
+        release_year: null
+      }));
+
+      try {
+        setBatchProgress(prev => ({
+          ...prev,
+          current: gameTitles.length,
+          logs: gameTitles.map(title => ({
+            title,
+            status: "success",
+            message: "Adicionado instantaneamente à lista"
+          }))
+        }));
+
+        if (isUsingFallback) {
+          const local = localStorage.getItem("__considered_games__");
+          const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_GAMES;
+          localStorage.setItem("__considered_games__", JSON.stringify([...newGames, ...currentList]));
+        } else {
+          await db.entities.ConsideredGame.createMany(newGames);
+        }
+      } catch (err) {
+        console.error("Error creating games in batch:", err);
+        setFormError(`Erro ao salvar jogos: ${err.message || err}`);
+        setBatchProgress(prev => ({
+          ...prev,
+          logs: gameTitles.map(title => ({
+            title,
+            status: "error",
+            message: `Falha ao salvar: ${err.message || err}`
+          }))
+        }));
+      } finally {
+        queryClient.invalidateQueries({ queryKey: ["consideredGames"] });
+        setIsProcessingBatch(false);
+      }
+      return;
+    }
+
+    // 2. SEARCH & ADD (With RAWG Search)
+    const newGamesToAdd = [];
+
+    for (let i = 0; i < gameTitles.length; i++) {
+      const gameTitle = gameTitles[i];
       let cover = null;
       let year = null;
       let success = false;
@@ -257,47 +329,41 @@ export default function ConsideredGames() {
         }
       }
 
-      const newId = Math.random().toString(36).substring(2, 11);
       const newGame = {
-        id: newId,
+        id: Math.random().toString(36).substring(2, 11),
         title: gameTitle,
         cover_image: cover,
         release_year: year
       };
 
-      try {
-        if (isUsingFallback) {
-          const local = localStorage.getItem("__considered_games__");
-          const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_GAMES;
-          localStorage.setItem("__considered_games__", JSON.stringify([newGame, ...currentList]));
-        } else {
-          await db.entities.ConsideredGame.create(newGame);
-        }
+      newGamesToAdd.push(newGame);
 
-        setBatchProgress(prev => {
-          const newLogs = [...prev.logs];
-          newLogs[newLogs.length - 1] = {
-            title: gameTitle,
-            status: "success",
-            message: success ? `Adicionado com sucesso (${year})` : "Adicionado sem capa (busca falhou/sem chave)"
-          };
-          return { ...prev, logs: newLogs };
-        });
-      } catch (err) {
-        console.error("Error creating in batch:", err);
-        setBatchProgress(prev => {
-          const newLogs = [...prev.logs];
-          newLogs[newLogs.length - 1] = {
-            title: gameTitle,
-            status: "error",
-            message: `Erro ao salvar: ${err.message || err}`
-          };
-          return { ...prev, logs: newLogs };
-        });
-      }
+      setBatchProgress(prev => {
+        const newLogs = [...prev.logs];
+        newLogs[newLogs.length - 1] = {
+          title: gameTitle,
+          status: "success",
+          message: success ? `Adicionado com sucesso (${year})` : "Adicionado sem capa (busca falhou/sem chave)"
+        };
+        return { ...prev, logs: newLogs };
+      });
 
       // Small delay of 200ms to avoid hammering RAWG API
       await new Promise(r => setTimeout(r, 200));
+    }
+
+    // Finally, save all gathered games in one single write/query!
+    try {
+      if (isUsingFallback) {
+        const local = localStorage.getItem("__considered_games__");
+        const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_GAMES;
+        localStorage.setItem("__considered_games__", JSON.stringify([...newGamesToAdd, ...currentList]));
+      } else {
+        await db.entities.ConsideredGame.createMany(newGamesToAdd);
+      }
+    } catch (err) {
+      console.error("Error finalizing batch creation:", err);
+      setFormError(`Erro ao salvar no banco de dados: ${err.message || err}`);
     }
 
     queryClient.invalidateQueries({ queryKey: ["consideredGames"] });
@@ -481,16 +547,40 @@ export default function ConsideredGames() {
                   ) : (
                     <>
                       {/* Batch text area */}
-                      <div className="space-y-1">
-                        <label className="text-xs font-bold text-white/60 uppercase tracking-wider">Jogos (um por linha)</label>
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-baseline">
+                          <label className="text-xs font-bold text-white/60 uppercase tracking-wider">Inserir Lista de Jogos</label>
+                          <span className="text-[10px] text-white/40">Linhas, vírgulas ou tópicos</span>
+                        </div>
                         <Textarea
                           value={batchText}
                           onChange={(e) => setBatchText(e.target.value)}
-                          placeholder={`Super Mario Odyssey\nAlan Wake 2\nGrand Theft Auto V`}
+                          placeholder={`Super Mario Odyssey\nAlan Wake 2\n- Grand Theft Auto V\n- Hades, Hollow Knight`}
                           rows={6}
                           disabled={isProcessingBatch}
                           className="bg-white/5 border-white/10 text-white placeholder:text-white/20 text-xs font-mono"
                         />
+                        <p className="text-[10px] text-white/40 leading-normal">
+                          Marcadores de lista (como <code>-</code>, <code>*</code> ou números) e espaços extras serão limpos automaticamente.
+                        </p>
+                      </div>
+
+                      {/* RAWG Search Toggle Checkbox */}
+                      <div className="flex items-center gap-2.5 py-1 select-none">
+                        <input
+                          type="checkbox"
+                          id="search-rawg-checkbox"
+                          checked={shouldSearchRawg}
+                          onChange={(e) => setShouldSearchRawg(e.target.checked)}
+                          disabled={isProcessingBatch}
+                          className="w-4 h-4 rounded border-white/20 bg-black/40 text-ps-blue focus:ring-ps-blue focus:ring-offset-0 focus:ring-1 cursor-pointer accent-ps-blue disabled:opacity-50"
+                        />
+                        <label 
+                          htmlFor="search-rawg-checkbox" 
+                          className="text-xs font-bold text-white/70 cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                        >
+                          Buscar capas e ano de lançamento automaticamente (RAWG)
+                        </label>
                       </div>
 
                       {/* Progress and logs */}

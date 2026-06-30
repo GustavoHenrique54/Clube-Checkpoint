@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Shield, Trophy, Plus, Pencil, Trash2, ArrowLeft, Camera, X, Lock } from "lucide-react";
+import { Shield, Trophy, Plus, Pencil, Trash2, ArrowLeft, Camera, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
