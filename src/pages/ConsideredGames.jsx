@@ -41,9 +41,43 @@ const INITIAL_FALLBACK_GAMES = [
   }
 ];
 
+// Utility function to fetch official game cover art from Wikipedia
+async function fetchWikipediaCover(gameTitle) {
+  if (!gameTitle || !gameTitle.trim()) return null;
+  try {
+    // 1. Search Wikipedia for the game title + " video game"
+    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(gameTitle.trim() + " video game")}&format=json&origin=*`;
+    const searchRes = await fetch(searchUrl);
+    if (!searchRes.ok) return null;
+    const searchData = await searchRes.json();
+    const results = searchData.query?.search;
+    if (!results || results.length === 0) return null;
+    
+    // Find the best matching page title. Usually the first search result is correct.
+    const pageTitle = results[0].title;
+    
+    // 2. Get the page image (thumbnail) for that page
+    const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`;
+    const imgRes = await fetch(imgUrl);
+    if (!imgRes.ok) return null;
+    const imgData = await imgRes.json();
+    const pages = imgData.query?.pages;
+    if (!pages) return null;
+    
+    const pageId = Object.keys(pages)[0];
+    const thumbnail = pages[pageId]?.thumbnail?.source;
+    return thumbnail || null;
+  } catch (e) {
+    console.error("Erro ao buscar capa no Wikipedia para:", gameTitle, e);
+    return null;
+  }
+}
+
 export default function ConsideredGames() {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchingWiki, setIsSearchingWiki] = useState(false);
+  const [wikiSearchStatus, setWikiSearchStatus] = useState("");
   const [rawgKey, setRawgKey] = useState(() => localStorage.getItem("rawg_api_key") || "");
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showKeyInfo, setShowKeyInfo] = useState(false);
@@ -183,11 +217,32 @@ export default function ConsideredGames() {
     }
   };
 
-  const handleSelectGameResult = (game) => {
+  const handleSelectGameResult = async (game) => {
     setSelectedResult(game);
     setManualTitle(game.name);
     setManualYear(game.released ? game.released.substring(0, 4) : "");
     setManualCover(game.background_image || "");
+
+    // Search Wikipedia for a better cover (official box art)
+    if (game.name) {
+      setIsSearchingWiki(true);
+      setWikiSearchStatus("Buscando capa oficial...");
+      try {
+        const wikiCover = await fetchWikipediaCover(game.name);
+        if (wikiCover) {
+          setManualCover(wikiCover);
+          setWikiSearchStatus("Capa oficial encontrada!");
+        } else {
+          setWikiSearchStatus("Usando capa do RAWG");
+        }
+      } catch (e) {
+        console.error(e);
+        setWikiSearchStatus("Erro ao buscar no Wikipedia");
+      } finally {
+        setIsSearchingWiki(false);
+        setTimeout(() => setWikiSearchStatus(""), 3000);
+      }
+    }
   };
 
   const handleAddGame = () => {
@@ -327,6 +382,17 @@ export default function ConsideredGames() {
         } catch (e) {
           console.error(`Error searching ${gameTitle}:`, e);
         }
+      }
+
+      // Try to fetch official box art from Wikipedia
+      try {
+        const wikiCover = await fetchWikipediaCover(gameTitle);
+        if (wikiCover) {
+          cover = wikiCover;
+          success = true;
+        }
+      } catch (e) {
+        console.error(`Wikipedia search failed for ${gameTitle}:`, e);
       }
 
       const newGame = {
@@ -534,7 +600,31 @@ export default function ConsideredGames() {
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-white/40 uppercase">URL da Imagem de Capa</label>
+                          <div className="flex justify-between items-center">
+                            <label className="text-[10px] font-bold text-white/40 uppercase">URL da Imagem de Capa</label>
+                            {manualTitle.trim() && (
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  setIsSearchingWiki(true);
+                                  setWikiSearchStatus("Buscando...");
+                                  const wikiCover = await fetchWikipediaCover(manualTitle);
+                                  if (wikiCover) {
+                                    setManualCover(wikiCover);
+                                    setWikiSearchStatus("Encontrada!");
+                                  } else {
+                                    setWikiSearchStatus("Não encontrada");
+                                  }
+                                  setIsSearchingWiki(false);
+                                  setTimeout(() => setWikiSearchStatus(""), 3000);
+                                }}
+                                disabled={isSearchingWiki}
+                                className="text-[9px] font-bold text-ps-blue hover:underline flex items-center gap-1 disabled:opacity-50"
+                              >
+                                {isSearchingWiki ? "Buscando..." : wikiSearchStatus || "Buscar capa (Wikipedia)"}
+                              </button>
+                            )}
+                          </div>
                           <Input
                             value={manualCover}
                             onChange={(e) => setManualCover(e.target.value)}
@@ -719,22 +809,22 @@ CREATE POLICY "Allow anon delete" ON public.considered_games FOR DELETE USING (t
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 items-end">
           {filteredGames.map((game) => (
             <div 
               key={game.id} 
               className="group relative flex flex-col rounded-xl overflow-hidden bg-ps-dark-card border border-white/10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-default"
             >
               {/* Cover container */}
-              <div className="aspect-[2/3] w-full bg-white/5 relative overflow-hidden flex items-center justify-center border-b border-white/5 flex-shrink-0">
+              <div className="w-full bg-white/5 relative overflow-hidden flex items-end justify-center border-b border-white/5 flex-shrink-0">
                 {game.cover_image ? (
                   <img 
                     src={game.cover_image} 
                     alt={game.title} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-white/20">
+                  <div className="aspect-[2/3] w-full flex flex-col items-center justify-center gap-2 text-white/20">
                     <Library className="w-10 h-10" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>
                   </div>
