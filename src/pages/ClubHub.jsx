@@ -288,8 +288,12 @@ export default function ClubHub() {
           }
           <div className="mx-1 my-5 px-5 flex items-center gap-4 h-full w-full">
             {hub?.active_game_image &&
-            <div className="shrink-0 w-24 flex items-center justify-center" style={{ aspectRatio: "2/3" }}>
-                <img src={hub.active_game_image} alt={hub.active_game_title} className="w-full h-auto object-contain rounded-md" />
+              <div className="shrink-0 w-24 game-box-3d-wrap relative z-0">
+                <div className="game-box-3d aspect-[2/3] overflow-hidden">
+                  <img src={hub.active_game_image} alt={hub.active_game_title} className="w-full h-full object-cover rounded-md" />
+                  <div className="game-box-reflection" />
+                </div>
+                <div className="game-box-shadow" />
               </div>
             }
             <div className="flex-1 min-w-0 flex flex-col justify-center">

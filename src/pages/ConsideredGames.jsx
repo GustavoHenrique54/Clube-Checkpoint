@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { db } from "@/api/supabaseClient";
-import { Search, Plus, Trash2, Library, Key, ExternalLink, RefreshCw, AlertCircle, AlertTriangle, Check, X } from "lucide-react";
+import { Search, Plus, Trash2, Library, Key, ExternalLink, RefreshCw, AlertCircle, AlertTriangle, Check, X, Pencil, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -73,6 +73,158 @@ async function fetchWikipediaCover(gameTitle) {
   }
 }
 
+// Utility to compress and resize image files to keep them light (~50KB or less)
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        
+        const MAX_WIDTH = 400;
+        const MAX_HEIGHT = 400;
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+        resolve(compressedBase64);
+      };
+      img.onerror = (e) => reject(e);
+    };
+    reader.onerror = (e) => reject(e);
+  });
+}
+
+// Visual 3D Game Card Box Component
+function GameCard({ game, isAdmin, onEdit, onDelete }) {
+  const suffix = game.cover_image?.split('#')[1];
+  const [detectedLayout, setDetectedLayout] = useState('vertical');
+
+  useEffect(() => {
+    if (game.cover_image && !suffix) {
+      const cleanUrl = game.cover_image.split('#')[0];
+      if (cleanUrl.startsWith('data:') || cleanUrl.startsWith('blob:')) {
+        setDetectedLayout('vertical');
+        return;
+      }
+      const img = new Image();
+      img.src = cleanUrl;
+      img.onload = () => {
+        const ratio = img.naturalWidth / img.naturalHeight;
+        if (ratio > 1.25) {
+          setDetectedLayout('horizontal');
+        } else if (ratio < 0.85) {
+          setDetectedLayout('vertical');
+        } else {
+          setDetectedLayout('square');
+        }
+      };
+    }
+  }, [game.cover_image, suffix]);
+
+  const layout = suffix || detectedLayout;
+
+  return (
+    <div className="group relative flex flex-col transition-all duration-300 cursor-default">
+      {/* 3D Cover Wrapper */}
+      <div className="game-box-3d-wrap w-full relative">
+        {game.cover_image ? (
+          <div className={`game-box-3d overflow-hidden ${
+            layout === 'horizontal' 
+              ? 'game-box-3d-horizontal aspect-[16/9]' 
+              : layout === 'square' 
+                ? 'aspect-square' 
+                : 'aspect-[2/3]'
+          }`}>
+            <img 
+              src={game.cover_image.split('#')[0]} 
+              alt={game.title} 
+              className="w-full h-full object-cover rounded-md"
+            />
+            <div className="game-box-reflection" />
+            
+            {isAdmin && (
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-200 rounded-md z-10">
+                <Button
+                  onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                  className="bg-ps-blue hover:bg-ps-blue-pressed text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                  title="Editar Jogo"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                  title="Excluir Jogo"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="game-box-3d aspect-[2/3] bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 overflow-hidden">
+            <Library className="w-10 h-10" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>
+            
+            {isAdmin && (
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-200 rounded-md z-10">
+                <Button
+                  onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                  className="bg-ps-blue hover:bg-ps-blue-pressed text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                  title="Editar Jogo"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                  title="Excluir Jogo"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="game-box-shadow" />
+      </div>
+
+      {/* Game Metadata details */}
+      <div className="pt-3 text-center">
+        <div>
+          <h3 className="font-bold text-white text-xs line-clamp-1 group-hover:text-ps-blue transition-colors duration-200" title={game.title}>
+            {game.title}
+          </h3>
+          {game.release_year && (
+            <p className="text-[9px] text-white/40 font-bold uppercase mt-0.5 font-mono">{game.release_year}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ConsideredGames() {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -92,6 +244,17 @@ export default function ConsideredGames() {
   const [manualCover, setManualCover] = useState("");
   const [selectedResult, setSelectedResult] = useState(null);
   const [formError, setFormError] = useState("");
+  const [layoutOption, setLayoutOption] = useState("auto");
+  const [isUploadingAdd, setIsUploadingAdd] = useState(false);
+
+  // Edit Game Form State
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingGame, setEditingGame] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editYear, setEditYear] = useState("");
+  const [editCover, setEditCover] = useState("");
+  const [editLayoutOption, setEditLayoutOption] = useState("auto");
+  const [isUploadingEdit, setIsUploadingEdit] = useState(false);
 
   // Batch Form State
   const [activeAddTab, setActiveAddTab] = useState("single"); // "single" or "batch"
@@ -228,6 +391,25 @@ export default function ConsideredGames() {
     }
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async (updatedGame) => {
+      if (isUsingFallback) {
+        const local = localStorage.getItem("__considered_games__");
+        const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_GAMES;
+        const updatedList = currentList.map(g => g.id === updatedGame.id ? updatedGame : g);
+        localStorage.setItem("__considered_games__", JSON.stringify(updatedList));
+        return updatedGame;
+      } else {
+        return db.entities.ConsideredGame.update(updatedGame.id, updatedGame);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["consideredGames"] });
+      resetEditForm();
+      setShowEditDialog(false);
+    }
+  });
+
   const handleSaveKey = (val) => {
     setRawgKey(val);
     localStorage.setItem("rawg_api_key", val);
@@ -299,10 +481,17 @@ export default function ConsideredGames() {
       return;
     }
     const newId = Math.random().toString(36).substring(2, 11);
+    
+    // Process cover image layout hash suffix
+    const cleanCover = manualCover.trim().split('#')[0];
+    const finalCover = cleanCover && layoutOption !== 'auto' 
+      ? `${cleanCover}#${layoutOption}` 
+      : (cleanCover || null);
+
     const newGame = {
       id: newId,
       title: manualTitle.trim(),
-      cover_image: manualCover.trim() || null,
+      cover_image: finalCover,
       release_year: manualYear.trim() || null
     };
     addMutation.mutate(newGame);
@@ -320,6 +509,102 @@ export default function ConsideredGames() {
     setActiveAddTab("single");
     setIsProcessingBatch(false);
     setBatchProgress({ current: 0, total: 0, logs: [] });
+    setLayoutOption("auto");
+  };
+
+  const handleOpenEditDialog = (game) => {
+    setEditingGame(game);
+    setEditTitle(game.title || "");
+    setEditYear(game.release_year || "");
+    
+    // Parse layout option from suffix
+    const suffix = game.cover_image?.split('#')[1] || "auto";
+    const cleanCover = game.cover_image?.split('#')[0] || "";
+    setEditCover(cleanCover);
+    setEditLayoutOption(suffix);
+    setFormError("");
+    setShowEditDialog(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editTitle.trim()) {
+      setFormError("Título do jogo é obrigatório.");
+      return;
+    }
+    
+    const cleanCover = editCover.trim().split('#')[0];
+    const finalCover = cleanCover && editLayoutOption !== 'auto'
+      ? `${cleanCover}#${editLayoutOption}`
+      : (cleanCover || null);
+
+    const updatedGame = {
+      ...editingGame,
+      title: editTitle.trim(),
+      cover_image: finalCover,
+      release_year: editYear.trim() || null
+    };
+    updateMutation.mutate(updatedGame);
+  };
+
+  const resetEditForm = () => {
+    setEditingGame(null);
+    setEditTitle("");
+    setEditYear("");
+    setEditCover("");
+    setEditLayoutOption("auto");
+    setFormError("");
+  };
+
+  const handleAddFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsUploadingAdd(true);
+    setFormError("");
+    try {
+      const uploadRes = await db.integrations.Core.UploadFile({ file }).catch(() => null);
+      if (uploadRes?.file_url && !uploadRes.file_url.startsWith("blob:")) {
+        setManualCover(uploadRes.file_url);
+      } else {
+        const compressed = await compressImage(file);
+        setManualCover(compressed);
+      }
+    } catch (err) {
+      console.error(err);
+      try {
+        const compressed = await compressImage(file);
+        setManualCover(compressed);
+      } catch (innerErr) {
+        setFormError("Erro ao processar imagem.");
+      }
+    } finally {
+      setIsUploadingAdd(false);
+    }
+  };
+
+  const handleEditFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsUploadingEdit(true);
+    setFormError("");
+    try {
+      const uploadRes = await db.integrations.Core.UploadFile({ file }).catch(() => null);
+      if (uploadRes?.file_url && !uploadRes.file_url.startsWith("blob:")) {
+        setEditCover(uploadRes.file_url);
+      } else {
+        const compressed = await compressImage(file);
+        setEditCover(compressed);
+      }
+    } catch (err) {
+      console.error(err);
+      try {
+        const compressed = await compressImage(file);
+        setEditCover(compressed);
+      } catch (innerErr) {
+        setFormError("Erro ao processar imagem.");
+      }
+    } finally {
+      setIsUploadingEdit(false);
+    }
   };
 
   const handleBatchAdd = async () => {
@@ -647,9 +932,39 @@ export default function ConsideredGames() {
                             />
                           </div>
                         </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-white/40 uppercase">Proporção da Capa</label>
+                            <select
+                              value={layoutOption}
+                              onChange={(e) => setLayoutOption(e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 rounded-sm h-8 px-2 text-xs text-white [color-scheme:dark]"
+                            >
+                              <option value="auto">Automático (Detectar)</option>
+                              <option value="vertical">Vertical (2:3)</option>
+                              <option value="square">Quadrado (1:1)</option>
+                              <option value="horizontal">Horizontal (16:9)</option>
+                            </select>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-white/40 uppercase">Upload de Capa (Local)</label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleAddFileChange}
+                                disabled={isUploadingAdd}
+                                className="bg-white/5 border-white/10 text-white text-[10px] h-8 py-0.5 file:bg-white/15 file:border-none file:text-white file:text-[9px] file:font-bold file:uppercase file:px-1.5 file:py-0.5 file:rounded file:cursor-pointer cursor-pointer"
+                              />
+                              {isUploadingAdd && <RefreshCw className="w-3.5 h-3.5 animate-spin text-ps-blue" />}
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="space-y-1">
                           <div className="flex justify-between items-center">
-                            <label className="text-[10px] font-bold text-white/40 uppercase">URL da Imagem de Capa</label>
+                            <label className="text-[10px] font-bold text-white/40 uppercase">Ou URL da Imagem de Capa</label>
                             {manualTitle.trim() && (
                               <button
                                 type="button"
@@ -791,6 +1106,107 @@ export default function ConsideredGames() {
               </DialogContent>
             </Dialog>
           )}
+
+          {/* Edit Game Dialog (Admin Only) */}
+          {isAdmin && (
+            <Dialog open={showEditDialog} onOpenChange={(open) => { setShowEditDialog(open); if(!open) resetEditForm(); }}>
+              <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-lg rounded-xl">
+                <DialogHeader>
+                  <DialogTitle className="text-lg font-bold text-white uppercase flex items-center gap-2">
+                    Editar Jogo
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-4 my-2">
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="col-span-2 space-y-1">
+                      <label className="text-[10px] font-bold text-white/40 uppercase">Título</label>
+                      <Input
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        placeholder="Ex: Super Mario"
+                        className="bg-white/5 border-white/10 text-white text-xs h-8"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-white/40 uppercase">Ano</label>
+                      <Input
+                        value={editYear}
+                        onChange={(e) => setEditYear(e.target.value)}
+                        placeholder="Ex: 2017"
+                        className="bg-white/5 border-white/10 text-white text-xs h-8"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-white/40 uppercase">Proporção da Capa</label>
+                      <select
+                        value={editLayoutOption}
+                        onChange={(e) => setEditLayoutOption(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-sm h-8 px-2 text-xs text-white [color-scheme:dark]"
+                      >
+                        <option value="auto">Automático (Detectar)</option>
+                        <option value="vertical">Vertical (2:3)</option>
+                        <option value="square">Quadrado (1:1)</option>
+                        <option value="horizontal">Horizontal (16:9)</option>
+                      </select>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-white/40 uppercase">Upload de Capa (Local)</label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleEditFileChange}
+                          disabled={isUploadingEdit}
+                          className="bg-white/5 border-white/10 text-white text-[10px] h-8 py-0.5 file:bg-white/15 file:border-none file:text-white file:text-[9px] file:font-bold file:uppercase file:px-1.5 file:py-0.5 file:rounded file:cursor-pointer cursor-pointer"
+                        />
+                        {isUploadingEdit && <RefreshCw className="w-3.5 h-3.5 animate-spin text-ps-blue" />}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-white/40 uppercase">Ou URL da Imagem de Capa</label>
+                    <Input
+                      value={editCover}
+                      onChange={(e) => setEditCover(e.target.value)}
+                      placeholder="https://..."
+                      className="bg-white/5 border-white/10 text-white text-xs h-8"
+                    />
+                  </div>
+
+                  {formError && (
+                    <div className="text-red-400 text-xs flex items-center gap-1.5 bg-red-500/10 p-2.5 rounded-lg border border-red-500/25">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{formError}</span>
+                    </div>
+                  )}
+                </div>
+
+                <DialogFooter className="border-t border-white/5 pt-3">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => { setShowEditDialog(false); resetEditForm(); }} 
+                    className="text-white hover:bg-white/5"
+                    disabled={updateMutation.isPending}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button 
+                    onClick={handleSaveEdit} 
+                    disabled={updateMutation.isPending} 
+                    className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold"
+                  >
+                    Salvar Alterações
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
 
@@ -859,55 +1275,17 @@ CREATE POLICY "Allow anon delete" ON public.considered_games FOR DELETE USING (t
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 items-end">
           {filteredGames.map((game) => (
-            <div 
-              key={game.id} 
-              className="group relative flex flex-col transition-all duration-300 hover:-translate-y-2 cursor-default"
-            >
-              {/* Cover container */}
-              <div className="w-full relative overflow-hidden rounded-xl shadow-md group-hover:shadow-2xl transition-all duration-300 flex items-end justify-center flex-shrink-0">
-                {game.cover_image ? (
-                  <img 
-                    src={game.cover_image} 
-                    alt={game.title} 
-                    className="w-full h-auto object-contain rounded-xl"
-                  />
-                ) : (
-                  <div className="aspect-[2/3] w-full flex flex-col items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-xl text-white/20">
-                    <Library className="w-10 h-10" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>
-                  </div>
-                )}
-
-                {/* Dark overlay with delete option in admin mode */}
-                {isAdmin && (
-                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200 rounded-xl">
-                    <Button
-                      onClick={() => {
-                        if (confirm(`Deseja remover ${game.title} da prateleira?`)) {
-                          deleteMutation.mutate(game.id);
-                        }
-                      }}
-                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
-                      title="Excluir Jogo"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              {/* Game Metadata details */}
-              <div className="pt-3 text-center">
-                <div>
-                  <h3 className="font-bold text-white text-xs line-clamp-1 group-hover:text-ps-blue transition-colors duration-200" title={game.title}>
-                    {game.title}
-                  </h3>
-                  {game.release_year && (
-                    <p className="text-[9px] text-white/40 font-bold uppercase mt-0.5 font-mono">{game.release_year}</p>
-                  )}
-                </div>
-              </div>
-            </div>
+            <GameCard
+              key={game.id}
+              game={game}
+              isAdmin={isAdmin}
+              onEdit={() => handleOpenEditDialog(game)}
+              onDelete={() => {
+                if (confirm(`Deseja remover ${game.title} da prateleira?`)) {
+                  deleteMutation.mutate(game.id);
+                }
+              }}
+            />
           ))}
         </div>
       )}
