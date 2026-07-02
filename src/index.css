@@ -350,3 +350,77 @@
   opacity: 0.45;
   filter: blur(8px);
 }
+
+/* 3D CD Jewel Case (Square Layout - PS1 Style) */
+.case-mockup-cd {
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-left: 7px solid rgba(255, 255, 255, 0.15); /* CD Jewel Case hinge */
+  box-shadow: 
+    inset 1px 1px 0 rgba(255, 255, 255, 0.15), 
+    inset -1px -1px 0 rgba(0, 0, 0, 0.3),
+    -4px 6px 10px rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+}
+
+/* CD plastic case hinge/spine representation */
+.case-mockup-cd::before {
+  width: 7px;
+  background: #18181b;
+  box-shadow: inset -1px 0 2px rgba(0, 0, 0, 0.8), inset 1px 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Diagonal reflection glare standard for CD jewel case */
+.case-mockup-cd .game-box-reflection {
+  background: linear-gradient(125deg, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    rgba(255, 255, 255, 0.15) 15%, 
+    rgba(255, 255, 255, 0) 16%, 
+    rgba(255, 255, 255, 0) 45%, 
+    rgba(255, 255, 255, 0.12) 46%, 
+    rgba(255, 255, 255, 0.12) 50%, 
+    rgba(255, 255, 255, 0) 51%,
+    rgba(255, 255, 255, 0) 70%,
+    rgba(255, 255, 255, 0.08) 71%,
+    rgba(255, 255, 255, 0.08) 73%,
+    rgba(255, 255, 255, 0) 74%
+  ) !important;
+  mix-blend-mode: overlay;
+}
+
+/* 3D DVD Case (Vertical Layout - PS2 Style) */
+.case-mockup-dvd {
+  border: 4px solid #111827; /* dark grey/blue plastic border */
+  border-left: 11px solid #1f2937; /* plastic spine */
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    -4px 6px 10px rgba(0, 0, 0, 0.6);
+  border-radius: 3px 6px 6px 3px;
+}
+
+.case-mockup-dvd::before {
+  width: 11px;
+  background: #1f2937;
+  box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* 3D Cardboard Box (Horizontal Layout - SNES Style) */
+.case-mockup-cardboard {
+  border: 2px solid #27272a; /* Cardboard rim */
+  border-left: 8px solid #1c1c1e; /* fold edge */
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    -4px 6px 10px rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+}
+
+.case-mockup-cardboard::before {
+  width: 8px;
+  background: #1c1c1e;
+  box-shadow: inset -1px 0 2px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Add subtle crease paper lines */
+.case-mockup-cardboard .game-box-reflection {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0.1) 100%) !important;
+  border-radius: inherit;
+}

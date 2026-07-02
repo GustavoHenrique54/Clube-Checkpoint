@@ -26,6 +26,64 @@ function formatMeetingDate(dt) {
   };
 }
 
+function ActiveGameCover({ imageUrl, title }) {
+  const suffix = imageUrl?.split('#')[1];
+  const [detectedLayout, setDetectedLayout] = useState('vertical');
+
+  useEffect(() => {
+    if (imageUrl && !suffix) {
+      const cleanUrl = imageUrl.split('#')[0];
+      if (cleanUrl.startsWith('data:') || cleanUrl.startsWith('blob:')) {
+        setDetectedLayout('vertical');
+        return;
+      }
+      const img = new Image();
+      img.src = cleanUrl;
+      img.onload = () => {
+        const ratio = img.naturalWidth / img.naturalHeight;
+        if (ratio > 1.25) {
+          setDetectedLayout('horizontal');
+        } else if (ratio < 0.85) {
+          setDetectedLayout('vertical');
+        } else {
+          setDetectedLayout('square');
+        }
+      };
+    }
+  }, [imageUrl, suffix]);
+
+  const layout = suffix || detectedLayout;
+
+  const getMockupClass = () => {
+    if (layout === 'horizontal') return 'case-mockup-cardboard game-box-3d-horizontal';
+    if (layout === 'square') return 'case-mockup-cd';
+    return 'case-mockup-dvd';
+  };
+
+  const getAspectRatio = () => {
+    if (layout === 'horizontal') return '1.4 / 1';
+    if (layout === 'square') return '1 / 1';
+    return '1 / 1.4';
+  };
+
+  return (
+    <div className="shrink-0 w-24 game-box-3d-wrap relative z-0">
+      <div 
+        className={`game-box-3d overflow-hidden ${getMockupClass()}`}
+        style={{ aspectRatio: getAspectRatio() }}
+      >
+        <img 
+          src={imageUrl.split('#')[0]} 
+          alt={title} 
+          className="w-full h-full object-fill rounded-md" 
+        />
+        <div className="game-box-reflection" />
+      </div>
+      <div className="game-box-shadow" />
+    </div>
+  );
+}
+
 const LEADERBOARD_PAGE_SIZE = 15;
 
 export default function ClubHub() {
@@ -287,15 +345,12 @@ export default function ClubHub() {
             </button>
           }
           <div className="mx-1 my-5 px-5 flex items-center gap-4 h-full w-full">
-            {hub?.active_game_image &&
-              <div className="shrink-0 w-24 game-box-3d-wrap relative z-0">
-                <div className="game-box-3d aspect-[2/3] overflow-hidden">
-                  <img src={hub.active_game_image} alt={hub.active_game_title} className="w-full h-full object-cover rounded-md" />
-                  <div className="game-box-reflection" />
-                </div>
-                <div className="game-box-shadow" />
-              </div>
-            }
+            {hub?.active_game_image && (
+              <ActiveGameCover 
+                imageUrl={hub.active_game_image} 
+                title={hub.active_game_title} 
+              />
+            )}
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-2">
                 <span className="bg-ps-blue text-white rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">Jogo Ativo</span>

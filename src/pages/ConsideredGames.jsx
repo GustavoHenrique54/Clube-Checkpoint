@@ -144,22 +144,31 @@ function GameCard({ game, isAdmin, onEdit, onDelete }) {
 
   const layout = suffix || detectedLayout;
 
+  const getMockupClass = () => {
+    if (layout === 'horizontal') return 'case-mockup-cardboard game-box-3d-horizontal';
+    if (layout === 'square') return 'case-mockup-cd';
+    return 'case-mockup-dvd';
+  };
+
+  const getAspectRatio = () => {
+    if (layout === 'horizontal') return '1.4 / 1';
+    if (layout === 'square') return '1 / 1';
+    return '1 / 1.4';
+  };
+
   return (
     <div className="group relative flex flex-col transition-all duration-300 cursor-default">
       {/* 3D Cover Wrapper */}
       <div className="game-box-3d-wrap w-full relative">
         {game.cover_image ? (
-          <div className={`game-box-3d overflow-hidden ${
-            layout === 'horizontal' 
-              ? 'game-box-3d-horizontal aspect-[16/9]' 
-              : layout === 'square' 
-                ? 'aspect-square' 
-                : 'aspect-[2/3]'
-          }`}>
+          <div 
+            className={`game-box-3d overflow-hidden ${getMockupClass()}`}
+            style={{ aspectRatio: getAspectRatio() }}
+          >
             <img 
               src={game.cover_image.split('#')[0]} 
               alt={game.title} 
-              className="w-full h-full object-cover rounded-md"
+              className="w-full h-full object-fill rounded-md"
             />
             <div className="game-box-reflection" />
             
@@ -183,7 +192,10 @@ function GameCard({ game, isAdmin, onEdit, onDelete }) {
             )}
           </div>
         ) : (
-          <div className="game-box-3d aspect-[2/3] bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 overflow-hidden">
+          <div 
+            className={`game-box-3d bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 overflow-hidden ${getMockupClass()}`}
+            style={{ aspectRatio: getAspectRatio() }}
+          >
             <Library className="w-10 h-10" />
             <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>
             
@@ -941,9 +953,9 @@ export default function ConsideredGames() {
                               className="w-full bg-white/5 border border-white/10 rounded-sm h-8 px-2 text-xs text-white [color-scheme:dark]"
                             >
                               <option value="auto">Automático (Detectar)</option>
-                              <option value="vertical">Vertical (2:3)</option>
-                              <option value="square">Quadrado (1:1)</option>
-                              <option value="horizontal">Horizontal (16:9)</option>
+                              <option value="vertical">Vertical (PS2)</option>
+                              <option value="square">Quadrado (PS1)</option>
+                              <option value="horizontal">Horizontal (SNES)</option>
                             </select>
                           </div>
                           
@@ -1148,9 +1160,9 @@ export default function ConsideredGames() {
                         className="w-full bg-white/5 border border-white/10 rounded-sm h-8 px-2 text-xs text-white [color-scheme:dark]"
                       >
                         <option value="auto">Automático (Detectar)</option>
-                        <option value="vertical">Vertical (2:3)</option>
-                        <option value="square">Quadrado (1:1)</option>
-                        <option value="horizontal">Horizontal (16:9)</option>
+                        <option value="vertical">Vertical (PS2)</option>
+                        <option value="square">Quadrado (PS1)</option>
+                        <option value="horizontal">Horizontal (SNES)</option>
                       </select>
                     </div>
                     
