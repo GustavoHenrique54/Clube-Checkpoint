@@ -12,7 +12,9 @@ import { Label } from "@/components/ui/label";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from
 "@/components/ui/dialog";
-import ps1CaseImg from "@/assets/ps1-case.png";
+import squareCaseImg from "@/assets/square-case.png";
+import verticalCaseImg from "@/assets/vertical-case.png";
+import horizontalCaseImg from "@/assets/horizontal-case.png";
 import {
   Pencil, Plus, Trash2, ExternalLink,
   Link as LinkIcon, Newspaper, Save, MapPin, Trophy, Medal, Crown, ChevronLeft, ChevronRight } from
@@ -26,6 +28,42 @@ function formatMeetingDate(dt) {
     time: d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
   };
 }
+
+const LAYOUT_CONFIGS = {
+  square: {
+    template: squareCaseImg,
+    aspectRatio: "994 / 902",
+    mockupClass: "case-mockup-cd",
+    artStyle: {
+      left: "10.56%",
+      top: "2.66%",
+      width: "87.63%",
+      height: "95.45%",
+    }
+  },
+  vertical: {
+    template: verticalCaseImg,
+    aspectRatio: "758 / 1024",
+    mockupClass: "case-mockup-dvd",
+    artStyle: {
+      left: "0.92%",
+      top: "2.25%",
+      width: "96.70%",
+      height: "95.70%",
+    }
+  },
+  horizontal: {
+    template: horizontalCaseImg,
+    aspectRatio: "1024 / 769",
+    mockupClass: "case-mockup-cardboard game-box-3d-horizontal",
+    artStyle: {
+      left: "2.34%",
+      top: "2.08%",
+      width: "94.63%",
+      height: "95.06%",
+    }
+  }
+};
 
 function ActiveGameCover({ imageUrl, title }) {
   const suffix = imageUrl?.split('#')[1];
@@ -54,59 +92,27 @@ function ActiveGameCover({ imageUrl, title }) {
   }, [imageUrl, suffix]);
 
   const layout = suffix || detectedLayout;
-
-  const getMockupClass = () => {
-    if (layout === 'horizontal') return 'case-mockup-cardboard game-box-3d-horizontal';
-    if (layout === 'square') return 'case-mockup-cd';
-    return 'case-mockup-dvd';
-  };
-
-  const getAspectRatio = () => {
-    if (layout === 'horizontal') return '1.4 / 1';
-    if (layout === 'square') return '1 / 1';
-    return '1 / 1.4';
-  };
+  const config = LAYOUT_CONFIGS[layout] || LAYOUT_CONFIGS.vertical;
 
   return (
     <div className="shrink-0 w-24 game-box-3d-wrap relative z-0">
-      {layout === 'square' ? (
-        <div 
-          className="game-box-3d case-mockup-cd overflow-hidden"
-          style={{ aspectRatio: "1 / 1" }}
-        >
-          <img 
-            src={ps1CaseImg} 
-            alt="CD Jewel Case Frame" 
-            className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
-          />
-          <img 
-            src={imageUrl.split('#')[0]} 
-            alt={title} 
-            className="absolute object-fill z-10" 
-            style={{ 
-              left: "14.26%",
-              top: "2.48%",
-              width: "102.6%",
-              height: "95.14%",
-              transformOrigin: "left center",
-              transform: "perspective(600px) rotateY(21.5deg)"
-            }}
-          />
-          <div className="game-box-reflection z-30" />
-        </div>
-      ) : (
-        <div 
-          className={`game-box-3d overflow-hidden ${getMockupClass()}`}
-          style={{ aspectRatio: getAspectRatio() }}
-        >
-          <img 
-            src={imageUrl.split('#')[0]} 
-            alt={title} 
-            className="w-full h-full object-fill rounded-md" 
-          />
-          <div className="game-box-reflection" />
-        </div>
-      )}
+      <div 
+        className={`game-box-3d overflow-hidden ${config.mockupClass}`}
+        style={{ aspectRatio: config.aspectRatio }}
+      >
+        <img 
+          src={config.template} 
+          alt={`${layout} Case Frame`} 
+          className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
+        />
+        <img 
+          src={imageUrl.split('#')[0]} 
+          alt={title} 
+          className="absolute object-fill z-10" 
+          style={config.artStyle}
+        />
+        <div className="game-box-reflection z-30" />
+      </div>
       <div className="game-box-shadow" />
     </div>
   );
