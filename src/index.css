@@ -282,22 +282,22 @@
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.5s ease;
-  transform: rotateY(-20deg) rotateX(3deg) rotateZ(-0.5deg);
+  transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg);
   box-shadow: 
-    -6px 6px 12px rgba(0, 0, 0, 0.55), 
-    -1px 1px 3px rgba(0, 0, 0, 0.35),
+    0 4px 10px rgba(0, 0, 0, 0.3), 
+    0 1px 3px rgba(0, 0, 0, 0.2),
     inset 1px 1px 0 rgba(255, 255, 255, 0.1);
   border-radius: 2px;
   width: 100%;
   background: #18181b;
 }
 
-/* Hover effect: float up, straighten slightly, and increase shadow */
+/* Hover effect: float up, tilt into 3D perspective, and increase shadow */
 .game-box-3d-wrap:hover .game-box-3d {
-  transform: rotateY(-8deg) rotateX(1deg) translateY(-8px);
+  transform: rotateY(-20deg) rotateX(3deg) rotateZ(-0.5deg) translateY(-8px);
   box-shadow: 
-    -15px 18px 30px rgba(0, 0, 0, 0.7), 
-    -3px 4px 8px rgba(0, 0, 0, 0.4),
+    -12px 16px 25px rgba(0, 0, 0, 0.6), 
+    -2px 3px 6px rgba(0, 0, 0, 0.45),
     inset 1px 1px 0 rgba(255, 255, 255, 0.15);
 }
 
