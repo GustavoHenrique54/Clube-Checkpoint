@@ -175,12 +175,19 @@ function GameCard({ game, isAdmin, onEdit, onDelete }) {
                 className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
               />
               
-              {/* Cover Image clipped in perspective */}
+              {/* Cover Image warped in 3D perspective */}
               <img 
                 src={game.cover_image.split('#')[0]} 
                 alt={game.title} 
-                className="absolute inset-0 w-full h-full object-fill z-10"
-                style={{ clipPath: "polygon(14.26% 2.48%, 98.63% 7.84%, 98.63% 92.36%, 14.26% 97.62%)" }}
+                className="absolute object-fill z-10"
+                style={{ 
+                  left: "14.26%",
+                  top: "2.48%",
+                  width: "102.6%",
+                  height: "95.14%",
+                  transformOrigin: "left center",
+                  transform: "perspective(600px) rotateY(21.5deg)"
+                }}
               />
               
               <div className="game-box-reflection z-30" />
@@ -250,8 +257,15 @@ function GameCard({ game, isAdmin, onEdit, onDelete }) {
                 className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
               />
               <div 
-                className="absolute inset-0 bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 z-10"
-                style={{ clipPath: "polygon(14.26% 2.48%, 98.63% 7.84%, 98.63% 92.36%, 14.26% 97.62%)" }}
+                className="absolute bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 z-10"
+                style={{ 
+                  left: "14.26%",
+                  top: "2.48%",
+                  width: "102.6%",
+                  height: "95.14%",
+                  transformOrigin: "left center",
+                  transform: "perspective(600px) rotateY(21.5deg)"
+                }}
               >
                 <Library className="w-10 h-10" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>

@@ -82,8 +82,15 @@ function ActiveGameCover({ imageUrl, title }) {
           <img 
             src={imageUrl.split('#')[0]} 
             alt={title} 
-            className="absolute inset-0 w-full h-full object-fill z-10" 
-            style={{ clipPath: "polygon(14.26% 2.48%, 98.63% 7.84%, 98.63% 92.36%, 14.26% 97.62%)" }}
+            className="absolute object-fill z-10" 
+            style={{ 
+              left: "14.26%",
+              top: "2.48%",
+              width: "102.6%",
+              height: "95.14%",
+              transformOrigin: "left center",
+              transform: "perspective(600px) rotateY(21.5deg)"
+            }}
           />
           <div className="game-box-reflection z-30" />
         </div>
