@@ -172,7 +172,7 @@ function GameCard({ game, isAdmin, onEdit, onDelete }) {
               <img 
                 src={ps1CaseImg} 
                 alt="CD Jewel Case Frame" 
-                className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
+                className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
               />
               
               {/* Cover Image clipped in perspective */}
@@ -180,7 +180,7 @@ function GameCard({ game, isAdmin, onEdit, onDelete }) {
                 src={game.cover_image.split('#')[0]} 
                 alt={game.title} 
                 className="absolute inset-0 w-full h-full object-fill z-10"
-                style={{ clipPath: "polygon(14.2% 2.2%, 98.4% 3.6%, 98.4% 96.4%, 14.2% 97.8%)" }}
+                style={{ clipPath: "polygon(14.26% 2.48%, 98.63% 7.84%, 98.63% 92.36%, 14.26% 97.62%)" }}
               />
               
               <div className="game-box-reflection z-30" />
@@ -247,11 +247,11 @@ function GameCard({ game, isAdmin, onEdit, onDelete }) {
               <img 
                 src={ps1CaseImg} 
                 alt="CD Jewel Case Frame" 
-                className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
+                className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
               />
               <div 
                 className="absolute inset-0 bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 z-10"
-                style={{ clipPath: "polygon(14.2% 2.2%, 98.4% 3.6%, 98.4% 96.4%, 14.2% 97.8%)" }}
+                style={{ clipPath: "polygon(14.26% 2.48%, 98.63% 7.84%, 98.63% 92.36%, 14.26% 97.62%)" }}
               >
                 <Library className="w-10 h-10" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>

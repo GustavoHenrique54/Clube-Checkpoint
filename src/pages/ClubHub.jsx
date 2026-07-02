@@ -77,13 +77,13 @@ function ActiveGameCover({ imageUrl, title }) {
           <img 
             src={ps1CaseImg} 
             alt="CD Jewel Case Frame" 
-            className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
+            className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
           />
           <img 
             src={imageUrl.split('#')[0]} 
             alt={title} 
             className="absolute inset-0 w-full h-full object-fill z-10" 
-            style={{ clipPath: "polygon(14.2% 2.2%, 98.4% 3.6%, 98.4% 96.4%, 14.2% 97.8%)" }}
+            style={{ clipPath: "polygon(14.26% 2.48%, 98.63% 7.84%, 98.63% 92.36%, 14.26% 97.62%)" }}
           />
           <div className="game-box-reflection z-30" />
         </div>
