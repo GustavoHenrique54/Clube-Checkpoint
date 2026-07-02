@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import ps1CaseImg from "@/assets/ps1-case.png";
 
 // Default placeholder games in case the database table doesn't exist yet
 const INITIAL_FALLBACK_GAMES = [
@@ -161,63 +162,148 @@ function GameCard({ game, isAdmin, onEdit, onDelete }) {
       {/* 3D Cover Wrapper */}
       <div className="game-box-3d-wrap w-full relative">
         {game.cover_image ? (
-          <div 
-            className={`game-box-3d overflow-hidden ${getMockupClass()}`}
-            style={{ aspectRatio: getAspectRatio() }}
-          >
-            <img 
-              src={game.cover_image.split('#')[0]} 
-              alt={game.title} 
-              className="w-full h-full object-fill rounded-md"
-            />
-            <div className="game-box-reflection" />
-            
-            {isAdmin && (
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-200 rounded-md z-10">
-                <Button
-                  onClick={(e) => { e.stopPropagation(); onEdit(); }}
-                  className="bg-ps-blue hover:bg-ps-blue-pressed text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
-                  title="Editar Jogo"
-                >
-                  <Pencil className="w-4 h-4" />
-                </Button>
-                <Button
-                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
-                  title="Excluir Jogo"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
-          </div>
+          layout === 'square' ? (
+            /* PS1 CD Jewel Case Mockup using the uploaded transparent PNG */
+            <div 
+              className="game-box-3d case-mockup-cd overflow-hidden"
+              style={{ aspectRatio: "1 / 1" }}
+            >
+              {/* Mockup Frame PNG background */}
+              <img 
+                src={ps1CaseImg} 
+                alt="CD Jewel Case Frame" 
+                className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
+              />
+              
+              {/* Cover Image clipped in perspective */}
+              <img 
+                src={game.cover_image.split('#')[0]} 
+                alt={game.title} 
+                className="absolute inset-0 w-full h-full object-fill z-10"
+                style={{ clipPath: "polygon(14.2% 2.2%, 98.4% 3.6%, 98.4% 96.4%, 14.2% 97.8%)" }}
+              />
+              
+              <div className="game-box-reflection z-30" />
+              
+              {isAdmin && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-200 rounded-md z-40">
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                    className="bg-ps-blue hover:bg-ps-blue-pressed text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                    title="Editar Jogo"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                    title="Excluir Jogo"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* DVD/Cardboard mockups */
+            <div 
+              className={`game-box-3d overflow-hidden ${getMockupClass()}`}
+              style={{ aspectRatio: getAspectRatio() }}
+            >
+              <img 
+                src={game.cover_image.split('#')[0]} 
+                alt={game.title} 
+                className="w-full h-full object-fill rounded-md"
+              />
+              <div className="game-box-reflection" />
+              
+              {isAdmin && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-200 rounded-md z-10">
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                    className="bg-ps-blue hover:bg-ps-blue-pressed text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                    title="Editar Jogo"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                    title="Excluir Jogo"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )
         ) : (
-          <div 
-            className={`game-box-3d bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 overflow-hidden ${getMockupClass()}`}
-            style={{ aspectRatio: getAspectRatio() }}
-          >
-            <Library className="w-10 h-10" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>
-            
-            {isAdmin && (
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-200 rounded-md z-10">
-                <Button
-                  onClick={(e) => { e.stopPropagation(); onEdit(); }}
-                  className="bg-ps-blue hover:bg-ps-blue-pressed text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
-                  title="Editar Jogo"
-                >
-                  <Pencil className="w-4 h-4" />
-                </Button>
-                <Button
-                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
-                  title="Excluir Jogo"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+          layout === 'square' ? (
+            /* CD Jewel Case fallback when cover image is empty */
+            <div 
+              className="game-box-3d case-mockup-cd overflow-hidden"
+              style={{ aspectRatio: "1 / 1" }}
+            >
+              <img 
+                src={ps1CaseImg} 
+                alt="CD Jewel Case Frame" 
+                className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
+              />
+              <div 
+                className="absolute inset-0 bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 z-10"
+                style={{ clipPath: "polygon(14.2% 2.2%, 98.4% 3.6%, 98.4% 96.4%, 14.2% 97.8%)" }}
+              >
+                <Library className="w-10 h-10" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>
               </div>
-            )}
-          </div>
+              {isAdmin && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-200 rounded-md z-40">
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                    className="bg-ps-blue hover:bg-ps-blue-pressed text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                    title="Editar Jogo"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                    title="Excluir Jogo"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* General DVD/Cardboard fallback */
+            <div 
+              className={`game-box-3d bg-white/5 border border-white/10 rounded-md flex flex-col items-center justify-center gap-2 text-white/20 overflow-hidden ${getMockupClass()}`}
+              style={{ aspectRatio: getAspectRatio() }}
+            >
+              <Library className="w-10 h-10" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">Sem Capa</span>
+              
+              {isAdmin && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-200 rounded-md z-10">
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                    className="bg-ps-blue hover:bg-ps-blue-pressed text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                    title="Editar Jogo"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full h-9 w-9 flex items-center justify-center border-none shadow-md"
+                    title="Excluir Jogo"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )
         )}
         <div className="game-box-shadow" />
       </div>

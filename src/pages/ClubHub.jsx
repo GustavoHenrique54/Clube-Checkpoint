@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from
 "@/components/ui/dialog";
+import ps1CaseImg from "@/assets/ps1-case.png";
 import {
   Pencil, Plus, Trash2, ExternalLink,
   Link as LinkIcon, Newspaper, Save, MapPin, Trophy, Medal, Crown, ChevronLeft, ChevronRight } from
@@ -68,17 +69,37 @@ function ActiveGameCover({ imageUrl, title }) {
 
   return (
     <div className="shrink-0 w-24 game-box-3d-wrap relative z-0">
-      <div 
-        className={`game-box-3d overflow-hidden ${getMockupClass()}`}
-        style={{ aspectRatio: getAspectRatio() }}
-      >
-        <img 
-          src={imageUrl.split('#')[0]} 
-          alt={title} 
-          className="w-full h-full object-fill rounded-md" 
-        />
-        <div className="game-box-reflection" />
-      </div>
+      {layout === 'square' ? (
+        <div 
+          className="game-box-3d case-mockup-cd overflow-hidden"
+          style={{ aspectRatio: "1 / 1" }}
+        >
+          <img 
+            src={ps1CaseImg} 
+            alt="CD Jewel Case Frame" 
+            className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
+          />
+          <img 
+            src={imageUrl.split('#')[0]} 
+            alt={title} 
+            className="absolute inset-0 w-full h-full object-fill z-10" 
+            style={{ clipPath: "polygon(14.2% 2.2%, 98.4% 3.6%, 98.4% 96.4%, 14.2% 97.8%)" }}
+          />
+          <div className="game-box-reflection z-30" />
+        </div>
+      ) : (
+        <div 
+          className={`game-box-3d overflow-hidden ${getMockupClass()}`}
+          style={{ aspectRatio: getAspectRatio() }}
+        >
+          <img 
+            src={imageUrl.split('#')[0]} 
+            alt={title} 
+            className="w-full h-full object-fill rounded-md" 
+          />
+          <div className="game-box-reflection" />
+        </div>
+      )}
       <div className="game-box-shadow" />
     </div>
   );
