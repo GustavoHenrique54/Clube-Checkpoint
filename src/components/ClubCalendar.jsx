@@ -12,11 +12,41 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const EVENT_TYPES = {
-  game_period: { label: "Período de Jogo", color: "bg-ps-blue text-white border-ps-blue/40", badgeColor: "bg-ps-blue", icon: Gamepad2 },
-  meeting: { label: "Reunião", color: "bg-emerald-600 text-white border-emerald-500/40", badgeColor: "bg-emerald-600", icon: CalendarIcon },
-  play_together: { label: "Jogar Junto", color: "bg-purple-600 text-white border-purple-500/40", badgeColor: "bg-purple-600", icon: Users },
-  live: { label: "Live Especial", color: "bg-rose-600 text-white border-rose-500/40", badgeColor: "bg-rose-600", icon: Radio },
-  special: { label: "Evento Especial", color: "bg-amber-600 text-white border-amber-500/40", badgeColor: "bg-amber-600", icon: Star },
+  game_period: { 
+    label: "Período de Jogo", 
+    color: "bg-ps-blue text-white border-ps-blue/40", 
+    badgeColor: "bg-ps-blue", 
+    dayBg: "bg-ps-blue/20 border-ps-blue/50",
+    icon: Gamepad2 
+  },
+  meeting: { 
+    label: "Reunião", 
+    color: "bg-emerald-600 text-white border-emerald-500/40", 
+    badgeColor: "bg-emerald-600", 
+    dayBg: "bg-emerald-950/35 border-emerald-500/40",
+    icon: CalendarIcon 
+  },
+  play_together: { 
+    label: "Jogar Junto", 
+    color: "bg-purple-600 text-white border-purple-500/40", 
+    badgeColor: "bg-purple-600", 
+    dayBg: "bg-purple-950/35 border-purple-500/40",
+    icon: Users 
+  },
+  live: { 
+    label: "Live Especial", 
+    color: "bg-rose-600 text-white border-rose-500/40", 
+    badgeColor: "bg-rose-600", 
+    dayBg: "bg-rose-950/35 border-rose-500/40",
+    icon: Radio 
+  },
+  special: { 
+    label: "Evento Especial", 
+    color: "bg-amber-600 text-white border-amber-500/40", 
+    badgeColor: "bg-amber-600", 
+    dayBg: "bg-amber-950/35 border-amber-500/40",
+    icon: Star 
+  },
 };
 
 const INITIAL_SAMPLE_EVENTS = [
@@ -265,28 +295,6 @@ export default function ClubCalendar({ isAdmin = false }) {
     return events.filter(e => isDateInRange(dateStr, e.start_date, e.end_date));
   };
 
-  // Build weeks grid array
-  const allGridSlots = [];
-  for (let i = 0; i < firstDayOfMonth; i++) {
-    allGridSlots.push(null);
-  }
-  for (let d = 1; d <= daysInMonth; d++) {
-    allGridSlots.push({
-      dayNum: d,
-      dateStr: formatDateKey(currentYear, currentMonth, d)
-    });
-  }
-  // Complete the last row to a multiple of 7
-  while (allGridSlots.length % 7 !== 0) {
-    allGridSlots.push(null);
-  }
-
-  // Chunk grid slots into weeks (rows of 7 days)
-  const weeks = [];
-  for (let i = 0; i < allGridSlots.length; i += 7) {
-    weeks.push(allGridSlots.slice(i, i + 7));
-  }
-
   const selectedDayActivities = selectedDay ? getDayActivities(selectedDay) : [];
 
   return (
@@ -294,7 +302,7 @@ export default function ClubCalendar({ isAdmin = false }) {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-ps-blue/20 flex items-center justify-center text-ps-blue border border-ps-blue/30">
+          <div className="w-10 h-10 rounded-full bg-ps-blue/20 flex items-center justify-center text-ps-blue border border-ps-blue/30 shadow-inner">
             <CalendarIcon className="w-5 h-5" />
           </div>
           <div>
@@ -347,17 +355,13 @@ export default function ClubCalendar({ isAdmin = false }) {
           </Button>
         </div>
 
-        {/* Legend */}
-        <div className="flex flex-wrap items-center gap-3 text-[11px]">
-          <div className="flex items-center gap-1 text-white/80 font-semibold">
-            <span className="w-3 h-2 rounded bg-ps-blue inline-block" />
-            <span>Período de Jogo (Faixa no topo)</span>
-          </div>
-          {Object.entries(EVENT_TYPES).filter(([k]) => k !== "game_period").map(([key, info]) => {
+        {/* Category Legend */}
+        <div className="flex flex-wrap items-center gap-2.5 text-[11px]">
+          {Object.entries(EVENT_TYPES).map(([key, info]) => {
             const Icon = info.icon;
             return (
-              <div key={key} className="flex items-center gap-1 text-white/70">
-                <span className={`w-2 h-2 rounded-full ${info.badgeColor}`} />
+              <div key={key} className="flex items-center gap-1 text-white/80 font-medium">
+                <span className={`w-2.5 h-2.5 rounded-full ${info.badgeColor} shadow-sm`} />
                 <span>{info.label}</span>
               </div>
             );
@@ -365,145 +369,105 @@ export default function ClubCalendar({ isAdmin = false }) {
         </div>
       </div>
 
-      {/* Calendar Grid Headers */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center border-b border-white/5 pb-2">
+      {/* Weekday Column Headers */}
+      <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center border-b border-white/5 pb-2">
         {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((dayName) => (
-          <div key={dayName} className="text-xs font-bold text-white/40 uppercase">
+          <div key={dayName} className="text-xs font-bold text-white/40 uppercase tracking-wider">
             {dayName}
           </div>
         ))}
       </div>
 
-      {/* Week Rows Grid */}
-      <div className="space-y-2">
-        {weeks.map((weekSlots, weekIdx) => {
-          // Find game_period events overlapping this week
-          const weekGamePeriods = events
-            .filter(e => e.event_type === "game_period")
-            .map(e => {
-              // Check overlap with week slots
-              let startCol = -1;
-              let endCol = -1;
-              weekSlots.forEach((slot, colIdx) => {
-                if (slot && isDateInRange(slot.dateStr, e.start_date, e.end_date)) {
-                  if (startCol === -1) startCol = colIdx;
-                  endCol = colIdx;
-                }
-              });
-              if (startCol === -1) return null;
+      {/* 7-Column Days Grid */}
+      <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+        {/* Empty padding slots */}
+        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+          <div 
+            key={`empty-${i}`} 
+            className="h-24 sm:h-28 bg-white/[0.01] rounded-xl border border-transparent" 
+          />
+        ))}
 
-              const isStart = weekSlots[startCol]?.dateStr === e.start_date;
-              const isEnd = weekSlots[endCol]?.dateStr === (e.end_date || e.start_date);
+        {/* Days of Month */}
+        {Array.from({ length: daysInMonth }).map((_, i) => {
+          const dayNum = i + 1;
+          const dateStr = formatDateKey(currentYear, currentMonth, dayNum);
+          const dayActivities = getDayActivities(dateStr);
+          const activeGamePeriod = dayActivities.find(a => a.event_type === "game_period");
+          const singleEvents = dayActivities.filter(a => a.event_type !== "game_period");
 
-              return {
-                ...e,
-                startCol,
-                endCol,
-                isStart,
-                isEnd
-              };
-            })
-            .filter(Boolean);
+          const isToday = 
+            today.getDate() === dayNum && 
+            today.getMonth() === currentMonth && 
+            today.getFullYear() === currentYear;
+
+          // Determine overall day cell styling based on events
+          let cellStyle = "bg-ps-dark-elevated/70 border-white/5 hover:border-white/20 hover:bg-white/5";
+          if (isToday) {
+            cellStyle = "bg-ps-blue/15 border-ps-blue shadow-[0_0_12px_rgba(0,112,209,0.3)] ring-1 ring-ps-blue/40";
+          } else if (activeGamePeriod) {
+            cellStyle = EVENT_TYPES.game_period.dayBg + " shadow-sm";
+          } else if (singleEvents.length > 0) {
+            const primaryType = singleEvents[0].event_type;
+            cellStyle = (EVENT_TYPES[primaryType]?.dayBg || "bg-white/10 border-white/20") + " shadow-sm";
+          }
 
           return (
-            <div key={`week-${weekIdx}`} className="space-y-1">
-              {/* Spanning Game Period Banners across this week */}
-              {weekGamePeriods.length > 0 && (
-                <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                  {weekGamePeriods.map((gp) => (
-                    <div
-                      key={`gp-${gp.id}-${weekIdx}`}
-                      onClick={(e) => { e.stopPropagation(); setSelectedDay(gp.start_date); }}
-                      className={`bg-ps-blue/90 hover:bg-ps-blue text-white text-[10px] sm:text-xs font-bold px-2 py-1 flex items-center gap-1.5 shadow-md cursor-pointer transition-all hover:scale-[1.01] ${
-                        gp.isStart ? "rounded-l-md" : "border-l border-white/20"
-                      } ${gp.isEnd ? "rounded-r-md" : "border-r border-white/20"}`}
-                      style={{
-                        gridColumnStart: gp.startCol + 1,
-                        gridColumnEnd: gp.endCol + 2,
-                      }}
-                      title={`JOGO ATIVO: ${gp.title} (${gp.start_date} até ${gp.end_date})`}
-                    >
-                      <Gamepad2 className="w-3.5 h-3.5 shrink-0 text-white" />
-                      <span className="truncate">
-                        {gp.isStart ? `JOGO ATIVO: ${gp.title}` : gp.title}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div
+              key={dateStr}
+              onClick={() => setSelectedDay(dateStr)}
+              className={`h-24 sm:h-28 p-1.5 sm:p-2 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between group hover:scale-[1.02] hover:z-10 shadow-md ${cellStyle}`}
+            >
+              {/* Day Number Header */}
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ${
+                  isToday ? "bg-ps-blue text-white shadow-md font-black" : "text-white/80"
+                }`}>
+                  {dayNum}
+                </span>
 
-              {/* 7 Day Cells */}
-              <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                {weekSlots.map((slot, colIdx) => {
-                  if (!slot) {
-                    return (
-                      <div 
-                        key={`empty-${weekIdx}-${colIdx}`} 
-                        className="h-20 sm:h-24 bg-white/[0.01] rounded-lg border border-transparent" 
-                      />
-                    );
-                  }
+                {dayActivities.length > 0 && (
+                  <span className="text-[9px] font-extrabold text-white/70 bg-black/40 px-1.5 py-0.5 rounded-full border border-white/10">
+                    {dayActivities.length}
+                  </span>
+                )}
+              </div>
 
-                  const { dayNum, dateStr } = slot;
-                  const dayActivities = getDayActivities(dateStr);
-                  const singleEvents = dayActivities.filter(a => a.event_type !== "game_period");
-                  const activeGamePeriod = dayActivities.find(a => a.event_type === "game_period");
-                  
-                  const isToday = 
-                    today.getDate() === dayNum && 
-                    today.getMonth() === currentMonth && 
-                    today.getFullYear() === currentYear;
+              {/* Inside Day Items (Strictly inside day square) */}
+              <div className="space-y-1 my-auto overflow-hidden">
+                {/* Active Game Period Badge (inside square) */}
+                {activeGamePeriod && (
+                  <div 
+                    className="bg-ps-blue text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-1 rounded-md truncate flex items-center gap-1 shadow-sm leading-none"
+                    title={`Jogo Ativo: ${activeGamePeriod.title}`}
+                  >
+                    <Gamepad2 className="w-3 h-3 shrink-0 text-white" />
+                    <span className="truncate">{activeGamePeriod.title}</span>
+                  </div>
+                )}
 
+                {/* Single Day Events (Reuniões, Lives, Jogar Junto, etc.) */}
+                {singleEvents.slice(0, activeGamePeriod ? 1 : 2).map((ev) => {
+                  const info = EVENT_TYPES[ev.event_type] || EVENT_TYPES.special;
+                  const Icon = info.icon;
                   return (
-                    <div
-                      key={dateStr}
-                      onClick={() => setSelectedDay(dateStr)}
-                      className={`h-20 sm:h-24 p-1.5 rounded-lg border text-left transition-all cursor-pointer relative flex flex-col justify-between group ${
-                        isToday 
-                          ? "bg-ps-blue/15 border-ps-blue shadow-md ring-1 ring-ps-blue/50" 
-                          : activeGamePeriod
-                          ? "bg-ps-blue/[0.04] border-ps-blue/20 hover:border-ps-blue/50"
-                          : "bg-ps-dark-elevated/70 border-white/5 hover:border-white/20 hover:bg-white/5"
-                      }`}
+                    <div 
+                      key={ev.id} 
+                      className={`${info.badgeColor} text-white text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-md font-bold truncate flex items-center gap-1 shadow-sm leading-none`}
+                      title={`${ev.time ? ev.time + ' - ' : ''}${ev.title}`}
                     >
-                      {/* Day Number Header */}
-                      <div className="flex items-center justify-between">
-                        <span className={`text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ${
-                          isToday ? "bg-ps-blue text-white shadow-sm" : "text-white/80"
-                        }`}>
-                          {dayNum}
-                        </span>
-
-                        {dayActivities.length > 0 && (
-                          <span className="text-[9px] font-bold text-white/50 bg-white/10 px-1.5 rounded-full">
-                            {dayActivities.length}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Single Day Events (Reuniões, Lives, Jogar Junto, etc.) */}
-                      <div className="space-y-1 overflow-hidden my-auto">
-                        {singleEvents.slice(0, 2).map((ev) => {
-                          const info = EVENT_TYPES[ev.event_type] || EVENT_TYPES.special;
-                          const Icon = info.icon;
-                          return (
-                            <div 
-                              key={ev.id} 
-                              className={`${info.badgeColor} text-white text-[9px] px-1.5 py-0.5 rounded font-bold truncate flex items-center gap-1 shadow-sm`}
-                              title={`${ev.time ? ev.time + ' - ' : ''}${ev.title}`}
-                            >
-                              <Icon className="w-2.5 h-2.5 shrink-0" />
-                              <span className="truncate">{ev.time ? `${ev.time} ` : ""}{ev.title}</span>
-                            </div>
-                          );
-                        })}
-                        {singleEvents.length > 2 && (
-                          <span className="text-[8px] font-bold text-white/50 block">+{singleEvents.length - 2} mais</span>
-                        )}
-                      </div>
+                      <Icon className="w-2.5 h-2.5 shrink-0" />
+                      <span className="truncate">{ev.time ? `${ev.time} ` : ""}{ev.title}</span>
                     </div>
                   );
                 })}
+
+                {/* Overflow indicator */}
+                {singleEvents.length > (activeGamePeriod ? 1 : 2) && (
+                  <span className="text-[8px] font-extrabold text-white/60 block px-1">
+                    +{singleEvents.length - (activeGamePeriod ? 1 : 2)} eventos
+                  </span>
+                )}
               </div>
             </div>
           );
@@ -537,7 +501,7 @@ export default function ClubCalendar({ isAdmin = false }) {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-2">
-                        <span className={`p-1.5 rounded-md ${info.badgeColor} text-white`}>
+                        <span className={`p-1.5 rounded-md ${info.badgeColor} text-white shadow-sm`}>
                           <Icon className="w-4 h-4" />
                         </span>
                         <div>
@@ -569,7 +533,8 @@ export default function ClubCalendar({ isAdmin = false }) {
                     </div>
 
                     {act.event_type === "game_period" ? (
-                      <p className="text-xs text-ps-blue font-semibold">
+                      <p className="text-xs text-ps-blue font-semibold flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-ps-blue" />
                         Período: {new Date(parseDateStr(act.start_date)).toLocaleDateString("pt-BR")} até {new Date(parseDateStr(act.end_date)).toLocaleDateString("pt-BR")}
                       </p>
                     ) : (
@@ -601,7 +566,7 @@ export default function ClubCalendar({ isAdmin = false }) {
             {isAdmin ? (
               <Button
                 onClick={() => { const day = selectedDay; setSelectedDay(null); openCreateModal(day); }}
-                className="bg-ps-blue hover:bg-ps-blue-pressed text-white text-xs font-bold uppercase rounded-full px-4 h-9 border-none"
+                className="bg-ps-blue hover:bg-ps-blue-pressed text-white text-xs font-bold uppercase rounded-full px-4 h-9 border-none shadow-md"
               >
                 + Adicionar neste dia
               </Button>
