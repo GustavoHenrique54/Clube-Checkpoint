@@ -161,7 +161,10 @@ export default function ClubHub() {
 
   const { data: links = [] } = useQuery({
     queryKey: ["clubLinks"],
-    queryFn: () => db.entities.ClubLink.list()
+    queryFn: async () => {
+      const allLinks = await db.entities.ClubLink.list();
+      return (allLinks || []).filter(l => l.id !== 'calendar_events_store' && l.title !== '__CLUB_CALENDAR_EVENTS__');
+    }
   });
 
   const { data: leaderboardProfiles = [] } = useQuery({

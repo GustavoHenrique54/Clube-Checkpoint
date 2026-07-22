@@ -122,58 +122,68 @@ export default function ClubCalendar({ isAdmin = false }) {
     location: "",
   });
 
-  // Query events with robust local fallback
+  // Query events from global Supabase store (syncs across all users & devices)
   const { data: events = [] } = useQuery({
     queryKey: ["clubEvents"],
     queryFn: async () => {
-      let list = null;
       try {
-        list = await db.entities.ClubEvent.list("-start_date");
-      } catch (e) {
-        console.warn("Table 'club_events' error, using fallback local storage.", e);
-      }
-      if (!list || list.length === 0) {
-        const local = localStorage.getItem("__club_events__");
-        if (local) {
-          try { return JSON.parse(local); } catch { return INITIAL_SAMPLE_EVENTS; }
+        const store = await db.entities.ClubLink.get("calendar_events_store");
+        if (store && store.description) {
+          const parsed = JSON.parse(store.description);
+          if (Array.isArray(parsed)) {
+            localStorage.setItem("__club_events__", JSON.stringify(parsed));
+            return parsed;
+          }
         }
-        localStorage.setItem("__club_events__", JSON.stringify(INITIAL_SAMPLE_EVENTS));
-        return INITIAL_SAMPLE_EVENTS;
+      } catch (e) {
+        console.warn("Global calendar_events_store fetch failed, using fallback.", e);
       }
-      return list;
+
+      // Check local storage fallback
+      const local = localStorage.getItem("__club_events__");
+      if (local) {
+        try {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed)) return parsed;
+        } catch {}
+      }
+
+      return INITIAL_SAMPLE_EVENTS;
     }
   });
 
-  // Mutations with dual Supabase + LocalStorage sync
+  // Mutations with global Supabase + LocalStorage sync
   const saveMutation = useMutation({
     mutationFn: async (eventData) => {
-      const local = localStorage.getItem("__club_events__");
-      let currentList = local ? JSON.parse(local) : INITIAL_SAMPLE_EVENTS;
-
-      let savedItem = null;
+      let currentEvents = [...events];
       if (eventData.id) {
-        // Edit
-        try {
-          savedItem = await db.entities.ClubEvent.update(eventData.id, eventData);
-        } catch (e) {
-          console.warn("Supabase update failed, saving to localStorage.", e);
-        }
-        const updatedList = currentList.map(e => e.id === eventData.id ? eventData : e);
-        localStorage.setItem("__club_events__", JSON.stringify(updatedList));
-        return savedItem || eventData;
+        currentEvents = currentEvents.map(e => e.id === eventData.id ? eventData : e);
       } else {
-        // Create
         const newId = Math.random().toString(36).substring(2, 11);
         const payload = { ...eventData, id: newId };
-        try {
-          savedItem = await db.entities.ClubEvent.create(payload);
-        } catch (e) {
-          console.warn("Supabase create failed, saving to localStorage.", e);
-        }
-        const updatedList = [payload, ...currentList];
-        localStorage.setItem("__club_events__", JSON.stringify(updatedList));
-        return savedItem || payload;
+        currentEvents = [payload, ...currentEvents];
       }
+
+      const storePayload = {
+        id: "calendar_events_store",
+        title: "__CLUB_CALENDAR_EVENTS__",
+        url: "https://clubecheckpoint.com",
+        description: JSON.stringify(currentEvents),
+        emoji: "📅"
+      };
+
+      try {
+        await db.entities.ClubLink.update("calendar_events_store", storePayload);
+      } catch {
+        try {
+          await db.entities.ClubLink.create(storePayload);
+        } catch (e) {
+          console.warn("Error persisting calendar events to Supabase", e);
+        }
+      }
+
+      localStorage.setItem("__club_events__", JSON.stringify(currentEvents));
+      return currentEvents;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clubEvents"] });
@@ -183,16 +193,28 @@ export default function ClubCalendar({ isAdmin = false }) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id) => {
+    mutationFn: async (idToDelete) => {
+      const currentEvents = events.filter(e => e.id !== idToDelete);
+
+      const storePayload = {
+        id: "calendar_events_store",
+        title: "__CLUB_CALENDAR_EVENTS__",
+        url: "https://clubecheckpoint.com",
+        description: JSON.stringify(currentEvents),
+        emoji: "📅"
+      };
+
       try {
-        await db.entities.ClubEvent.delete(id);
-      } catch (e) {
-        console.warn("Supabase delete failed, updating localStorage.", e);
+        await db.entities.ClubLink.update("calendar_events_store", storePayload);
+      } catch {
+        try {
+          await db.entities.ClubLink.create(storePayload);
+        } catch (e) {
+          console.warn("Error persisting deleted event to Supabase", e);
+        }
       }
-      const local = localStorage.getItem("__club_events__");
-      const currentList = local ? JSON.parse(local) : INITIAL_SAMPLE_EVENTS;
-      const updatedList = currentList.filter(e => e.id !== id);
-      localStorage.setItem("__club_events__", JSON.stringify(updatedList));
+
+      localStorage.setItem("__club_events__", JSON.stringify(currentEvents));
       return { success: true };
     },
     onSuccess: () => {
