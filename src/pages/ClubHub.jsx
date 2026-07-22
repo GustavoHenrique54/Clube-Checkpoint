@@ -95,25 +95,27 @@ function ActiveGameCover({ imageUrl, title }) {
   const config = LAYOUT_CONFIGS[layout] || LAYOUT_CONFIGS.vertical;
 
   return (
-    <div className="shrink-0 w-24 game-box-3d-wrap relative z-0">
-      <div 
-        className={`game-box-3d overflow-hidden ${config.mockupClass}`}
-        style={{ aspectRatio: config.aspectRatio }}
-      >
-        <img 
-          src={config.template} 
-          alt={`${layout} Case Frame`} 
-          className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
-        />
-        <img 
-          src={imageUrl.split('#')[0]} 
-          alt={title} 
-          className="absolute object-fill z-10" 
-          style={config.artStyle}
-        />
-        <div className="game-box-reflection z-30" />
+    <div className="shrink-0 w-28 sm:w-32 flex items-center justify-center py-1">
+      <div className="w-full game-box-3d-wrap relative z-0">
+        <div 
+          className={`game-box-3d overflow-hidden ${config.mockupClass}`}
+          style={{ aspectRatio: config.aspectRatio }}
+        >
+          <img 
+            src={config.template} 
+            alt={`${layout} Case Frame`} 
+            className="absolute inset-0 w-full h-full object-fill pointer-events-none z-20"
+          />
+          <img 
+            src={imageUrl.split('#')[0]} 
+            alt={title} 
+            className="absolute object-fill z-10" 
+            style={config.artStyle}
+          />
+          <div className="game-box-reflection z-30" />
+        </div>
+        <div className="game-box-shadow" />
       </div>
-      <div className="game-box-shadow" />
     </div>
   );
 }
@@ -371,64 +373,64 @@ export default function ClubHub() {
       {activeTab === "hub" && <>
       {/* Active Game + Meeting */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Active Game — vertical cover */}
-        <div className="bg-ps-dark-card border border-white/10 rounded-md overflow-hidden relative group flex flex-col justify-center flex-1">
+        {/* Active Game */}
+        <div className="bg-ps-dark-card border border-white/10 rounded-md p-5 relative group flex flex-col justify-center min-h-[160px]">
           {isAdmin &&
-          <button onClick={openEditGame} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/40 text-white/70 hover:text-white hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100">
+            <button onClick={openEditGame} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/40 text-white/70 hover:text-white hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100">
               <Pencil className="w-4 h-4" />
             </button>
           }
-          <div className="mx-1 my-5 px-5 flex items-center gap-4 h-full w-full">
+          <div className="flex items-center gap-4 sm:gap-6 w-full">
             {hub?.active_game_image && (
               <ActiveGameCover 
                 imageUrl={hub.active_game_image} 
                 title={hub.active_game_title} 
               />
             )}
-            <div className="flex-1 min-w-0 flex flex-col justify-center">
+            <div className="flex-1 min-w-0 flex flex-col justify-center py-1">
               <div className="flex items-center gap-2 mb-2">
-                <span className="bg-ps-blue text-white rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">Jogo Ativo</span>
+                <span className="bg-ps-blue text-white rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">Jogo Ativo</span>
               </div>
-              {hub?.active_game_title ?
-              <>
-                  <h2 className="text-lg font-bold text-white leading-tight">{hub.active_game_title}</h2>
-                  {hub.active_game_description &&
-                <p className="text-white/60 text-xs mt-2 leading-relaxed">{hub.active_game_description}</p>
-                }
-                </> :
-
-              <p className="text-white/40 text-sm italic">{isAdmin ? "Clique no lápis para definir o jogo ativo." : "Nenhum jogo ativo no momento."}</p>
-              }
+              {hub?.active_game_title ? (
+                <>
+                  <h2 className="text-base sm:text-lg font-bold text-white leading-snug">{hub.active_game_title}</h2>
+                  {hub.active_game_description && (
+                    <p className="text-white/60 text-xs sm:text-sm mt-1.5 leading-relaxed line-clamp-3">{hub.active_game_description}</p>
+                  )}
+                </>
+              ) : (
+                <p className="text-white/40 text-sm italic">{isAdmin ? "Clique no lápis para definir o jogo ativo." : "Nenhum jogo ativo no momento."}</p>
+              )}
             </div>
           </div>
         </div>
 
         {/* Next Meeting */}
-        <div className="bg-ps-dark-card border border-white/10 rounded-md p-5 relative group">
+        <div className="bg-ps-dark-card border border-white/10 rounded-md p-5 relative group flex flex-col justify-center min-h-[160px]">
           {isAdmin &&
-          <button onClick={openEditMeeting} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/20 text-white/70 hover:text-white hover:bg-black/40 transition-all opacity-0 group-hover:opacity-100">
+            <button onClick={openEditMeeting} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/20 text-white/70 hover:text-white hover:bg-black/40 transition-all opacity-0 group-hover:opacity-100">
               <Pencil className="w-4 h-4" />
             </button>
           }
-          <div className="flex items-center gap-2 mb-4">
-            <span className="bg-green-600 text-white rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">Próxima Reunião</span>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="bg-green-600 text-white rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">Próxima Reunião</span>
           </div>
-          {meeting ?
-          <div className="space-y-3">
-              <div className="bg-ps-dark-elevated border border-white/10 rounded-md px-5 py-4 text-center">
-                <p className="text-4xl font-bold text-white">{meeting.time}</p>
-                <p className="text-white/60 capitalize mt-2 text-xs font-semibold">{meeting.date}</p>
+          {meeting ? (
+            <div className="space-y-2">
+              <div className="bg-ps-dark-elevated border border-white/10 rounded-md px-4 py-3 text-center">
+                <p className="text-3xl sm:text-4xl font-bold text-white">{meeting.time}</p>
+                <p className="text-white/70 capitalize mt-1 text-xs font-semibold">{meeting.date}</p>
               </div>
-              {hub?.meeting_location &&
-            <div className="flex items-center gap-1.5 text-white/50 text-xs px-1">
-                  <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>{hub.meeting_location}</span>
+              {hub?.meeting_location && (
+                <div className="flex items-center gap-1.5 text-white/60 text-xs px-1 pt-1">
+                  <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-green-400" />
+                  <span className="truncate">{hub.meeting_location}</span>
                 </div>
-            }
-            </div> :
-
-          <p className="text-white/40 text-sm italic">{isAdmin ? "Clique no lápis para definir a reunião." : "Data da próxima reunião não anunciada ainda."}</p>
-          }
+              )}
+            </div>
+          ) : (
+            <p className="text-white/40 text-sm italic">{isAdmin ? "Clique no lápis para definir a reunião." : "Data da próxima reunião não anunciada ainda."}</p>
+          )}
         </div>
       </div>
 

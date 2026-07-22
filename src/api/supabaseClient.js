@@ -52,6 +52,15 @@ class SupabaseEntity {
         copy.featured_badges = [];
       }
     }
+
+    if (this.tableName === 'club_hub') {
+      if (record.meeting_date) {
+        const timePart = record.meeting_time ? `T${record.meeting_time}` : 'T00:00';
+        copy.next_meeting_datetime = `${record.meeting_date}${timePart}`;
+      } else {
+        copy.next_meeting_datetime = null;
+      }
+    }
     return copy;
   }
 
@@ -65,6 +74,20 @@ class SupabaseEntity {
       // Stringify featured_badges if it is an array/object
       if (copy.featured_badges && typeof copy.featured_badges !== 'string') {
         copy.featured_badges = JSON.stringify(copy.featured_badges);
+      }
+    }
+
+    if (this.tableName === 'club_hub') {
+      if (copy.next_meeting_datetime !== undefined) {
+        if (copy.next_meeting_datetime) {
+          const parts = copy.next_meeting_datetime.split('T');
+          copy.meeting_date = parts[0];
+          copy.meeting_time = parts[1] ? parts[1].substring(0, 5) : '00:00';
+        } else {
+          copy.meeting_date = null;
+          copy.meeting_time = null;
+        }
+        delete copy.next_meeting_datetime;
       }
     }
     return copy;
