@@ -1,7 +1,7 @@
 import { db } from "@/api/supabaseClient";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon, Library, Settings } from "lucide-react";
+import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon, Library, Settings, Coffee, Heart } from "lucide-react";
 import Logo from "@/components/Logo";
 
 const PUBLIC_PAGES = ["Landing", "PublicProfile"];
@@ -169,6 +169,34 @@ export default function Layout({ children, currentPageName }) {
             );
           })}
         </nav>
+
+        {/* Ko-fi Donation Area */}
+        <div className="px-4 py-2.5 mx-3 mb-2 rounded-2xl bg-gradient-to-r from-amber-500/15 via-rose-500/15 to-ps-blue/15 border border-white/10 hover:border-amber-400/40 transition-all duration-200 group relative">
+          <a
+            href="https://ko-fi.com/clubecheckpoint"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between gap-2"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-xl bg-amber-500 text-ps-dark flex items-center justify-center shadow-md group-hover:scale-110 transition-transform shrink-0">
+                <Coffee className="w-4 h-4 fill-current" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[11px] font-black text-amber-400 leading-none truncate">Apoie o Clube</span>
+                <span className="text-[9px] font-bold text-white/50 lowercase truncate">ko-fi.com/clubecheckpoint</span>
+              </div>
+            </div>
+            <Heart className="w-4 h-4 text-rose-400 fill-rose-400/30 group-hover:scale-110 transition-transform shrink-0" />
+          </a>
+
+          {/* Tooltip */}
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-60 p-3 bg-ps-dark-card border border-white/15 rounded-xl text-[11px] text-white/90 leading-relaxed shadow-2xl opacity-0 pointer-events-none group-hover:opacity-100 transition-all z-50 text-center font-medium">
+            Qualquer doação é muito bem-vinda, toda ajuda será usada para elevar o nível dos conteúdos do clube e levá-lo adiante!
+            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-ps-dark-card border-r border-b border-white/15 rotate-45" />
+          </div>
+        </div>
+
         <div className="p-4 border-t border-white/10 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-full bg-ps-blue border-2 border-white/20 overflow-hidden flex items-center justify-center flex-shrink-0">
@@ -218,6 +246,22 @@ export default function Layout({ children, currentPageName }) {
               </Link>
             );
           })}
+
+          {/* Mobile Ko-fi Link */}
+          <a
+            href="https://ko-fi.com/clubecheckpoint"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between gap-3 px-4 py-4 rounded-full text-lg font-bold uppercase bg-gradient-to-r from-amber-500/20 to-rose-500/20 border border-amber-400/30 text-amber-300"
+          >
+            <div className="flex items-center gap-3">
+              <Coffee className="w-6 h-6 fill-current text-amber-400" />
+              <span>Apoie no Ko-fi</span>
+            </div>
+            <Heart className="w-5 h-5 text-rose-400 fill-rose-400/30" />
+          </a>
+
           <button
             onClick={() => {
               setMobileMenuOpen(false);
