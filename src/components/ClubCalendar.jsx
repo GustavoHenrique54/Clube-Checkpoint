@@ -15,36 +15,36 @@ const EVENT_TYPES = {
   game_period: { 
     label: "Período de Jogo", 
     color: "bg-ps-blue text-white border-ps-blue/40", 
-    badgeColor: "bg-ps-blue", 
-    dayBg: "bg-ps-blue/20 border-ps-blue/50",
+    badgeColor: "bg-gradient-to-r from-ps-blue to-blue-600", 
+    dayBg: "bg-gradient-to-br from-ps-blue/25 via-ps-blue/10 to-transparent border-ps-blue/50 shadow-[0_4px_20px_rgba(0,112,209,0.18)] ring-1 ring-ps-blue/30",
     icon: Gamepad2 
   },
   meeting: { 
     label: "Reunião", 
     color: "bg-emerald-600 text-white border-emerald-500/40", 
-    badgeColor: "bg-emerald-600", 
-    dayBg: "bg-emerald-950/35 border-emerald-500/40",
+    badgeColor: "bg-gradient-to-r from-emerald-600 to-teal-600", 
+    dayBg: "bg-gradient-to-br from-emerald-950/40 via-emerald-900/10 to-transparent border-emerald-500/45 shadow-[0_4px_20px_rgba(16,185,129,0.15)]",
     icon: CalendarIcon 
   },
   play_together: { 
     label: "Jogar Junto", 
     color: "bg-purple-600 text-white border-purple-500/40", 
-    badgeColor: "bg-purple-600", 
-    dayBg: "bg-purple-950/35 border-purple-500/40",
+    badgeColor: "bg-gradient-to-r from-purple-600 to-indigo-600", 
+    dayBg: "bg-gradient-to-br from-purple-950/40 via-purple-900/10 to-transparent border-purple-500/45 shadow-[0_4px_20px_rgba(147,51,234,0.15)]",
     icon: Users 
   },
   live: { 
     label: "Live Especial", 
     color: "bg-rose-600 text-white border-rose-500/40", 
-    badgeColor: "bg-rose-600", 
-    dayBg: "bg-rose-950/35 border-rose-500/40",
+    badgeColor: "bg-gradient-to-r from-rose-600 to-pink-600", 
+    dayBg: "bg-gradient-to-br from-rose-950/40 via-rose-900/10 to-transparent border-rose-500/45 shadow-[0_4px_20px_rgba(225,29,72,0.15)]",
     icon: Radio 
   },
   special: { 
     label: "Evento Especial", 
     color: "bg-amber-600 text-white border-amber-500/40", 
-    badgeColor: "bg-amber-600", 
-    dayBg: "bg-amber-950/35 border-amber-500/40",
+    badgeColor: "bg-gradient-to-r from-amber-600 to-orange-600", 
+    dayBg: "bg-gradient-to-br from-amber-950/40 via-amber-900/10 to-transparent border-amber-500/45 shadow-[0_4px_20px_rgba(217,119,6,0.15)]",
     icon: Star 
   },
 };
@@ -298,18 +298,18 @@ export default function ClubCalendar({ isAdmin = false }) {
   const selectedDayActivities = selectedDay ? getDayActivities(selectedDay) : [];
 
   return (
-    <div className="bg-ps-dark-card border border-white/10 rounded-xl p-4 sm:p-5 shadow-xl space-y-4">
+    <div className="bg-ps-dark-card/90 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-5">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-ps-blue/20 flex items-center justify-center text-ps-blue border border-ps-blue/30 shadow-inner">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-ps-blue/30 to-blue-600/10 flex items-center justify-center text-ps-blue border border-ps-blue/30 shadow-inner">
             <CalendarIcon className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white uppercase tracking-wide flex items-center gap-2">
+            <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2">
               Calendário do Clube
             </h2>
-            <p className="text-xs text-white/55">Períodos de jogo, encontros e eventos especiais</p>
+            <p className="text-xs text-white/55 font-medium">Períodos de jogo, encontros e eventos do Clube Checkpoint</p>
           </div>
         </div>
 
@@ -317,7 +317,7 @@ export default function ClubCalendar({ isAdmin = false }) {
           {isAdmin && (
             <Button
               onClick={() => openCreateModal()}
-              className="bg-ps-blue hover:bg-ps-blue-pressed text-white text-xs font-bold uppercase tracking-wider rounded-full px-4 h-9 border-none shadow-md flex items-center gap-1.5"
+              className="bg-gradient-to-r from-ps-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs font-black uppercase tracking-wider rounded-full px-5 h-10 border-none shadow-lg shadow-ps-blue/20 flex items-center gap-2 transition-all hover:scale-[1.02]"
             >
               <Plus className="w-4 h-4" /> Novo Evento / Período
             </Button>
@@ -325,22 +325,22 @@ export default function ClubCalendar({ isAdmin = false }) {
         </div>
       </div>
 
-      {/* Month Navigation & Legend */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-ps-dark-elevated p-3 rounded-lg border border-white/5">
+      {/* Month Navigation & Category Badges */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white/[0.03] p-3.5 rounded-2xl border border-white/10 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrevMonth}
-            className="p-1.5 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all border border-white/5"
             title="Mês Anterior"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <span className="text-sm font-bold text-white uppercase tracking-wider min-w-[140px] text-center capitalize">
+          <span className="text-base font-black text-white uppercase tracking-wider min-w-[160px] text-center capitalize">
             {monthName}
           </span>
           <button
             onClick={handleNextMonth}
-            className="p-1.5 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all border border-white/5"
             title="Próximo Mês"
           >
             <ChevronRight className="w-5 h-5" />
@@ -349,19 +349,22 @@ export default function ClubCalendar({ isAdmin = false }) {
           <Button
             onClick={handleToday}
             variant="outline"
-            className="text-[11px] font-bold text-white/80 border-white/20 bg-transparent hover:bg-white/10 rounded-full px-3 h-7 ml-2"
+            className="text-xs font-bold text-white/90 border-white/20 bg-white/5 hover:bg-white/15 rounded-full px-4 h-8 ml-2"
           >
             Hoje
           </Button>
         </div>
 
-        {/* Category Legend */}
-        <div className="flex flex-wrap items-center gap-2.5 text-[11px]">
+        {/* Category Badges */}
+        <div className="flex flex-wrap items-center gap-2 text-[11px]">
           {Object.entries(EVENT_TYPES).map(([key, info]) => {
             const Icon = info.icon;
             return (
-              <div key={key} className="flex items-center gap-1 text-white/80 font-medium">
-                <span className={`w-2.5 h-2.5 rounded-full ${info.badgeColor} shadow-sm`} />
+              <div 
+                key={key} 
+                className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-full border border-white/10 font-bold text-white/80 shadow-xs"
+              >
+                <span className={`w-2 h-2 rounded-full ${info.badgeColor}`} />
                 <span>{info.label}</span>
               </div>
             );
@@ -370,21 +373,21 @@ export default function ClubCalendar({ isAdmin = false }) {
       </div>
 
       {/* Weekday Column Headers */}
-      <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center border-b border-white/5 pb-2">
+      <div className="grid grid-cols-7 gap-2 text-center border-b border-white/5 pb-2">
         {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((dayName) => (
-          <div key={dayName} className="text-xs font-bold text-white/40 uppercase tracking-wider">
+          <div key={dayName} className="text-xs font-black text-white/40 uppercase tracking-widest">
             {dayName}
           </div>
         ))}
       </div>
 
-      {/* 7-Column Days Grid */}
-      <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+      {/* 7-Column Days Grid (ClickUp Soft Hybrid Cards) */}
+      <div className="grid grid-cols-7 gap-2 sm:gap-3">
         {/* Empty padding slots */}
         {Array.from({ length: firstDayOfMonth }).map((_, i) => (
           <div 
             key={`empty-${i}`} 
-            className="h-24 sm:h-28 bg-white/[0.01] rounded-xl border border-transparent" 
+            className="min-h-[105px] sm:min-h-[115px] bg-white/[0.008] rounded-2xl border border-transparent" 
           />
         ))}
 
@@ -401,44 +404,44 @@ export default function ClubCalendar({ isAdmin = false }) {
             today.getMonth() === currentMonth && 
             today.getFullYear() === currentYear;
 
-          // Determine overall day cell styling based on events
-          let cellStyle = "bg-ps-dark-elevated/70 border-white/5 hover:border-white/20 hover:bg-white/5";
+          // Determine day card styling
+          let cellStyle = "bg-white/[0.02] border-white/10 hover:border-white/25 hover:bg-white/[0.05]";
           if (isToday) {
-            cellStyle = "bg-ps-blue/15 border-ps-blue shadow-[0_0_12px_rgba(0,112,209,0.3)] ring-1 ring-ps-blue/40";
+            cellStyle = "bg-ps-blue/20 border-ps-blue ring-2 ring-ps-blue/60 shadow-[0_0_18px_rgba(0,112,209,0.35)]";
           } else if (activeGamePeriod) {
-            cellStyle = EVENT_TYPES.game_period.dayBg + " shadow-sm";
+            cellStyle = EVENT_TYPES.game_period.dayBg;
           } else if (singleEvents.length > 0) {
             const primaryType = singleEvents[0].event_type;
-            cellStyle = (EVENT_TYPES[primaryType]?.dayBg || "bg-white/10 border-white/20") + " shadow-sm";
+            cellStyle = EVENT_TYPES[primaryType]?.dayBg || "bg-white/5 border-white/20";
           }
 
           return (
             <div
               key={dateStr}
               onClick={() => setSelectedDay(dateStr)}
-              className={`h-24 sm:h-28 p-1.5 sm:p-2 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between group hover:scale-[1.02] hover:z-10 shadow-md ${cellStyle}`}
+              className={`min-h-[105px] sm:min-h-[115px] p-2 sm:p-2.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer relative flex flex-col justify-between group hover:-translate-y-0.5 hover:shadow-xl ${cellStyle}`}
             >
               {/* Day Number Header */}
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ${
-                  isToday ? "bg-ps-blue text-white shadow-md font-black" : "text-white/80"
+                <span className={`text-xs font-black rounded-full w-6 h-6 flex items-center justify-center ${
+                  isToday ? "bg-ps-blue text-white shadow-md" : "text-white/75 group-hover:text-white"
                 }`}>
                   {dayNum}
                 </span>
 
                 {dayActivities.length > 0 && (
-                  <span className="text-[9px] font-extrabold text-white/70 bg-black/40 px-1.5 py-0.5 rounded-full border border-white/10">
+                  <span className="text-[10px] font-black text-white/70 bg-black/40 px-2 py-0.5 rounded-full border border-white/10 shadow-xs">
                     {dayActivities.length}
                   </span>
                 )}
               </div>
 
-              {/* Inside Day Items (Strictly inside day square) */}
+              {/* Inside Soft Floating Cards */}
               <div className="space-y-1 my-auto overflow-hidden">
-                {/* Active Game Period Badge (inside square) */}
+                {/* Active Game Period Pill (inside card) */}
                 {activeGamePeriod && (
                   <div 
-                    className="bg-ps-blue text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-1 rounded-md truncate flex items-center gap-1 shadow-sm leading-none"
+                    className="bg-gradient-to-r from-ps-blue to-blue-600 text-white text-[10px] font-black px-2 py-1 rounded-xl shadow-md flex items-center gap-1.5 leading-none my-1 tracking-tight"
                     title={`Jogo Ativo: ${activeGamePeriod.title}`}
                   >
                     <Gamepad2 className="w-3 h-3 shrink-0 text-white" />
@@ -446,14 +449,14 @@ export default function ClubCalendar({ isAdmin = false }) {
                   </div>
                 )}
 
-                {/* Single Day Events (Reuniões, Lives, Jogar Junto, etc.) */}
+                {/* Single Day Events Tags */}
                 {singleEvents.slice(0, activeGamePeriod ? 1 : 2).map((ev) => {
                   const info = EVENT_TYPES[ev.event_type] || EVENT_TYPES.special;
                   const Icon = info.icon;
                   return (
                     <div 
                       key={ev.id} 
-                      className={`${info.badgeColor} text-white text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-md font-bold truncate flex items-center gap-1 shadow-sm leading-none`}
+                      className={`${info.badgeColor} text-white text-[10px] px-2 py-1 rounded-xl font-bold truncate flex items-center gap-1.5 shadow-sm leading-none my-0.5 border border-white/10 backdrop-blur-sm`}
                       title={`${ev.time ? ev.time + ' - ' : ''}${ev.title}`}
                     >
                       <Icon className="w-2.5 h-2.5 shrink-0" />
@@ -462,10 +465,10 @@ export default function ClubCalendar({ isAdmin = false }) {
                   );
                 })}
 
-                {/* Overflow indicator */}
+                {/* Overflow count */}
                 {singleEvents.length > (activeGamePeriod ? 1 : 2) && (
-                  <span className="text-[8px] font-extrabold text-white/60 block px-1">
-                    +{singleEvents.length - (activeGamePeriod ? 1 : 2)} eventos
+                  <span className="text-[9px] font-extrabold text-white/50 block px-1">
+                    +{singleEvents.length - (activeGamePeriod ? 1 : 2)} mais
                   </span>
                 )}
               </div>
@@ -476,9 +479,9 @@ export default function ClubCalendar({ isAdmin = false }) {
 
       {/* --- DAY DETAILS MODAL --- */}
       <Dialog open={!!selectedDay} onOpenChange={() => setSelectedDay(null)}>
-        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-lg rounded-xl">
+        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-lg rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-white uppercase flex items-center gap-2">
+            <DialogTitle className="text-lg font-black text-white uppercase flex items-center gap-2">
               <CalendarIcon className="w-5 h-5 text-ps-blue" />
               {selectedDay && new Date(parseDateStr(selectedDay)).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
             </DialogTitle>
@@ -497,15 +500,15 @@ export default function ClubCalendar({ isAdmin = false }) {
                 return (
                   <div 
                     key={act.id} 
-                    className="p-4 rounded-lg bg-ps-dark-card border border-white/10 space-y-2 relative group"
+                    className="p-4 rounded-xl bg-ps-dark-card border border-white/10 space-y-2 relative group shadow-md"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`p-1.5 rounded-md ${info.badgeColor} text-white shadow-sm`}>
+                      <div className="flex items-center gap-2.5">
+                        <span className={`p-2 rounded-xl ${info.badgeColor} text-white shadow-md`}>
                           <Icon className="w-4 h-4" />
                         </span>
                         <div>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${info.color}`}>
+                          <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full ${info.color}`}>
                             {info.label}
                           </span>
                           <h3 className="font-bold text-white text-sm mt-1 leading-snug">{act.title}</h3>
@@ -516,14 +519,14 @@ export default function ClubCalendar({ isAdmin = false }) {
                         <div className="flex items-center gap-1">
                           <button 
                             onClick={() => { setSelectedDay(null); openEditModal(act); }}
-                            className="p-1 rounded bg-white/5 hover:bg-white/20 text-white/70 hover:text-white transition-all"
+                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/20 text-white/70 hover:text-white transition-all"
                             title="Editar Evento"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
                           <button 
                             onClick={() => deleteMutation.mutate(act.id)}
-                            className="p-1 rounded bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-200 transition-all"
+                            className="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-200 transition-all"
                             title="Excluir Evento"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -552,7 +555,7 @@ export default function ClubCalendar({ isAdmin = false }) {
                     )}
 
                     {act.description && (
-                      <p className="text-xs text-white/60 leading-relaxed bg-white/5 p-2.5 rounded-md mt-2">
+                      <p className="text-xs text-white/60 leading-relaxed bg-white/5 p-3 rounded-xl mt-2 border border-white/5">
                         {act.description}
                       </p>
                     )}
@@ -584,7 +587,7 @@ export default function ClubCalendar({ isAdmin = false }) {
 
       {/* --- ADMIN CREATE / EDIT EVENT MODAL --- */}
       <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
-        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-md rounded-xl">
+        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-white uppercase flex items-center gap-2">
               {editingEvent ? "Editar Evento / Período" : "Novo Evento / Período"}
@@ -592,7 +595,7 @@ export default function ClubCalendar({ isAdmin = false }) {
           </DialogHeader>
 
           {formError && (
-            <div className="p-3 bg-red-950/50 border border-red-500/30 text-red-400 text-xs rounded-lg">
+            <div className="p-3 bg-red-950/50 border border-red-500/30 text-red-400 text-xs rounded-xl">
               {formError}
             </div>
           )}
@@ -603,7 +606,7 @@ export default function ClubCalendar({ isAdmin = false }) {
               <select
                 value={form.event_type}
                 onChange={(e) => setForm(f => ({ ...f, event_type: e.target.value }))}
-                className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/15 text-white text-xs font-bold [color-scheme:dark]"
+                className="mt-1 w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs font-bold [color-scheme:dark]"
               >
                 {Object.entries(EVENT_TYPES).map(([key, info]) => (
                   <option key={key} value={key} className="bg-ps-dark-elevated text-white">
@@ -619,7 +622,7 @@ export default function ClubCalendar({ isAdmin = false }) {
                 value={form.title}
                 onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
                 placeholder={form.event_type === "game_period" ? "Ex: Castlevania SotN" : "Ex: Reunião do Clube"}
-                className="mt-1 bg-white/5 border-white/15 text-white text-xs rounded-lg placeholder:text-white/30"
+                className="mt-1 bg-white/5 border-white/15 text-white text-xs rounded-xl placeholder:text-white/30"
               />
             </div>
 
@@ -632,7 +635,7 @@ export default function ClubCalendar({ isAdmin = false }) {
                   type="date"
                   value={form.start_date}
                   onChange={(e) => setForm(f => ({ ...f, start_date: e.target.value }))}
-                  className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/15 text-white text-xs [color-scheme:dark]"
+                  className="mt-1 w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs [color-scheme:dark]"
                 />
               </div>
 
@@ -643,7 +646,7 @@ export default function ClubCalendar({ isAdmin = false }) {
                     type="date"
                     value={form.end_date}
                     onChange={(e) => setForm(f => ({ ...f, end_date: e.target.value }))}
-                    className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/15 text-white text-xs [color-scheme:dark]"
+                    className="mt-1 w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-white text-xs [color-scheme:dark]"
                   />
                 </div>
               ) : (
@@ -653,7 +656,7 @@ export default function ClubCalendar({ isAdmin = false }) {
                     type="time"
                     value={form.time}
                     onChange={(e) => setForm(f => ({ ...f, time: e.target.value }))}
-                    className="mt-1 bg-white/5 border-white/15 text-white text-xs rounded-lg [color-scheme:dark]"
+                    className="mt-1 bg-white/5 border-white/15 text-white text-xs rounded-xl [color-scheme:dark]"
                   />
                 </div>
               )}
@@ -665,7 +668,7 @@ export default function ClubCalendar({ isAdmin = false }) {
                 value={form.location}
                 onChange={(e) => setForm(f => ({ ...f, location: e.target.value }))}
                 placeholder="Ex: Discord, Twitch, PSN, Steam..."
-                className="mt-1 bg-white/5 border-white/15 text-white text-xs rounded-lg placeholder:text-white/30"
+                className="mt-1 bg-white/5 border-white/15 text-white text-xs rounded-xl placeholder:text-white/30"
               />
             </div>
 
@@ -676,7 +679,7 @@ export default function ClubCalendar({ isAdmin = false }) {
                 onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
                 placeholder="Detalhes ou regras do encontro/evento..."
                 rows={3}
-                className="mt-1 bg-white/5 border-white/15 text-white text-xs rounded-lg placeholder:text-white/30 resize-none"
+                className="mt-1 bg-white/5 border-white/15 text-white text-xs rounded-xl placeholder:text-white/30 resize-none"
               />
             </div>
           </div>
