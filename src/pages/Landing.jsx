@@ -8,6 +8,7 @@ import { createPageUrl } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Trophy, Users, Star, ArrowRight, Shield, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
 
 const features = [
 {
@@ -81,19 +82,8 @@ export default function Landing() {
             transition={{ duration: 0.7 }}>
 
             {/* Club Logo Block */}
-            <div className="mb-10">
-              <p 
-                className="text-white text-5xl font-light text-center tracking-[0.05em] sm:text-7xl md:text-5xl font-display uppercase" 
-                style={subtitleStyle}
-              >
-                {config?.hero_subtitle || "clube"}
-              </p>
-              <h1 
-                className="text-white text-6xl font-light tracking-[0.02em] sm:text-8xl md:text-9xl font-display uppercase"
-                style={titleStyle}
-              >
-                {config?.hero_title || "CHECKPOINT"}
-              </h1>
+            <div className="mb-10 flex flex-col items-center">
+              <Logo variant="auto" className="w-full max-w-sm sm:max-w-md md:max-w-xl h-auto object-contain mb-2 drop-shadow-lg" />
               <p className="mt-4 text-ps-blue font-bold uppercase tracking-widest text-sm sm:text-base">
                 {config?.hero_tagline || 'O CLUBE "DO LIVRO" DE GAMES'}
               </p>
@@ -238,10 +228,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="bg-ps-dark-canvas py-12 text-white border-t border-white/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col leading-none">
-            <span className="text-[10px] text-white/55 uppercase tracking-widest font-mono">clube</span>
-            <span className="font-display font-light text-white text-lg tracking-wider">CHECKPOINT</span>
-          </div>
+          <Logo variant="auto" className="h-8 w-auto object-contain" />
           <p className="text-xs text-white/40 font-mono">© {new Date().getFullYear()} Clube Checkpoint. Todos os direitos reservados.</p>
         </div>
       </footer>

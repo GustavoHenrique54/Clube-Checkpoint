@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Gamepad2, AlertCircle } from "lucide-react";
+import Logo from "@/components/Logo";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -87,11 +88,8 @@ export default function Login() {
 
       <div className="w-full max-w-md bg-ps-dark-card border border-white/10 rounded-md p-8 shadow-2xl relative z-10">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-ps-blue rounded-full flex items-center justify-center mb-3">
-            <Gamepad2 className="w-6 h-6 text-white" />
-          </div>
-          <h1 className="text-xl font-bold uppercase tracking-widest text-white">Clube Checkpoint</h1>
-          <p className="text-xs text-white/50 tracking-wider uppercase mt-1 font-mono">
+          <Logo variant="white" className="h-10 w-auto object-contain mb-3" />
+          <p className="text-xs text-white/50 tracking-wider uppercase font-mono">
             {isSignUp ? "Criar nova conta" : "Iniciar Sessão"}
           </p>
         </div>

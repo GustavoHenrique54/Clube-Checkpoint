@@ -2,6 +2,7 @@ import { db } from "@/api/supabaseClient";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon, Library, Settings } from "lucide-react";
+import Logo from "@/components/Logo";
 
 const PUBLIC_PAGES = ["Landing", "PublicProfile"];
 
@@ -73,10 +74,7 @@ export default function Layout({ children, currentPageName }) {
         <nav className="fixed top-0 w-full z-50 bg-ps-dark-canvas/80 backdrop-blur-xl border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
-              <div className="flex flex-col leading-none">
-                <span className="text-[10px] font-script text-white/80 italic font-light tracking-wide">clube</span>
-                <span className="text-xl font-black text-white uppercase tracking-tight" style={{ textShadow: "2px 2px 0  rgba(0,0,0,0.3)" }}>CHECKPOINT</span>
-              </div>
+              <Logo variant="auto" className="h-8 sm:h-9 w-auto object-contain" />
             </Link>
             <div className="flex items-center gap-3">
               <button onClick={toggleTheme} className="p-2 text-white/60 hover:text-white rounded-full transition-all" title="Alternar Tema">
@@ -134,7 +132,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile Navbar */}
       <div className="md:hidden flex items-center justify-between px-4 h-16 bg-ps-dark-elevated border-b border-white/10 fixed top-0 w-full z-40">
         <Link to="/hub" className="flex items-center gap-2">
-          <span className="text-lg font-black tracking-tight text-white uppercase">CHECKPOINT</span>
+          <Logo variant="auto" className="h-7 w-auto object-contain" />
         </Link>
         <div className="flex items-center gap-2">
           <button onClick={toggleTheme} className="p-2 text-white/60 hover:text-white rounded-full transition-all" title="Alternar Tema">
@@ -150,7 +148,7 @@ export default function Layout({ children, currentPageName }) {
       <aside className="hidden md:flex flex-col w-64 bg-ps-dark-elevated border-r border-white/10 h-screen sticky top-0">
         <div className="p-6">
           <Link to="/hub" className="flex items-center gap-2">
-            <span className="text-xl font-black tracking-tight text-white uppercase">CHECKPOINT</span>
+            <Logo variant="auto" className="h-9 w-auto object-contain" />
           </Link>
         </div>
         <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto">
