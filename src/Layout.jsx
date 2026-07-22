@@ -135,6 +135,16 @@ export default function Layout({ children, currentPageName }) {
           <Logo variant="auto" className="h-7 w-auto object-contain" />
         </Link>
         <div className="flex items-center gap-2">
+          <a
+            href="https://ko-fi.com/clubecheckpoint"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 px-3 bg-amber-500/20 text-amber-400 border border-amber-400/40 rounded-full flex items-center gap-1.5 text-xs font-black uppercase tracking-wider hover:bg-amber-500/30 transition-all shadow-xs"
+            title="Apoie no Ko-fi"
+          >
+            <Coffee className="w-3.5 h-3.5 fill-current" />
+            <span>Apoie</span>
+          </a>
           <button onClick={toggleTheme} className="p-2 text-white/60 hover:text-white rounded-full transition-all" title="Alternar Tema">
             {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
@@ -226,53 +236,71 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </aside>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Dropdown (Compact, Solid Theme BG, Non-Full-Screen) */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-ps-dark-canvas/95 backdrop-blur-md z-30 md:hidden flex flex-col pt-20 px-6 space-y-4">
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                to={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-4 rounded-full text-lg font-bold uppercase transition-all ${
-                  isActive ? "bg-ps-blue text-white" : "text-white/60 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <Icon className="w-6 h-6" />
-                {item.name}
-              </Link>
-            );
-          })}
-
-          {/* Mobile Ko-fi Link */}
-          <a
-            href="https://ko-fi.com/clubecheckpoint"
-            target="_blank"
-            rel="noopener noreferrer"
+        <>
+          {/* Backdrop overlay */}
+          <div 
+            className="fixed inset-0 z-40 md:hidden bg-black/40"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-between gap-3 px-4 py-4 rounded-full text-lg font-bold uppercase bg-gradient-to-r from-amber-500/20 to-rose-500/20 border border-amber-400/30 text-amber-300"
-          >
-            <div className="flex items-center gap-3">
-              <Coffee className="w-6 h-6 fill-current text-amber-400" />
-              <span>Apoie no Ko-fi</span>
-            </div>
-            <Heart className="w-5 h-5 text-rose-400 fill-rose-400/30" />
-          </a>
+          />
 
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              handleLogout();
-            }}
-            className="flex items-center gap-3 px-4 py-4 rounded-full text-lg font-bold uppercase text-red-400 hover:bg-red-500/10 transition-all border border-red-500/20"
-          >
-            <LogOut className="w-6 h-6" />
-            Sair
-          </button>
-        </div>
+          <div className="fixed top-16 right-3 left-3 sm:left-auto sm:w-72 z-50 md:hidden bg-ps-dark-elevated text-white border border-white/15 rounded-2xl p-3 shadow-2xl space-y-1">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                    isActive ? "bg-ps-blue text-white shadow-md" : "text-white/70 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {item.name}
+                </Link>
+              );
+            })}
+
+            {/* Mobile Ko-fi Link (Compact) */}
+            <a
+              href="https://ko-fi.com/clubecheckpoint"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500/20 to-rose-500/20 border border-amber-400/30 text-amber-300 hover:border-amber-400/50 transition-all mt-1"
+            >
+              <div className="flex items-center gap-2">
+                <Coffee className="w-4 h-4 fill-current text-amber-400" />
+                <span>Apoiar no Ko-fi</span>
+              </div>
+              <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400/30" />
+            </a>
+
+            <div className="pt-2 border-t border-white/10 mt-1 flex items-center justify-between px-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-6 h-6 rounded-full bg-ps-blue border border-white/20 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                  {(user?.display_name || user?.username || "?")[0]?.toUpperCase()}
+                </div>
+                <span className="text-xs font-bold text-white/80 truncate">{user?.display_name || user?.username || "Membro"}</span>
+              </div>
+
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold uppercase text-red-400 hover:bg-red-500/10 transition-all"
+                title="Sair"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sair</span>
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Main Content Area */}
