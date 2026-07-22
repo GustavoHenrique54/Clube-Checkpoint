@@ -14,37 +14,32 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 const EVENT_TYPES = {
   game_period: { 
     label: "Período de Jogo", 
-    color: "bg-ps-blue text-white border-ps-blue/40", 
-    badgeColor: "bg-gradient-to-r from-ps-blue to-blue-600", 
-    dayBg: "bg-gradient-to-br from-ps-blue/25 via-ps-blue/10 to-transparent border-ps-blue/50 shadow-[0_4px_20px_rgba(0,112,209,0.18)] ring-1 ring-ps-blue/30",
+    dotColor: "bg-ps-blue shadow-[0_0_8px_rgba(0,112,209,0.8)]",
+    badgeColor: "bg-ps-blue text-white",
     icon: Gamepad2 
   },
   meeting: { 
     label: "Reunião", 
-    color: "bg-emerald-600 text-white border-emerald-500/40", 
-    badgeColor: "bg-gradient-to-r from-emerald-600 to-teal-600", 
-    dayBg: "bg-gradient-to-br from-emerald-950/40 via-emerald-900/10 to-transparent border-emerald-500/45 shadow-[0_4px_20px_rgba(16,185,129,0.15)]",
+    dotColor: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
+    badgeColor: "bg-emerald-600 text-white",
     icon: CalendarIcon 
   },
   play_together: { 
     label: "Jogar Junto", 
-    color: "bg-purple-600 text-white border-purple-500/40", 
-    badgeColor: "bg-gradient-to-r from-purple-600 to-indigo-600", 
-    dayBg: "bg-gradient-to-br from-purple-950/40 via-purple-900/10 to-transparent border-purple-500/45 shadow-[0_4px_20px_rgba(147,51,234,0.15)]",
+    dotColor: "bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.8)]",
+    badgeColor: "bg-purple-600 text-white",
     icon: Users 
   },
   live: { 
     label: "Live Especial", 
-    color: "bg-rose-600 text-white border-rose-500/40", 
-    badgeColor: "bg-gradient-to-r from-rose-600 to-pink-600", 
-    dayBg: "bg-gradient-to-br from-rose-950/40 via-rose-900/10 to-transparent border-rose-500/45 shadow-[0_4px_20px_rgba(225,29,72,0.15)]",
+    dotColor: "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]",
+    badgeColor: "bg-rose-600 text-white",
     icon: Radio 
   },
   special: { 
     label: "Evento Especial", 
-    color: "bg-amber-600 text-white border-amber-500/40", 
-    badgeColor: "bg-gradient-to-r from-amber-600 to-orange-600", 
-    dayBg: "bg-gradient-to-br from-amber-950/40 via-amber-900/10 to-transparent border-amber-500/45 shadow-[0_4px_20px_rgba(217,119,6,0.15)]",
+    dotColor: "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]",
+    badgeColor: "bg-amber-600 text-white",
     icon: Star 
   },
 };
@@ -106,7 +101,10 @@ export default function ClubCalendar({ isAdmin = false }) {
   
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [selectedDay, setSelectedDay] = useState(null);
+  
+  // Default selected date to Today's date string
+  const defaultSelectedStr = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  const [selectedDay, setSelectedDay] = useState(defaultSelectedStr);
   
   // Dialog states
   const [showEventModal, setShowEventModal] = useState(false);
@@ -117,8 +115,8 @@ export default function ClubCalendar({ isAdmin = false }) {
   const [form, setForm] = useState({
     title: "",
     event_type: "game_period",
-    start_date: formatDateKey(today.getFullYear(), today.getMonth(), today.getDate()),
-    end_date: formatDateKey(today.getFullYear(), today.getMonth(), today.getDate()),
+    start_date: defaultSelectedStr,
+    end_date: defaultSelectedStr,
     time: "18:00",
     description: "",
     location: "",
@@ -228,10 +226,11 @@ export default function ClubCalendar({ isAdmin = false }) {
   const handleToday = () => {
     setCurrentMonth(today.getMonth());
     setCurrentYear(today.getFullYear());
+    setSelectedDay(defaultSelectedStr);
   };
 
   const openCreateModal = (dateStr = null) => {
-    const defaultDate = dateStr || formatDateKey(currentYear, currentMonth, today.getDate());
+    const defaultDate = dateStr || selectedDay || defaultSelectedStr;
     setEditingEvent(null);
     setForm({
       title: "",
@@ -298,18 +297,18 @@ export default function ClubCalendar({ isAdmin = false }) {
   const selectedDayActivities = selectedDay ? getDayActivities(selectedDay) : [];
 
   return (
-    <div className="bg-ps-dark-card/90 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-5">
+    <div className="bg-ps-dark-card/60 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-6 space-y-6 shadow-2xl">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-ps-blue/30 to-blue-600/10 flex items-center justify-center text-ps-blue border border-ps-blue/30 shadow-inner">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-ps-blue/20 flex items-center justify-center text-ps-blue border border-ps-blue/30">
             <CalendarIcon className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2">
+            <h2 className="text-lg font-black text-white uppercase tracking-tight">
               Calendário do Clube
             </h2>
-            <p className="text-xs text-white/55 font-medium">Períodos de jogo, encontros e eventos do Clube Checkpoint</p>
+            <p className="text-xs text-white/50 font-medium hidden sm:block">Grade orgânica minimalista e eventos</p>
           </div>
         </div>
 
@@ -317,273 +316,238 @@ export default function ClubCalendar({ isAdmin = false }) {
           {isAdmin && (
             <Button
               onClick={() => openCreateModal()}
-              className="bg-gradient-to-r from-ps-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs font-black uppercase tracking-wider rounded-full px-5 h-10 border-none shadow-lg shadow-ps-blue/20 flex items-center gap-2 transition-all hover:scale-[1.02]"
+              className="bg-ps-blue hover:bg-ps-blue-pressed text-white text-xs font-black uppercase tracking-wider rounded-full px-4 h-9 border-none shadow-md flex items-center gap-1.5"
             >
-              <Plus className="w-4 h-4" /> Novo Evento / Período
+              <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Novo Evento</span>
             </Button>
           )}
         </div>
       </div>
 
-      {/* Month Navigation & Category Badges */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white/[0.03] p-3.5 rounded-2xl border border-white/10 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handlePrevMonth}
-            className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all border border-white/5"
-            title="Mês Anterior"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <span className="text-base font-black text-white uppercase tracking-wider min-w-[160px] text-center capitalize">
+      {/* Month Navigation Controls */}
+      <div className="flex items-center justify-between border-b border-white/5 pb-4">
+        <div className="flex items-center gap-3">
+          <span className="text-base sm:text-lg font-black text-white uppercase tracking-wide capitalize">
             {monthName}
           </span>
-          <button
-            onClick={handleNextMonth}
-            className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all border border-white/5"
-            title="Próximo Mês"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-
           <Button
             onClick={handleToday}
             variant="outline"
-            className="text-xs font-bold text-white/90 border-white/20 bg-white/5 hover:bg-white/15 rounded-full px-4 h-8 ml-2"
+            className="text-[10px] font-bold text-white/80 border-white/20 bg-white/5 hover:bg-white/15 rounded-full px-3 h-6"
           >
             Hoje
           </Button>
         </div>
 
-        {/* Category Badges */}
-        <div className="flex flex-wrap items-center gap-2 text-[11px]">
-          {Object.entries(EVENT_TYPES).map(([key, info]) => {
-            const Icon = info.icon;
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handlePrevMonth}
+            className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            title="Mês Anterior"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleNextMonth}
+            className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            title="Próximo Mês"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Category Dots Legend */}
+      <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs">
+        {Object.entries(EVENT_TYPES).map(([key, info]) => (
+          <div key={key} className="flex items-center gap-1.5 text-white/75 font-semibold">
+            <span className={`w-2.5 h-2.5 rounded-full ${info.dotColor}`} />
+            <span>{info.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* ULTRA MINIMALIST FRAMELESS CALENDAR GRID */}
+      <div className="space-y-3">
+        {/* Weekday Labels (No grid borders) */}
+        <div className="grid grid-cols-7 text-center">
+          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((dayName) => (
+            <div key={dayName} className="text-[11px] font-extrabold text-white/35 uppercase tracking-wider py-1">
+              {dayName}
+            </div>
+          ))}
+        </div>
+
+        {/* Days Grid (Seamless, Frameless) */}
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center">
+          {/* Empty padding slots */}
+          {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+            <div key={`empty-${i}`} className="py-3" />
+          ))}
+
+          {/* Days of Month */}
+          {Array.from({ length: daysInMonth }).map((_, i) => {
+            const dayNum = i + 1;
+            const dateStr = formatDateKey(currentYear, currentMonth, dayNum);
+            const dayActivities = getDayActivities(dateStr);
+            const hasGamePeriod = dayActivities.some(a => a.event_type === "game_period");
+            const singleEvents = dayActivities.filter(a => a.event_type !== "game_period");
+
+            const isToday = 
+              today.getDate() === dayNum && 
+              today.getMonth() === currentMonth && 
+              today.getFullYear() === currentYear;
+
+            const isSelected = selectedDay === dateStr;
+
             return (
-              <div 
-                key={key} 
-                className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-full border border-white/10 font-bold text-white/80 shadow-xs"
+              <div
+                key={dateStr}
+                onClick={() => setSelectedDay(dateStr)}
+                className={`py-2 sm:py-3 px-1 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-200 group relative ${
+                  isSelected ? "bg-white/10 shadow-lg scale-105" : "hover:bg-white/5"
+                }`}
               >
-                <span className={`w-2 h-2 rounded-full ${info.badgeColor}`} />
-                <span>{info.label}</span>
+                {/* Day Number Circle */}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all ${
+                  isToday
+                    ? "bg-ps-blue text-white shadow-md shadow-ps-blue/40 ring-2 ring-ps-blue/60"
+                    : isSelected
+                    ? "bg-white text-ps-dark font-extrabold shadow-md"
+                    : "text-white/80 group-hover:text-white"
+                }`}>
+                  {dayNum}
+                </div>
+
+                {/* Minimalist Organic Indicators (Under Day Number) */}
+                <div className="h-3 flex items-center justify-center gap-1 mt-1">
+                  {/* Game Period Indicator (Glowing Bar) */}
+                  {hasGamePeriod && (
+                    <span 
+                      className="w-5 h-1.5 rounded-full bg-ps-blue shadow-[0_0_8px_rgba(0,112,209,0.8)]"
+                      title="Período de Jogo Ativo"
+                    />
+                  )}
+
+                  {/* Single Event Dots */}
+                  {singleEvents.slice(0, hasGamePeriod ? 1 : 3).map((ev) => {
+                    const info = EVENT_TYPES[ev.event_type] || EVENT_TYPES.special;
+                    return (
+                      <span
+                        key={ev.id}
+                        className={`w-1.5 h-1.5 rounded-full ${info.dotColor}`}
+                        title={ev.title}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Weekday Column Headers */}
-      <div className="grid grid-cols-7 gap-2 text-center border-b border-white/5 pb-2">
-        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((dayName) => (
-          <div key={dayName} className="text-xs font-black text-white/40 uppercase tracking-widest">
-            {dayName}
+      {/* --- SELECTED DAY ORGANIC AGENDA PANEL (Mobile & Desktop Optimized) --- */}
+      <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 sm:p-5 space-y-4 backdrop-blur-md">
+        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="w-4 h-4 text-ps-blue" />
+            <h3 className="text-sm font-black text-white uppercase tracking-wide">
+              {selectedDay ? (
+                new Date(parseDateStr(selectedDay)).toLocaleDateString("pt-BR", {
+                  weekday: "long", day: "numeric", month: "long"
+                })
+              ) : "Selecione um dia"}
+            </h3>
           </div>
-        ))}
-      </div>
 
-      {/* 7-Column Days Grid (ClickUp Soft Hybrid Cards) */}
-      <div className="grid grid-cols-7 gap-2 sm:gap-3">
-        {/* Empty padding slots */}
-        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-          <div 
-            key={`empty-${i}`} 
-            className="min-h-[105px] sm:min-h-[115px] bg-white/[0.008] rounded-2xl border border-transparent" 
-          />
-        ))}
-
-        {/* Days of Month */}
-        {Array.from({ length: daysInMonth }).map((_, i) => {
-          const dayNum = i + 1;
-          const dateStr = formatDateKey(currentYear, currentMonth, dayNum);
-          const dayActivities = getDayActivities(dateStr);
-          const activeGamePeriod = dayActivities.find(a => a.event_type === "game_period");
-          const singleEvents = dayActivities.filter(a => a.event_type !== "game_period");
-
-          const isToday = 
-            today.getDate() === dayNum && 
-            today.getMonth() === currentMonth && 
-            today.getFullYear() === currentYear;
-
-          // Determine day card styling
-          let cellStyle = "bg-white/[0.02] border-white/10 hover:border-white/25 hover:bg-white/[0.05]";
-          if (isToday) {
-            cellStyle = "bg-ps-blue/20 border-ps-blue ring-2 ring-ps-blue/60 shadow-[0_0_18px_rgba(0,112,209,0.35)]";
-          } else if (activeGamePeriod) {
-            cellStyle = EVENT_TYPES.game_period.dayBg;
-          } else if (singleEvents.length > 0) {
-            const primaryType = singleEvents[0].event_type;
-            cellStyle = EVENT_TYPES[primaryType]?.dayBg || "bg-white/5 border-white/20";
-          }
-
-          return (
-            <div
-              key={dateStr}
-              onClick={() => setSelectedDay(dateStr)}
-              className={`min-h-[105px] sm:min-h-[115px] p-2 sm:p-2.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer relative flex flex-col justify-between group hover:-translate-y-0.5 hover:shadow-xl ${cellStyle}`}
+          {isAdmin && selectedDay && (
+            <button
+              onClick={() => openCreateModal(selectedDay)}
+              className="text-xs font-bold text-ps-blue hover:text-ps-blue-pressed flex items-center gap-1 transition-all"
             >
-              {/* Day Number Header */}
-              <div className="flex items-center justify-between">
-                <span className={`text-xs font-black rounded-full w-6 h-6 flex items-center justify-center ${
-                  isToday ? "bg-ps-blue text-white shadow-md" : "text-white/75 group-hover:text-white"
-                }`}>
-                  {dayNum}
-                </span>
+              <Plus className="w-3.5 h-3.5" /> Adicionar Evento
+            </button>
+          )}
+        </div>
 
-                {dayActivities.length > 0 && (
-                  <span className="text-[10px] font-black text-white/70 bg-black/40 px-2 py-0.5 rounded-full border border-white/10 shadow-xs">
-                    {dayActivities.length}
-                  </span>
-                )}
-              </div>
-
-              {/* Inside Soft Floating Cards */}
-              <div className="space-y-1 my-auto overflow-hidden">
-                {/* Active Game Period Pill (inside card) */}
-                {activeGamePeriod && (
-                  <div 
-                    className="bg-gradient-to-r from-ps-blue to-blue-600 text-white text-[10px] font-black px-2 py-1 rounded-xl shadow-md flex items-center gap-1.5 leading-none my-1 tracking-tight"
-                    title={`Jogo Ativo: ${activeGamePeriod.title}`}
-                  >
-                    <Gamepad2 className="w-3 h-3 shrink-0 text-white" />
-                    <span className="truncate">{activeGamePeriod.title}</span>
-                  </div>
-                )}
-
-                {/* Single Day Events Tags */}
-                {singleEvents.slice(0, activeGamePeriod ? 1 : 2).map((ev) => {
-                  const info = EVENT_TYPES[ev.event_type] || EVENT_TYPES.special;
-                  const Icon = info.icon;
-                  return (
-                    <div 
-                      key={ev.id} 
-                      className={`${info.badgeColor} text-white text-[10px] px-2 py-1 rounded-xl font-bold truncate flex items-center gap-1.5 shadow-sm leading-none my-0.5 border border-white/10 backdrop-blur-sm`}
-                      title={`${ev.time ? ev.time + ' - ' : ''}${ev.title}`}
-                    >
-                      <Icon className="w-2.5 h-2.5 shrink-0" />
-                      <span className="truncate">{ev.time ? `${ev.time} ` : ""}{ev.title}</span>
-                    </div>
-                  );
-                })}
-
-                {/* Overflow count */}
-                {singleEvents.length > (activeGamePeriod ? 1 : 2) && (
-                  <span className="text-[9px] font-extrabold text-white/50 block px-1">
-                    +{singleEvents.length - (activeGamePeriod ? 1 : 2)} mais
-                  </span>
-                )}
-              </div>
+        {/* Selected Day Activities List */}
+        <div className="space-y-3">
+          {selectedDayActivities.length === 0 ? (
+            <div className="text-center py-6 text-white/40 text-xs italic flex flex-col items-center gap-1.5">
+              <Info className="w-6 h-6 opacity-30" />
+              <span>Nenhum evento agendado para este dia.</span>
             </div>
-          );
-        })}
-      </div>
-
-      {/* --- DAY DETAILS MODAL --- */}
-      <Dialog open={!!selectedDay} onOpenChange={() => setSelectedDay(null)}>
-        <DialogContent className="bg-ps-dark-elevated border-white/10 text-white max-w-lg rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-black text-white uppercase flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5 text-ps-blue" />
-              {selectedDay && new Date(parseDateStr(selectedDay)).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-3 my-2 max-h-[60vh] overflow-y-auto pr-1">
-            {selectedDayActivities.length === 0 ? (
-              <div className="text-center py-8 text-white/40 italic">
-                <Info className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                Nenhum evento ou período agendado para este dia.
-              </div>
-            ) : (
-              selectedDayActivities.map((act) => {
-                const info = EVENT_TYPES[act.event_type] || EVENT_TYPES.special;
-                const Icon = info.icon;
-                return (
-                  <div 
-                    key={act.id} 
-                    className="p-4 rounded-xl bg-ps-dark-card border border-white/10 space-y-2 relative group shadow-md"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className={`p-2 rounded-xl ${info.badgeColor} text-white shadow-md`}>
-                          <Icon className="w-4 h-4" />
+          ) : (
+            selectedDayActivities.map((act) => {
+              const info = EVENT_TYPES[act.event_type] || EVENT_TYPES.special;
+              const Icon = info.icon;
+              return (
+                <div
+                  key={act.id}
+                  className="p-3.5 rounded-xl bg-ps-dark-elevated/80 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-white/20 transition-all"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-xl ${info.badgeColor} shrink-0 mt-0.5 sm:mt-0 shadow-sm`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${info.badgeColor}`}>
+                          {info.label}
                         </span>
-                        <div>
-                          <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full ${info.color}`}>
-                            {info.label}
+                        {act.time && (
+                          <span className="text-xs font-bold text-white/60 flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-white/40" /> {act.time}
                           </span>
-                          <h3 className="font-bold text-white text-sm mt-1 leading-snug">{act.title}</h3>
-                        </div>
+                        )}
                       </div>
+                      <h4 className="font-bold text-white text-sm leading-snug">{act.title}</h4>
 
-                      {isAdmin && (
-                        <div className="flex items-center gap-1">
-                          <button 
-                            onClick={() => { setSelectedDay(null); openEditModal(act); }}
-                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/20 text-white/70 hover:text-white transition-all"
-                            title="Editar Evento"
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button 
-                            onClick={() => deleteMutation.mutate(act.id)}
-                            className="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-200 transition-all"
-                            title="Excluir Evento"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                      {act.event_type === "game_period" && (
+                        <p className="text-xs text-ps-blue font-semibold">
+                          Período: {new Date(parseDateStr(act.start_date)).toLocaleDateString("pt-BR")} até {new Date(parseDateStr(act.end_date)).toLocaleDateString("pt-BR")}
+                        </p>
+                      )}
+
+                      {act.location && (
+                        <p className="text-xs text-white/60 flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-white/40" /> {act.location}
+                        </p>
+                      )}
+
+                      {act.description && (
+                        <p className="text-xs text-white/50 pt-1 leading-relaxed">
+                          {act.description}
+                        </p>
                       )}
                     </div>
-
-                    {act.event_type === "game_period" ? (
-                      <p className="text-xs text-ps-blue font-semibold flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-ps-blue" />
-                        Período: {new Date(parseDateStr(act.start_date)).toLocaleDateString("pt-BR")} até {new Date(parseDateStr(act.end_date)).toLocaleDateString("pt-BR")}
-                      </p>
-                    ) : (
-                      act.time && (
-                        <p className="text-xs text-white/70 flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-white/40" /> Horário: {act.time}
-                        </p>
-                      )
-                    )}
-
-                    {act.location && (
-                      <p className="text-xs text-white/70 flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-white/40" /> {act.location}
-                      </p>
-                    )}
-
-                    {act.description && (
-                      <p className="text-xs text-white/60 leading-relaxed bg-white/5 p-3 rounded-xl mt-2 border border-white/5">
-                        {act.description}
-                      </p>
-                    )}
                   </div>
-                );
-              })
-            )}
-          </div>
 
-          <DialogFooter className="flex items-center justify-between sm:justify-between">
-            {isAdmin ? (
-              <Button
-                onClick={() => { const day = selectedDay; setSelectedDay(null); openCreateModal(day); }}
-                className="bg-ps-blue hover:bg-ps-blue-pressed text-white text-xs font-bold uppercase rounded-full px-4 h-9 border-none shadow-md"
-              >
-                + Adicionar neste dia
-              </Button>
-            ) : <div />}
-            <Button
-              variant="outline"
-              onClick={() => setSelectedDay(null)}
-              className="border-white/20 text-white bg-transparent rounded-full px-4 h-9 text-xs font-bold"
-            >
-              Fechar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                  {isAdmin && (
+                    <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+                      <button
+                        onClick={() => openEditModal(act)}
+                        className="p-1.5 rounded-lg bg-white/5 hover:bg-white/20 text-white/70 hover:text-white transition-all"
+                        title="Editar Evento"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => deleteMutation.mutate(act.id)}
+                        className="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-200 transition-all"
+                        title="Excluir Evento"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
 
       {/* --- ADMIN CREATE / EDIT EVENT MODAL --- */}
       <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
