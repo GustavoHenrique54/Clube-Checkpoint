@@ -50,7 +50,8 @@ function formatDateKey(year, month, day) {
 
 function parseDateStr(dateStr) {
   if (!dateStr) return null;
-  const parts = dateStr.split("T")[0].split("-");
+  const clean = dateStr.split("T")[0];
+  const parts = clean.split("-");
   if (parts.length < 3) return null;
   return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
 }
@@ -93,15 +94,17 @@ export default function ClubCalendar({ isAdmin = false }) {
     location: "",
   });
 
-  // Query events
+  // Query events with robust local fallback
   const { data: events = [] } = useQuery({
     queryKey: ["clubEvents"],
     queryFn: async () => {
+      let list = null;
       try {
-        const list = await db.entities.ClubEvent.list("-start_date");
-        return list || [];
+        list = await db.entities.ClubEvent.list("-start_date");
       } catch (e) {
-        console.warn("Table 'club_events' not available yet, using fallback local storage.", e);
+        console.warn("Table 'club_events' error, using fallback local storage.", e);
+      }
+      if (!list || list.length === 0) {
         const local = localStorage.getItem("__club_events__");
         if (local) {
           try { return JSON.parse(local); } catch { return INITIAL_SAMPLE_EVENTS; }
@@ -109,35 +112,39 @@ export default function ClubCalendar({ isAdmin = false }) {
         localStorage.setItem("__club_events__", JSON.stringify(INITIAL_SAMPLE_EVENTS));
         return INITIAL_SAMPLE_EVENTS;
       }
+      return list;
     }
   });
 
-  // Mutations
+  // Mutations with dual Supabase + LocalStorage sync
   const saveMutation = useMutation({
     mutationFn: async (eventData) => {
       const local = localStorage.getItem("__club_events__");
       let currentList = local ? JSON.parse(local) : INITIAL_SAMPLE_EVENTS;
 
+      let savedItem = null;
       if (eventData.id) {
-        // Update
+        // Edit
         try {
-          return await db.entities.ClubEvent.update(eventData.id, eventData);
-        } catch {
-          const updated = currentList.map(e => e.id === eventData.id ? eventData : e);
-          localStorage.setItem("__club_events__", JSON.stringify(updated));
-          return eventData;
+          savedItem = await db.entities.ClubEvent.update(eventData.id, eventData);
+        } catch (e) {
+          console.warn("Supabase update failed, saving to localStorage.", e);
         }
+        const updatedList = currentList.map(e => e.id === eventData.id ? eventData : e);
+        localStorage.setItem("__club_events__", JSON.stringify(updatedList));
+        return savedItem || eventData;
       } else {
         // Create
         const newId = Math.random().toString(36).substring(2, 11);
         const payload = { ...eventData, id: newId };
         try {
-          return await db.entities.ClubEvent.create(payload);
-        } catch {
-          const updated = [payload, ...currentList];
-          localStorage.setItem("__club_events__", JSON.stringify(updated));
-          return payload;
+          savedItem = await db.entities.ClubEvent.create(payload);
+        } catch (e) {
+          console.warn("Supabase create failed, saving to localStorage.", e);
         }
+        const updatedList = [payload, ...currentList];
+        localStorage.setItem("__club_events__", JSON.stringify(updatedList));
+        return savedItem || payload;
       }
     },
     onSuccess: () => {
@@ -150,21 +157,22 @@ export default function ClubCalendar({ isAdmin = false }) {
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       try {
-        return await db.entities.ClubEvent.delete(id);
-      } catch {
-        const local = localStorage.getItem("__club_events__");
-        const currentList = local ? JSON.parse(local) : INITIAL_SAMPLE_EVENTS;
-        const updated = currentList.filter(e => e.id !== id);
-        localStorage.setItem("__club_events__", JSON.stringify(updated));
-        return { success: true };
+        await db.entities.ClubEvent.delete(id);
+      } catch (e) {
+        console.warn("Supabase delete failed, updating localStorage.", e);
       }
+      const local = localStorage.getItem("__club_events__");
+      const currentList = local ? JSON.parse(local) : INITIAL_SAMPLE_EVENTS;
+      const updatedList = currentList.filter(e => e.id !== id);
+      localStorage.setItem("__club_events__", JSON.stringify(updatedList));
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clubEvents"] });
     }
   });
 
-  // Calendar calculations
+  // Calendar month/year calculations
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const monthName = new Date(currentYear, currentMonth).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
@@ -257,11 +265,32 @@ export default function ClubCalendar({ isAdmin = false }) {
     return events.filter(e => isDateInRange(dateStr, e.start_date, e.end_date));
   };
 
-  // Active day details for selectedDay modal/popover
+  // Build weeks grid array
+  const allGridSlots = [];
+  for (let i = 0; i < firstDayOfMonth; i++) {
+    allGridSlots.push(null);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    allGridSlots.push({
+      dayNum: d,
+      dateStr: formatDateKey(currentYear, currentMonth, d)
+    });
+  }
+  // Complete the last row to a multiple of 7
+  while (allGridSlots.length % 7 !== 0) {
+    allGridSlots.push(null);
+  }
+
+  // Chunk grid slots into weeks (rows of 7 days)
+  const weeks = [];
+  for (let i = 0; i < allGridSlots.length; i += 7) {
+    weeks.push(allGridSlots.slice(i, i + 7));
+  }
+
   const selectedDayActivities = selectedDay ? getDayActivities(selectedDay) : [];
 
   return (
-    <div className="bg-ps-dark-card border border-white/10 rounded-xl p-5 shadow-xl space-y-4">
+    <div className="bg-ps-dark-card border border-white/10 rounded-xl p-4 sm:p-5 shadow-xl space-y-4">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div className="flex items-center gap-3">
@@ -320,7 +349,11 @@ export default function ClubCalendar({ isAdmin = false }) {
 
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-3 text-[11px]">
-          {Object.entries(EVENT_TYPES).map(([key, info]) => {
+          <div className="flex items-center gap-1 text-white/80 font-semibold">
+            <span className="w-3 h-2 rounded bg-ps-blue inline-block" />
+            <span>Período de Jogo (Faixa no topo)</span>
+          </div>
+          {Object.entries(EVENT_TYPES).filter(([k]) => k !== "game_period").map(([key, info]) => {
             const Icon = info.icon;
             return (
               <div key={key} className="flex items-center gap-1 text-white/70">
@@ -332,92 +365,145 @@ export default function ClubCalendar({ isAdmin = false }) {
         </div>
       </div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center">
+      {/* Calendar Grid Headers */}
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center border-b border-white/5 pb-2">
         {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((dayName) => (
-          <div key={dayName} className="text-xs font-bold text-white/40 uppercase py-2">
+          <div key={dayName} className="text-xs font-bold text-white/40 uppercase">
             {dayName}
           </div>
         ))}
+      </div>
 
-        {/* Empty Padding Slots */}
-        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-          <div key={`empty-${i}`} className="h-20 sm:h-24 bg-white/[0.02] rounded-lg border border-transparent" />
-        ))}
+      {/* Week Rows Grid */}
+      <div className="space-y-2">
+        {weeks.map((weekSlots, weekIdx) => {
+          // Find game_period events overlapping this week
+          const weekGamePeriods = events
+            .filter(e => e.event_type === "game_period")
+            .map(e => {
+              // Check overlap with week slots
+              let startCol = -1;
+              let endCol = -1;
+              weekSlots.forEach((slot, colIdx) => {
+                if (slot && isDateInRange(slot.dateStr, e.start_date, e.end_date)) {
+                  if (startCol === -1) startCol = colIdx;
+                  endCol = colIdx;
+                }
+              });
+              if (startCol === -1) return null;
 
-        {/* Days of Month */}
-        {Array.from({ length: daysInMonth }).map((_, i) => {
-          const dayNum = i + 1;
-          const dateStr = formatDateKey(currentYear, currentMonth, dayNum);
-          const activities = getDayActivities(dateStr);
-          const isToday = 
-            today.getDate() === dayNum && 
-            today.getMonth() === currentMonth && 
-            today.getFullYear() === currentYear;
+              const isStart = weekSlots[startCol]?.dateStr === e.start_date;
+              const isEnd = weekSlots[endCol]?.dateStr === (e.end_date || e.start_date);
 
-          const gamePeriods = activities.filter(a => a.event_type === "game_period");
-          const singleEvents = activities.filter(a => a.event_type !== "game_period");
+              return {
+                ...e,
+                startCol,
+                endCol,
+                isStart,
+                isEnd
+              };
+            })
+            .filter(Boolean);
 
           return (
-            <div
-              key={dateStr}
-              onClick={() => setSelectedDay(dateStr)}
-              className={`h-20 sm:h-24 p-1 sm:p-1.5 rounded-lg border text-left transition-all cursor-pointer relative overflow-hidden group flex flex-col justify-between ${
-                isToday 
-                  ? "bg-ps-blue/10 border-ps-blue/60 shadow-inner" 
-                  : gamePeriods.length > 0
-                  ? "bg-ps-blue/5 border-ps-blue/20 hover:border-ps-blue/40"
-                  : "bg-ps-dark-elevated/60 border-white/5 hover:border-white/20 hover:bg-white/5"
-              }`}
-            >
-              {/* Day Number Header */}
-              <div className="flex items-center justify-between">
-                <span className={`text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center ${
-                  isToday ? "bg-ps-blue text-white shadow-md" : "text-white/80"
-                }`}>
-                  {dayNum}
-                </span>
+            <div key={`week-${weekIdx}`} className="space-y-1">
+              {/* Spanning Game Period Banners across this week */}
+              {weekGamePeriods.length > 0 && (
+                <div className="grid grid-cols-7 gap-1 sm:gap-2">
+                  {weekGamePeriods.map((gp) => (
+                    <div
+                      key={`gp-${gp.id}-${weekIdx}`}
+                      onClick={(e) => { e.stopPropagation(); setSelectedDay(gp.start_date); }}
+                      className={`bg-ps-blue/90 hover:bg-ps-blue text-white text-[10px] sm:text-xs font-bold px-2 py-1 flex items-center gap-1.5 shadow-md cursor-pointer transition-all hover:scale-[1.01] ${
+                        gp.isStart ? "rounded-l-md" : "border-l border-white/20"
+                      } ${gp.isEnd ? "rounded-r-md" : "border-r border-white/20"}`}
+                      style={{
+                        gridColumnStart: gp.startCol + 1,
+                        gridColumnEnd: gp.endCol + 2,
+                      }}
+                      title={`JOGO ATIVO: ${gp.title} (${gp.start_date} até ${gp.end_date})`}
+                    >
+                      <Gamepad2 className="w-3.5 h-3.5 shrink-0 text-white" />
+                      <span className="truncate">
+                        {gp.isStart ? `JOGO ATIVO: ${gp.title}` : gp.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-                {activities.length > 0 && (
-                  <span className="text-[9px] font-bold text-white/50 bg-white/10 px-1.5 rounded-full">
-                    {activities.length}
-                  </span>
-                )}
-              </div>
-
-              {/* Event Indicators */}
-              <div className="space-y-1 my-auto overflow-hidden">
-                {/* Active Game Period highlight pill */}
-                {gamePeriods.slice(0, 1).map((gp) => (
-                  <div 
-                    key={gp.id} 
-                    className="bg-ps-blue/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded truncate leading-tight flex items-center gap-1 shadow-sm"
-                    title={gp.title}
-                  >
-                    <Gamepad2 className="w-2.5 h-2.5 shrink-0" />
-                    <span className="truncate">{gp.title}</span>
-                  </div>
-                ))}
-
-                {/* Single Event dots/pills */}
-                <div className="flex flex-wrap gap-1">
-                  {singleEvents.slice(0, 2).map((ev) => {
-                    const info = EVENT_TYPES[ev.event_type] || EVENT_TYPES.special;
+              {/* 7 Day Cells */}
+              <div className="grid grid-cols-7 gap-1 sm:gap-2">
+                {weekSlots.map((slot, colIdx) => {
+                  if (!slot) {
                     return (
                       <div 
-                        key={ev.id} 
-                        className={`${info.badgeColor} text-white text-[9px] px-1 py-0.5 rounded font-bold truncate flex items-center gap-0.5`}
-                        title={ev.title}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
-                        <span className="hidden sm:inline truncate max-w-[50px]">{ev.title}</span>
-                      </div>
+                        key={`empty-${weekIdx}-${colIdx}`} 
+                        className="h-20 sm:h-24 bg-white/[0.01] rounded-lg border border-transparent" 
+                      />
                     );
-                  })}
-                  {singleEvents.length > 2 && (
-                    <span className="text-[8px] font-bold text-white/50">+{singleEvents.length - 2}</span>
-                  )}
-                </div>
+                  }
+
+                  const { dayNum, dateStr } = slot;
+                  const dayActivities = getDayActivities(dateStr);
+                  const singleEvents = dayActivities.filter(a => a.event_type !== "game_period");
+                  const activeGamePeriod = dayActivities.find(a => a.event_type === "game_period");
+                  
+                  const isToday = 
+                    today.getDate() === dayNum && 
+                    today.getMonth() === currentMonth && 
+                    today.getFullYear() === currentYear;
+
+                  return (
+                    <div
+                      key={dateStr}
+                      onClick={() => setSelectedDay(dateStr)}
+                      className={`h-20 sm:h-24 p-1.5 rounded-lg border text-left transition-all cursor-pointer relative flex flex-col justify-between group ${
+                        isToday 
+                          ? "bg-ps-blue/15 border-ps-blue shadow-md ring-1 ring-ps-blue/50" 
+                          : activeGamePeriod
+                          ? "bg-ps-blue/[0.04] border-ps-blue/20 hover:border-ps-blue/50"
+                          : "bg-ps-dark-elevated/70 border-white/5 hover:border-white/20 hover:bg-white/5"
+                      }`}
+                    >
+                      {/* Day Number Header */}
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ${
+                          isToday ? "bg-ps-blue text-white shadow-sm" : "text-white/80"
+                        }`}>
+                          {dayNum}
+                        </span>
+
+                        {dayActivities.length > 0 && (
+                          <span className="text-[9px] font-bold text-white/50 bg-white/10 px-1.5 rounded-full">
+                            {dayActivities.length}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Single Day Events (Reuniões, Lives, Jogar Junto, etc.) */}
+                      <div className="space-y-1 overflow-hidden my-auto">
+                        {singleEvents.slice(0, 2).map((ev) => {
+                          const info = EVENT_TYPES[ev.event_type] || EVENT_TYPES.special;
+                          const Icon = info.icon;
+                          return (
+                            <div 
+                              key={ev.id} 
+                              className={`${info.badgeColor} text-white text-[9px] px-1.5 py-0.5 rounded font-bold truncate flex items-center gap-1 shadow-sm`}
+                              title={`${ev.time ? ev.time + ' - ' : ''}${ev.title}`}
+                            >
+                              <Icon className="w-2.5 h-2.5 shrink-0" />
+                              <span className="truncate">{ev.time ? `${ev.time} ` : ""}{ev.title}</span>
+                            </div>
+                          );
+                        })}
+                        {singleEvents.length > 2 && (
+                          <span className="text-[8px] font-bold text-white/50 block">+{singleEvents.length - 2} mais</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
@@ -587,7 +673,7 @@ export default function ClubCalendar({ isAdmin = false }) {
 
               {form.event_type === "game_period" ? (
                 <div>
-                  <Label className="text-xs font-bold text-white/80 uppercase">Data Final</Label>
+                  <Label className="text-xs font-bold text-white/80 uppercase">Data Final *</Label>
                   <input
                     type="date"
                     value={form.end_date}
