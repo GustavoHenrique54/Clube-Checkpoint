@@ -19,6 +19,7 @@ import {
   Pencil, Plus, Trash2, ExternalLink,
   Link as LinkIcon, Newspaper, Save, MapPin, Trophy, Medal, Crown, ChevronLeft, ChevronRight } from
 "lucide-react";
+import ClubCalendar from "@/components/ClubCalendar";
 
 function formatMeetingDate(dt) {
   if (!dt) return null;
@@ -371,6 +372,9 @@ export default function ClubHub() {
       )}
 
       {activeTab === "hub" && <>
+      {/* Interactive Club Calendar */}
+      <ClubCalendar isAdmin={isAdmin} />
+
       {/* Active Game + Meeting */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Active Game */}

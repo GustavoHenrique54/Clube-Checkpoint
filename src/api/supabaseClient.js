@@ -18,7 +18,8 @@ const TABLE_MAPPINGS = {
   ClubLink: 'links',
   ClubHub: 'club_hub',
   FriendRequest: 'friend_requests',
-  ConsideredGame: 'considered_games'
+  ConsideredGame: 'considered_games',
+  ClubEvent: 'club_events'
 };
 
 class SupabaseEntity {

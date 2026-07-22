@@ -800,10 +800,32 @@ export default function ConsideredGames() {
     setIsProcessingBatch(false);
   };
 
-  const filteredGames = games.filter(g => 
-    g.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    g.release_year?.includes(searchQuery)
-  );
+  const [sortBy, setSortBy] = useState("recent");
+
+  const filteredGames = games
+    .filter(g => 
+      g.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      g.release_year?.includes(searchQuery)
+    )
+    .sort((a, b) => {
+      if (sortBy === "title-asc") {
+        return (a.title || "").localeCompare(b.title || "", "pt-BR");
+      }
+      if (sortBy === "title-desc") {
+        return (b.title || "").localeCompare(a.title || "", "pt-BR");
+      }
+      if (sortBy === "year-asc") {
+        const yearA = parseInt(a.release_year, 10) || 9999;
+        const yearB = parseInt(b.release_year, 10) || 9999;
+        return yearA - yearB;
+      }
+      if (sortBy === "year-desc") {
+        const yearA = parseInt(a.release_year, 10) || 0;
+        const yearB = parseInt(b.release_year, 10) || 0;
+        return yearB - yearA;
+      }
+      return 0;
+    });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
@@ -818,16 +840,29 @@ export default function ConsideredGames() {
           <p className="text-white/60 text-sm mt-1">Todos os jogos analisados, jogados ou considerados no Clube Checkpoint</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1 sm:w-64">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 sm:w-64 min-w-[180px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar na prateleira..."
-              className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-ps-blue rounded-full h-9"
+              className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-ps-blue rounded-full h-9 text-xs"
             />
           </div>
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="bg-white/5 border border-white/10 text-white text-xs font-bold rounded-full h-9 px-3 focus:outline-none focus:border-ps-blue cursor-pointer [color-scheme:dark]"
+            title="Ordenar jogos"
+          >
+            <option value="recent" className="bg-ps-dark-elevated text-white">Adicionados Recentemente</option>
+            <option value="title-asc" className="bg-ps-dark-elevated text-white">Nome (A - Z)</option>
+            <option value="title-desc" className="bg-ps-dark-elevated text-white">Nome (Z - A)</option>
+            <option value="year-asc" className="bg-ps-dark-elevated text-white">Ano (Mais Antigo)</option>
+            <option value="year-desc" className="bg-ps-dark-elevated text-white">Ano (Mais Recente)</option>
+          </select>
 
           {isAdmin && (
             <Dialog open={showAdminDialog} onOpenChange={(open) => { setShowAdminDialog(open); if(!open) resetForm(); }}>
