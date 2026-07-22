@@ -58,7 +58,7 @@ export default function AdminUsers() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <Users className="w-6 h-6 text-white" />
-        <h1 className="text-2xl font-black text-white uppercase" style={{textShadow: "2px 2px 0 rgba(0,0,0,0.3)"}}>Membros</h1>
+        <h1 className="text-2xl font-black text-white uppercase">Membros</h1>
         <span className="text-sm text-white/50 ml-auto font-medium">{users.length} membros</span>
       </div>
 

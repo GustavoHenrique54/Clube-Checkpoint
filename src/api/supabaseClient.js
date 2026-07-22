@@ -67,6 +67,10 @@ class SupabaseEntity {
   // Helper to format payload going into the DB (serializing arrays, stripping non-existent fields)
   _formatIn(data) {
     const copy = { ...data };
+    
+    // Always delete virtual/alias fields that are not database columns
+    delete copy.created_date;
+
     if (this.tableName === 'profiles') {
       // Remove compatibility field user_id (the DB column is 'id')
       delete copy.user_id;

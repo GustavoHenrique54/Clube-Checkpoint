@@ -86,7 +86,7 @@ export default function BadgeDetail() {
               <Trophy className="w-16 h-16 text-slate-400 mx-auto" />
             )}
           </div>
-          <h1 className="text-2xl font-black text-white mt-4 uppercase" style={{textShadow: "2px 2px 0 rgba(0,0,0,0.3)"}}>{badge.name}</h1>
+          <h1 className="text-2xl font-black text-white mt-4 uppercase">{badge.name}</h1>
           <div className="flex items-center justify-center gap-2 mt-2">
             <span className={`text-sm font-bold ${rarity.color}`}>{rarity.label}</span>
             <span className="text-white/30">·</span>

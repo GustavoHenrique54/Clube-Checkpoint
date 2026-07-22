@@ -77,7 +77,7 @@ export default function Friends() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <Users className="w-6 h-6 text-white" />
-        <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
+        <h1 className="text-2xl font-black text-white uppercase">
           Amigos
         </h1>
       </div>

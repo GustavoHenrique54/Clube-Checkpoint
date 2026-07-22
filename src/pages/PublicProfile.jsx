@@ -110,7 +110,7 @@ export default function PublicProfile() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>Perfil não encontrado</p>
+          <p className="text-2xl font-black text-white uppercase">Perfil não encontrado</p>
           <p className="text-white/60 mt-2">Este usuário não existe ou o perfil está indisponível.</p>
         </div>
       </div>

@@ -120,7 +120,7 @@ export default function EditProfile() {
         <button onClick={() => navigate(-1)} className="text-white/70 hover:text-white transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>Editar Perfil</h1>
+        <h1 className="text-2xl font-black text-white uppercase">Editar Perfil</h1>
       </div>
 
       {/* Cover Image */}

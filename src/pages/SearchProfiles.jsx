@@ -30,7 +30,7 @@ export default function SearchProfiles() {
         <Link to={createPageUrl("Profile")} className="text-white/70 hover:text-white transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
+        <h1 className="text-2xl font-black text-white uppercase">
           Buscar Perfis
         </h1>
       </div>

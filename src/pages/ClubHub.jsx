@@ -280,7 +280,7 @@ export default function ClubHub() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white uppercase" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}>
+          <h1 className="text-2xl font-black text-white uppercase">
             Hub do Clube
           </h1>
           <p className="text-white/55 text-sm mt-1">Tudo do Clube Checkpoint em um só lugar</p>

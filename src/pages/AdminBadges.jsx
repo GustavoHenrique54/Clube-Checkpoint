@@ -97,7 +97,7 @@ export default function AdminBadges() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <Trophy className="w-6 h-6 text-white" />
-          <h1 className="text-2xl font-black text-white uppercase" style={{textShadow: "2px 2px 0 rgba(0,0,0,0.3)"}}>Emblemas</h1>
+          <h1 className="text-2xl font-black text-white uppercase">Emblemas</h1>
         </div>
         <Button onClick={openCreate} className="bg-white text-blue-700 hover:bg-blue-50 font-black">
           <Plus className="w-4 h-4 mr-1.5" /> Criar Emblema

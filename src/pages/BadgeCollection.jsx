@@ -62,7 +62,7 @@ export default function BadgeCollection() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white uppercase flex items-center gap-2" style={{textShadow: "2px 2px 0 rgba(0,0,0,0.3)"}}>
+          <h1 className="text-2xl font-black text-white uppercase flex items-center gap-2">
             <Trophy className="w-6 h-6" />
             Coleção de Emblemas
           </h1>

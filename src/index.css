@@ -154,7 +154,6 @@
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  text-shadow: 3px 3px 0 rgba(0,0,0,0.4), 1px 1px 0 rgba(0,0,0,0.3);
 }
 
 /* Light mode specific overrides for hardcoded dark-themed classes */
