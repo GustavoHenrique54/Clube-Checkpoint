@@ -130,7 +130,7 @@ export default function ClubCalendar({ isAdmin = false }) {
         const store = await db.entities.ClubLink.get("calendar_events_store");
         if (store && store.description) {
           const parsed = JSON.parse(store.description);
-          if (Array.isArray(parsed)) {
+          if (Array.isArray(parsed) && parsed.length > 0) {
             localStorage.setItem("__club_events__", JSON.stringify(parsed));
             return parsed;
           }
@@ -144,7 +144,7 @@ export default function ClubCalendar({ isAdmin = false }) {
       if (local) {
         try {
           const parsed = JSON.parse(local);
-          if (Array.isArray(parsed)) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
         } catch {}
       }
 
@@ -155,7 +155,19 @@ export default function ClubCalendar({ isAdmin = false }) {
   // Mutations with global Supabase + LocalStorage sync
   const saveMutation = useMutation({
     mutationFn: async (eventData) => {
-      let currentEvents = [...events];
+      let currentEvents = [];
+      try {
+        const store = await db.entities.ClubLink.get("calendar_events_store");
+        if (store && store.description) {
+          const parsed = JSON.parse(store.description);
+          if (Array.isArray(parsed)) currentEvents = parsed;
+        }
+      } catch {}
+
+      if (currentEvents.length === 0) {
+        currentEvents = [...events];
+      }
+
       if (eventData.id) {
         currentEvents = currentEvents.map(e => e.id === eventData.id ? eventData : e);
       } else {
@@ -194,7 +206,20 @@ export default function ClubCalendar({ isAdmin = false }) {
 
   const deleteMutation = useMutation({
     mutationFn: async (idToDelete) => {
-      const currentEvents = events.filter(e => e.id !== idToDelete);
+      let currentEvents = [];
+      try {
+        const store = await db.entities.ClubLink.get("calendar_events_store");
+        if (store && store.description) {
+          const parsed = JSON.parse(store.description);
+          if (Array.isArray(parsed)) currentEvents = parsed;
+        }
+      } catch {}
+
+      if (currentEvents.length === 0) {
+        currentEvents = [...events];
+      }
+
+      currentEvents = currentEvents.filter(e => e.id !== idToDelete);
 
       const storePayload = {
         id: "calendar_events_store",

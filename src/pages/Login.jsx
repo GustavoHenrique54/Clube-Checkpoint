@@ -20,6 +20,24 @@ export default function Login() {
   const [searchParams] = useSearchParams();
   const redirectPath = searchParams.get("redirect") || "/hub";
 
+  const formatAuthError = (msg) => {
+    if (!msg) return "Ocorreu um erro inesperado.";
+    const lower = msg.toLowerCase();
+    if (lower.includes("email rate limit exceeded")) {
+      return "Limite de envio de e-mails atingido no servidor Supabase (limite de confirmações por hora). Por favor, aguarde alguns minutos antes de tentar novamente, ou desative a 'Confirmação por E-mail' no painel do Supabase (Authentication -> Providers -> Email -> Confirm Email).";
+    }
+    if (lower.includes("user already registered") || lower.includes("already exists")) {
+      return "Este e-mail já está cadastrado no sistema.";
+    }
+    if (lower.includes("invalid login credentials")) {
+      return "E-mail ou senha incorretos. Verifique suas credenciais.";
+    }
+    if (lower.includes("password should be at least")) {
+      return "A senha deve conter no mínimo 6 caracteres.";
+    }
+    return msg;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -34,7 +52,7 @@ export default function Login() {
       if (error) throw error;
       navigate(redirectPath);
     } catch (err) {
-      setErrorMsg(err.message || "Erro ao fazer login. Verifique suas credenciais.");
+      setErrorMsg(formatAuthError(err.message));
     } finally {
       setLoading(false);
     }
@@ -63,19 +81,47 @@ export default function Login() {
 
       if (error) throw error;
 
-      // Supabase email confirmation might be enabled, check user status
+      // Check if user already exists
       if (data?.user?.identities?.length === 0) {
         throw new Error("Este e-mail já está cadastrado.");
       }
 
-      setSuccessMsg("Conta criada com sucesso! Verifique seu e-mail para confirmação.");
-      // Auto-switch to login mode after register
+      // Try to ensure public profile row exists in Supabase profiles table
+      if (data?.user) {
+        try {
+          const { data: existingProf } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', email.trim())
+            .maybeSingle();
+
+          if (!existingProf) {
+            await supabase.from('profiles').insert([{
+              id: data.user.id,
+              email: email.trim(),
+              username: username.trim().toLowerCase(),
+              display_name: displayName.trim(),
+              role: 'member'
+            }]);
+          }
+        } catch (profErr) {
+          console.warn("Could not pre-create profile row:", profErr);
+        }
+      }
+
+      if (data?.session) {
+        // Direct login succeeded (email confirmation was disabled)
+        navigate(redirectPath);
+        return;
+      }
+
+      setSuccessMsg("Conta criada com sucesso! Se a confirmação por e-mail estiver ativa, verifique sua caixa de entrada.");
       setTimeout(() => {
         setIsSignUp(false);
         setSuccessMsg("");
-      }, 5000);
+      }, 6000);
     } catch (err) {
-      setErrorMsg(err.message || "Erro ao criar conta.");
+      setErrorMsg(formatAuthError(err.message));
     } finally {
       setLoading(false);
     }
