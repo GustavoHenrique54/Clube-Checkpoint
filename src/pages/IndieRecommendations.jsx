@@ -3,17 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { db } from "@/api/supabaseClient";
 import { 
   Gamepad2, Plus, Heart, Share2, Search, Trash2, Pencil, Check, 
-  Copy, ExternalLink, Sparkles, Trophy, Flame, MessageSquare, 
-  User, Calendar, Upload, Wand2, Tag, Filter, RefreshCw, Star, Layers
+  Sparkles, Trophy, MessageSquare, User, Upload, Wand2, Filter, RefreshCw, Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import squareCaseImg from "@/assets/square-case.png";
-import verticalCaseImg from "@/assets/vertical-case.png";
-import horizontalCaseImg from "@/assets/horizontal-case.png";
 
 // Fallback initial recommendations for immediate demonstration or if database table is not yet created
 const INITIAL_FALLBACK_RECOMMENDATIONS = [
@@ -164,7 +160,6 @@ export default function IndieRecommendations() {
       try {
         const list = await db.entities.IndieRecommendation.list("-created_at");
         if (!list || list.length === 0) {
-          // Verify if table exists or throws error
           await db.entities.IndieRecommendation.filter().catch(e => { throw e; });
         }
         setIsUsingFallback(false);
@@ -277,7 +272,6 @@ export default function IndieRecommendations() {
     }
   });
 
-  // Auto-search cover on title blur or button click
   const handleAutoFetchCover = async (titleToFetch = gameTitle) => {
     if (!titleToFetch.trim()) return;
     setIsSearchingWiki(true);
@@ -358,11 +352,10 @@ export default function IndieRecommendations() {
       comment: comment.trim() || null,
       cover_image: coverUrl.trim() || null,
       platforms: selectedPlatforms.length > 0 ? selectedPlatforms : ["PC"],
-      votes: 1, // Author starts with 1 vote automatically
+      votes: 1,
       created_at: new Date().toISOString()
     };
 
-    // Auto add to voted list
     const newVoted = [...votedIds, newItem.id];
     setVotedIds(newVoted);
     localStorage.setItem("__voted_indies__", JSON.stringify(newVoted));
@@ -418,55 +411,61 @@ export default function IndieRecommendations() {
   const totalVotesCount = recommendations.reduce((acc, curr) => acc + (curr.votes || 0), 0);
 
   return (
-    <div className="min-h-screen bg-ps-dark-canvas text-white pb-20 ckpnt-pattern">
-      {/* Hero Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-purple-950/60 via-ps-dark-elevated/90 to-ps-dark-canvas border-b border-white/10 pt-10 pb-12 px-4 sm:px-6 lg:px-8">
-        {/* Glow Effects */}
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r from-purple-600/20 via-ps-blue/20 to-pink-500/20 blur-3xl pointer-events-none rounded-full" />
+    <div className="dark bg-[#080b11] text-slate-100 min-h-screen pb-24 font-sans ckpnt-pattern selection:bg-ps-blue selection:text-white">
+      
+      {/* Premium Minimal Hero Banner */}
+      <div className="relative overflow-hidden bg-[#0c101a] border-b border-slate-800/80 pt-12 pb-14 px-4 sm:px-6 lg:px-8">
         
+        {/* Subtle Brand Blue Ambient Lighting */}
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-ps-blue/15 blur-[120px] pointer-events-none rounded-full" />
+
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-black uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
+            <div className="space-y-4 max-w-3xl">
+              
+              {/* Brand Tag */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-ps-blue/10 border border-ps-blue/30 text-ps-blue text-xs font-black uppercase tracking-widest">
+                <Sparkles className="w-3.5 h-3.5 text-ps-blue animate-pulse" />
                 <span>Mês dos Jogos Indies • Clube Checkpoint</span>
               </div>
               
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white flex items-center gap-3">
-                Indicação de Jogos Indies 🕹️
+              {/* Title & Description */}
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+                Indicação de Jogos Indies
               </h1>
               
-              <p className="text-white/70 max-w-2xl text-sm sm:text-base leading-relaxed font-medium">
-                O próximo mês do clube será focado em **Jogos Indies**! Deixe a sua recomendação abaixo para que a comunidade possa votar e definir o nosso próximo jogo principal. 
-                <span className="block mt-1 text-purple-300 font-bold">✨ Aberto a todos — Não é preciso fazer login para indicar!</span>
+              <p className="text-slate-300 text-base leading-relaxed font-normal max-w-2xl">
+                Ajude a escolher o próximo jogo do clube! Indique seus indies favoritos e vote na lista da comunidade. 
+                <span className="block mt-1 text-white font-bold">Aberto a todos — Acesso livre por link direto, sem necessidade de login.</span>
               </p>
             </div>
 
-            {/* Top Action Buttons */}
+            {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 shrink-0">
               <Button
                 onClick={() => setShowAddDialog(true)}
-                className="bg-gradient-to-r from-purple-600 to-ps-blue hover:from-purple-500 hover:to-ps-blue-pressed text-white font-bold py-6 px-6 rounded-2xl shadow-lg hover:shadow-purple-500/25 transition-all text-sm sm:text-base flex items-center gap-2"
+                className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold py-6 px-7 rounded-xl shadow-lg shadow-ps-blue/20 transition-all text-sm sm:text-base flex items-center gap-2 border border-blue-400/20"
               >
                 <Plus className="w-5 h-5 stroke-[2.5]" />
-                <span>Recomendar um Jogo</span>
+                <span>Recomendar Jogo Indie</span>
               </Button>
 
               <Button
                 onClick={handleCopyShareLink}
                 variant="outline"
-                className="border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold py-6 px-5 rounded-2xl transition-all flex items-center gap-2 text-sm"
-                title="Copiar link para enviar a amigos"
+                className="border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-slate-100 font-bold py-6 px-5 rounded-xl transition-all flex items-center gap-2 text-sm shadow-sm"
+                title="Copiar link da página para compartilhar"
               >
                 {showShareSuccess ? (
                   <>
                     <Check className="w-4 h-4 text-emerald-400" />
-                    <span className="text-emerald-400">Link Copiado!</span>
+                    <span className="text-emerald-400 font-bold">Link Copiado!</span>
                   </>
                 ) : (
                   <>
-                    <Share2 className="w-4 h-4 text-purple-300" />
+                    <Share2 className="w-4 h-4 text-slate-300" />
                     <span>Copiar Link</span>
                   </>
                 )}
@@ -475,77 +474,81 @@ export default function IndieRecommendations() {
 
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-3 gap-4">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3.5 backdrop-blur-md">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300">
+          {/* High-Contrast Stat Cards */}
+          <div className="mt-10 pt-8 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-3 gap-4">
+            
+            <div className="bg-[#111724] border border-slate-800 rounded-xl p-4 flex items-center gap-4 shadow-sm">
+              <div className="w-11 h-11 rounded-lg bg-ps-blue/20 border border-ps-blue/40 flex items-center justify-center text-ps-blue shrink-0">
                 <Gamepad2 className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/50 uppercase tracking-wider">Total de Indicações</p>
-                <p className="text-xl font-black text-white">{recommendations.length} {recommendations.length === 1 ? 'Jogo' : 'Jogos'}</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Jogos Indicados</p>
+                <p className="text-2xl font-black text-white">{recommendations.length}</p>
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3.5 backdrop-blur-md">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
+            <div className="bg-[#111724] border border-slate-800 rounded-xl p-4 flex items-center gap-4 shadow-sm">
+              <div className="w-11 h-11 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shrink-0">
                 <Heart className="w-5 h-5 fill-current" />
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/50 uppercase tracking-wider">Votos da Comunidade</p>
-                <p className="text-xl font-black text-white">{totalVotesCount} {totalVotesCount === 1 ? 'Voto' : 'Votos'}</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Votos Computados</p>
+                <p className="text-2xl font-black text-white">{totalVotesCount}</p>
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3.5 backdrop-blur-md col-span-2 sm:col-span-1">
-              <div className="w-10 h-10 rounded-xl bg-ps-blue/20 border border-ps-blue/30 flex items-center justify-center text-ps-blue">
+            <div className="bg-[#111724] border border-slate-800 rounded-xl p-4 flex items-center gap-4 shadow-sm col-span-2 sm:col-span-1">
+              <div className="w-11 h-11 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
                 <Trophy className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/50 uppercase tracking-wider">Acesso Direto</p>
-                <p className="text-xs font-bold text-white/80">Link Privado / Sem Login</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Acesso da Página</p>
+                <p className="text-xs font-bold text-slate-200">Link Direto / Público</p>
               </div>
             </div>
+
           </div>
 
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         
-        {/* Search and Sort Filter Bar */}
+        {/* Minimal High-Contrast Filter Bar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-8">
           
           {/* Search Box */}
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
               type="text"
-              placeholder="Buscar por jogo ou por quem recomendou..."
+              placeholder="Buscar jogo ou quem indicou..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2.5 bg-ps-dark-card border-white/15 focus:border-purple-500 rounded-xl text-sm text-white placeholder:text-white/40"
+              className="pl-10 pr-10 py-2.5 bg-[#101522] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl text-sm font-medium shadow-inner"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-white/40 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-white transition-colors"
               >
                 Limpar
               </button>
             )}
           </div>
 
-          {/* Sort Selector */}
-          <div className="flex items-center gap-2 bg-ps-dark-card border border-white/15 p-1 rounded-xl shrink-0">
-            <span className="text-xs font-bold text-white/40 px-2 flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5" /> Ordenar:
+          {/* Sort Tabs */}
+          <div className="flex items-center gap-1.5 bg-[#101522] border border-slate-800 p-1 rounded-xl shrink-0">
+            <span className="text-xs font-bold text-slate-400 px-2 flex items-center gap-1">
+              <Filter className="w-3.5 h-3.5 text-slate-400" /> Ordenar:
             </span>
             <button
               onClick={() => setSortBy("votes")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                sortBy === "votes" ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"
+                sortBy === "votes" 
+                  ? "bg-ps-blue text-white shadow-md font-black" 
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/60"
               }`}
             >
               Mais Votados 🔥
@@ -553,7 +556,9 @@ export default function IndieRecommendations() {
             <button
               onClick={() => setSortBy("recent")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                sortBy === "recent" ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"
+                sortBy === "recent" 
+                  ? "bg-ps-blue text-white shadow-md font-black" 
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/60"
               }`}
             >
               Recentes ⏱️
@@ -561,7 +566,9 @@ export default function IndieRecommendations() {
             <button
               onClick={() => setSortBy("title")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                sortBy === "title" ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"
+                sortBy === "title" 
+                  ? "bg-ps-blue text-white shadow-md font-black" 
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/60"
               }`}
             >
               A-Z 🔤
@@ -570,48 +577,48 @@ export default function IndieRecommendations() {
 
         </div>
 
-        {/* Loading Skeleton */}
+        {/* Recommendations List */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="bg-ps-dark-card border border-white/10 rounded-2xl p-5 animate-pulse h-64 flex flex-col justify-between">
+              <div key={i} className="bg-[#111622] border border-slate-800 rounded-2xl p-5 animate-pulse h-64 flex flex-col justify-between">
                 <div className="flex gap-4">
-                  <div className="w-20 h-28 bg-white/10 rounded-xl" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-5 bg-white/10 rounded w-3/4" />
-                    <div className="h-3 bg-white/10 rounded w-1/2" />
-                    <div className="h-10 bg-white/5 rounded w-full mt-2" />
+                  <div className="w-20 h-28 bg-slate-800 rounded-xl" />
+                  <div className="flex-1 space-y-3">
+                    <div className="h-5 bg-slate-800 rounded w-3/4" />
+                    <div className="h-4 bg-slate-800/60 rounded w-1/2" />
+                    <div className="h-10 bg-slate-800/40 rounded w-full mt-2" />
                   </div>
                 </div>
-                <div className="h-8 bg-white/10 rounded-xl w-full" />
+                <div className="h-9 bg-slate-800 rounded-xl w-full" />
               </div>
             ))}
           </div>
         ) : sortedRecommendations.length === 0 ? (
           /* Empty State */
-          <div className="bg-ps-dark-card border border-white/10 rounded-3xl p-10 text-center max-w-lg mx-auto my-12 shadow-2xl">
-            <div className="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/30 text-purple-300 flex items-center justify-center mx-auto mb-4">
+          <div className="bg-[#111622] border border-slate-800 rounded-2xl p-10 text-center max-w-md mx-auto my-12 shadow-xl">
+            <div className="w-16 h-16 rounded-2xl bg-ps-blue/15 border border-ps-blue/30 text-ps-blue flex items-center justify-center mx-auto mb-4">
               <Gamepad2 className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-black text-white mb-2">Nenhuma recomendação encontrada</h3>
-            <p className="text-sm text-white/60 mb-6 leading-relaxed">
+            <h3 className="text-xl font-black text-white mb-2">Nenhuma recomendação</h3>
+            <p className="text-sm text-slate-300 mb-6 leading-relaxed">
               {searchQuery 
-                ? "Nenhum jogo indie corresponde à sua busca. Tente buscar por outro termo."
-                : "Ainda não temos jogos na lista! Seja a primeira pessoa a fazer uma indicação."}
+                ? "Nenhum jogo atende aos critérios de busca."
+                : "Seja a primeira pessoa a fazer uma recomendação!"}
             </p>
             <Button
               onClick={() => {
                 setSearchQuery("");
                 setShowAddDialog(true);
               }}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all"
+              className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold py-3 px-6 rounded-xl transition-all"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Indicar Jogo Indie Agora
+              Indicar Jogo Indie
             </Button>
           </div>
         ) : (
-          /* Recommendations Grid */
+          /* Cards Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedRecommendations.map((item) => {
               const hasVoted = votedIds.includes(item.id);
@@ -619,13 +626,14 @@ export default function IndieRecommendations() {
               return (
                 <div
                   key={item.id}
-                  className="group relative bg-ps-dark-card border border-white/10 hover:border-purple-500/50 rounded-2xl p-5 transition-all duration-300 hover:shadow-xl hover:shadow-purple-950/20 flex flex-col justify-between"
+                  className="group bg-[#111622] border border-slate-800 hover:border-ps-blue/60 rounded-2xl p-5 transition-all duration-200 hover:shadow-xl hover:shadow-ps-blue/10 flex flex-col justify-between"
                 >
-                  {/* Top Part: Cover + Info */}
+                  {/* Top: Cover & Details */}
                   <div>
-                    <div className="flex gap-4">
-                      {/* Game Cover Art */}
-                      <div className="w-24 h-32 rounded-xl overflow-hidden bg-white/5 border border-white/10 shrink-0 relative shadow-md group-hover:scale-[1.02] transition-transform">
+                    <div className="flex gap-4 items-start">
+                      
+                      {/* Game Cover */}
+                      <div className="w-24 h-32 rounded-xl overflow-hidden bg-[#182030] border border-slate-700/80 shrink-0 relative shadow-md group-hover:border-ps-blue/50 transition-colors">
                         {item.cover_image ? (
                           <img
                             src={item.cover_image}
@@ -638,68 +646,69 @@ export default function IndieRecommendations() {
                           />
                         ) : null}
                         <div
-                          className="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-gradient-to-br from-purple-900/40 to-slate-900 text-purple-300"
+                          className="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-slate-900 text-ps-blue"
                           style={{ display: item.cover_image ? 'none' : 'flex' }}
                         >
-                          <Gamepad2 className="w-6 h-6 mb-1 opacity-70" />
-                          <span className="text-[10px] font-black uppercase tracking-wider line-clamp-2 leading-tight">
+                          <Gamepad2 className="w-6 h-6 mb-1 opacity-80" />
+                          <span className="text-[10px] font-black uppercase tracking-wider line-clamp-2 leading-tight text-slate-200">
                             {item.title}
                           </span>
                         </div>
                       </div>
 
-                      {/* Info & Submitter */}
+                      {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-black text-base text-white line-clamp-2 leading-snug group-hover:text-purple-300 transition-colors" title={item.title}>
+                        <h3 className="font-black text-lg text-white line-clamp-2 leading-tight group-hover:text-ps-blue transition-colors" title={item.title}>
                           {item.title}
                         </h3>
 
-                        {/* Submitter Name */}
-                        <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-bold truncate max-w-full">
-                          <User className="w-3 h-3 shrink-0" />
-                          <span className="truncate">Indicação de <strong>{item.submitter_name}</strong></span>
+                        {/* Submitter Name Badge */}
+                        <div className="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-ps-blue/15 border border-ps-blue/30 text-blue-300 text-xs font-bold truncate max-w-full">
+                          <User className="w-3.5 h-3.5 shrink-0 text-ps-blue" />
+                          <span className="truncate">Indicado por <strong className="text-white">{item.submitter_name}</strong></span>
                         </div>
 
-                        {/* Platforms */}
+                        {/* Platform Pills */}
                         {item.platforms && item.platforms.length > 0 && (
                           <div className="mt-2.5 flex flex-wrap gap-1">
                             {item.platforms.map((plat) => (
-                              <span key={plat} className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70">
+                              <span key={plat} className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
                                 {plat}
                               </span>
                             ))}
                           </div>
                         )}
                       </div>
+
                     </div>
 
-                    {/* Submitter Comment / Recommendation Reason */}
+                    {/* Submitter Comment Box */}
                     {item.comment && (
-                      <div className="mt-4 p-3 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-white/80 leading-relaxed italic relative">
-                        <MessageSquare className="w-3.5 h-3.5 text-purple-400 absolute -top-2 left-3 bg-ps-dark-card px-0.5" />
+                      <div className="mt-4 p-3 rounded-xl bg-[#0a0e17] border border-slate-800 text-xs text-slate-200 leading-relaxed font-normal relative">
+                        <MessageSquare className="w-3.5 h-3.5 text-ps-blue absolute -top-2 left-3 bg-[#111622] px-0.5" />
                         <p className="line-clamp-3">"{item.comment}"</p>
                       </div>
                     )}
                   </div>
 
-                  {/* Bottom Action Bar: Upvote Button + Date + Admin Actions */}
-                  <div className="mt-5 pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+                  {/* Bottom: Upvote Button & Meta */}
+                  <div className="mt-5 pt-3.5 border-t border-slate-800/80 flex items-center justify-between gap-2">
                     
                     {/* Upvote Button */}
                     <button
                       onClick={() => handleToggleVote(item.id)}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black transition-all ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all ${
                         hasVoted
-                          ? "bg-rose-600 text-white shadow-md shadow-rose-950/40"
-                          : "bg-white/5 hover:bg-rose-500/20 text-white/70 hover:text-rose-400 border border-white/10 hover:border-rose-500/40"
+                          ? "bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-950/50 border border-rose-500"
+                          : "bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-rose-500/60 hover:text-rose-400"
                       }`}
                       title={hasVoted ? "Clique para remover seu voto" : "Votar nesta indicação"}
                     >
-                      <Heart className={`w-4 h-4 ${hasVoted ? "fill-current" : ""}`} />
+                      <Heart className={`w-4 h-4 ${hasVoted ? "fill-current text-white" : ""}`} />
                       <span>{item.votes || 0} {item.votes === 1 ? "Voto" : "Votos"}</span>
                     </button>
 
-                    {/* Date or Admin options */}
+                    {/* Admin Actions */}
                     <div className="flex items-center gap-1.5">
                       {isAdmin && (
                         <>
@@ -713,8 +722,8 @@ export default function IndieRecommendations() {
                               setSelectedPlatforms(item.platforms || ["PC"]);
                               setShowEditDialog(true);
                             }}
-                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all"
-                            title="Editar indicação (Admin)"
+                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                            title="Editar"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
@@ -724,15 +733,15 @@ export default function IndieRecommendations() {
                                 deleteMutation.mutate(item.id);
                               }
                             }}
-                            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
-                            title="Excluir indicação (Admin)"
+                            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                            title="Excluir"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </>
                       )}
 
-                      <span className="text-[10px] text-white/40 font-mono">
+                      <span className="text-[11px] text-slate-400 font-mono">
                         {item.created_at ? new Date(item.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : ''}
                       </span>
                     </div>
@@ -749,28 +758,28 @@ export default function IndieRecommendations() {
 
       {/* Add Recommendation Modal */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="bg-ps-dark-elevated text-white border border-white/15 max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <DialogContent className="dark bg-[#0f1420] text-slate-100 border border-slate-800 max-w-lg rounded-2xl p-6 sm:p-7 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black flex items-center gap-2.5 text-white">
-              <Sparkles className="w-6 h-6 text-purple-400" />
+              <Sparkles className="w-6 h-6 text-ps-blue" />
               Recomendar Jogo Indie
             </DialogTitle>
-            <DialogDescription className="text-sm text-white/70">
+            <DialogDescription className="text-sm text-slate-300">
               Qual jogo indie você quer ver o clube jogando no próximo mês? Não precisa de login!
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+          <form onSubmit={handleSubmit} className="space-y-4 mt-3">
             
             {formError && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs font-bold text-red-400">
+              <div className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-xs font-bold text-red-300">
                 {formError}
               </div>
             )}
 
             {/* Game Title */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-white/80 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
                 Nome do Jogo Indie *
               </label>
               <div className="flex gap-2">
@@ -782,7 +791,7 @@ export default function IndieRecommendations() {
                     setGameTitle(e.target.value);
                     setFormError("");
                   }}
-                  className="bg-ps-dark-card border-white/15 focus:border-purple-500 text-white rounded-xl"
+                  className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl"
                   required
                 />
                 <Button
@@ -790,17 +799,17 @@ export default function IndieRecommendations() {
                   onClick={() => handleAutoFetchCover(gameTitle)}
                   disabled={isSearchingWiki || !gameTitle.trim()}
                   variant="outline"
-                  className="border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-bold shrink-0 rounded-xl"
-                  title="Buscar capa oficial automaticamente"
+                  className="border-ps-blue/40 bg-ps-blue/15 hover:bg-ps-blue/30 text-blue-300 font-bold shrink-0 rounded-xl"
+                  title="Buscar capa oficial na Wikipedia"
                 >
-                  {isSearchingWiki ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                  {isSearchingWiki ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4 text-ps-blue" />}
                 </Button>
               </div>
             </div>
 
             {/* Submitter Name */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-white/80 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
                 Seu Nome ou Apelido *
               </label>
               <Input
@@ -808,28 +817,28 @@ export default function IndieRecommendations() {
                 placeholder="Como quer ser identificado na indicação?"
                 value={submitterName}
                 onChange={(e) => setSubmitterName(e.target.value)}
-                className="bg-ps-dark-card border-white/15 focus:border-purple-500 text-white rounded-xl"
+                className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl"
                 required
               />
             </div>
 
-            {/* Comment / Why Recommend */}
+            {/* Comment */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-white/80 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
                 Por que você indica esse jogo? (Opcional)
               </label>
               <Textarea
-                placeholder="Conte brevemente o que faz esse jogo ser especial para o nosso clube..."
+                placeholder="Conte brevemente por que ele é perfeito para o clube..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="bg-ps-dark-card border-white/15 focus:border-purple-500 text-white rounded-xl text-sm min-h-[80px]"
+                className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl text-sm min-h-[80px]"
               />
             </div>
 
             {/* Platform Selector */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-white/80 mb-1.5">
-                Plataformas Onde Está Disponível
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
+                Plataformas Disponíveis
               </label>
               <div className="flex flex-wrap gap-2">
                 {AVAILABLE_PLATFORMS.map((plat) => {
@@ -841,8 +850,8 @@ export default function IndieRecommendations() {
                       onClick={() => togglePlatform(plat)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                         isSelected
-                          ? "bg-purple-600 border-purple-400 text-white shadow-md"
-                          : "bg-white/5 border-white/10 text-white/60 hover:text-white"
+                          ? "bg-ps-blue border-blue-400 text-white shadow-md"
+                          : "bg-slate-900 border-slate-700 text-slate-300 hover:text-white"
                       }`}
                     >
                       {plat}
@@ -852,10 +861,10 @@ export default function IndieRecommendations() {
               </div>
             </div>
 
-            {/* Cover URL / Upload */}
+            {/* Cover Image Upload / URL */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-white/80 mb-1.5">
-                Capa do Jogo (URL ou Arquivo - Opcional)
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
+                Capa do Jogo (Opcional)
               </label>
               <div className="flex items-center gap-2">
                 <Input
@@ -863,9 +872,9 @@ export default function IndieRecommendations() {
                   placeholder="https://..."
                   value={coverUrl}
                   onChange={(e) => setCoverUrl(e.target.value)}
-                  className="bg-ps-dark-card border-white/15 focus:border-purple-500 text-white rounded-xl text-xs flex-1"
+                  className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl text-xs flex-1"
                 />
-                <label className="cursor-pointer bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1.5 shrink-0 transition-all">
+                <label className="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1.5 shrink-0 transition-all">
                   {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
                   <span>Enviar</span>
                   <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
@@ -873,35 +882,35 @@ export default function IndieRecommendations() {
               </div>
             </div>
 
-            {/* Card Live Preview inside Form */}
+            {/* Card Live Preview */}
             {(gameTitle || coverUrl) && (
               <div className="pt-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-1">Prévia do Cartão:</p>
-                <div className="p-3 rounded-2xl bg-ps-dark-card border border-white/10 flex items-center gap-3">
-                  <div className="w-12 h-16 rounded-lg bg-white/10 overflow-hidden shrink-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Prévia do Cartão:</p>
+                <div className="p-3 rounded-xl bg-[#141a27] border border-slate-700 flex items-center gap-3">
+                  <div className="w-10 h-14 rounded-lg bg-slate-800 overflow-hidden shrink-0">
                     {coverUrl ? <img src={coverUrl} alt="" className="w-full h-full object-cover" /> : null}
                   </div>
                   <div className="min-w-0">
                     <p className="font-bold text-sm text-white truncate">{gameTitle || "Título do Jogo"}</p>
-                    <p className="text-xs text-purple-300 font-medium truncate">Indicado por {submitterName || "Seu Nome"}</p>
+                    <p className="text-xs text-ps-blue font-semibold truncate">Indicado por {submitterName || "Seu Nome"}</p>
                   </div>
                 </div>
               </div>
             )}
 
-            <DialogFooter className="mt-6 pt-4 border-t border-white/10 flex gap-2">
+            <DialogFooter className="mt-6 pt-4 border-t border-slate-800 flex gap-2">
               <Button
                 type="button"
                 variant="ghost"
                 onClick={() => setShowAddDialog(false)}
-                className="text-white/60 hover:text-white"
+                className="text-slate-300 hover:text-white"
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
                 disabled={addMutation.isPending}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 rounded-xl flex-1"
+                className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold px-6 rounded-xl flex-1"
               >
                 {addMutation.isPending ? "Salvando..." : "Enviar Indicação"}
               </Button>
@@ -911,52 +920,52 @@ export default function IndieRecommendations() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Modal (For Admin) */}
+      {/* Edit Modal (Admin) */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="bg-ps-dark-elevated text-white border border-white/15 max-w-lg rounded-3xl p-6 shadow-2xl">
+        <DialogContent className="dark bg-[#0f1420] text-slate-100 border border-slate-800 max-w-lg rounded-2xl p-6 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-black text-white">Editar Recomendação (Admin)</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 mt-2">
             <div>
-              <label className="block text-xs font-bold uppercase text-white/80 mb-1">Título</label>
+              <label className="block text-xs font-bold uppercase text-slate-200 mb-1">Título</label>
               <Input
                 value={gameTitle}
                 onChange={(e) => setGameTitle(e.target.value)}
-                className="bg-ps-dark-card border-white/15 text-white"
+                className="bg-[#141a27] border-slate-700 text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-white/80 mb-1">Quem indicou</label>
+              <label className="block text-xs font-bold uppercase text-slate-200 mb-1">Quem indicou</label>
               <Input
                 value={submitterName}
                 onChange={(e) => setSubmitterName(e.target.value)}
-                className="bg-ps-dark-card border-white/15 text-white"
+                className="bg-[#141a27] border-slate-700 text-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-white/80 mb-1">Comentário</label>
+              <label className="block text-xs font-bold uppercase text-slate-200 mb-1">Comentário</label>
               <Textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="bg-ps-dark-card border-white/15 text-white min-h-[70px]"
+                className="bg-[#141a27] border-slate-700 text-white min-h-[70px]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-white/80 mb-1">URL da Capa</label>
+              <label className="block text-xs font-bold uppercase text-slate-200 mb-1">URL da Capa</label>
               <Input
                 value={coverUrl}
                 onChange={(e) => setCoverUrl(e.target.value)}
-                className="bg-ps-dark-card border-white/15 text-white text-xs"
+                className="bg-[#141a27] border-slate-700 text-white text-xs"
               />
             </div>
 
-            <DialogFooter className="pt-4 border-t border-white/10">
-              <Button variant="ghost" onClick={() => setShowEditDialog(false)}>Cancelar</Button>
+            <DialogFooter className="pt-4 border-t border-slate-800">
+              <Button variant="ghost" onClick={() => setShowEditDialog(false)} className="text-slate-300 hover:text-white">Cancelar</Button>
               <Button
                 onClick={() => {
                   editMutation.mutate({
@@ -968,7 +977,7 @@ export default function IndieRecommendations() {
                     platforms: selectedPlatforms
                   });
                 }}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold"
               >
                 Salvar Alterações
               </Button>
