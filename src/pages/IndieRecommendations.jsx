@@ -42,18 +42,55 @@ const INITIAL_FALLBACK_RECOMMENDATIONS = [
   }
 ];
 
-// Utility function to fetch cover art from Wikipedia silently in background
+// Utility function to fetch cover art from Wikipedia silently in background with smart sequel matching
 async function fetchWikipediaCover(gameTitle) {
   if (!gameTitle || !gameTitle.trim()) return null;
+  const cleanTitle = gameTitle.trim();
   try {
-    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(gameTitle.trim() + " video game")}&format=json&origin=*`;
+    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanTitle + " video game")}&format=json&origin=*`;
     const searchRes = await fetch(searchUrl);
     if (!searchRes.ok) return null;
     const searchData = await searchRes.json();
     const results = searchData.query?.search;
     if (!results || results.length === 0) return null;
+
+    // Smart matching for sequel numbers (e.g. "Hades 2" -> match "2" or "II")
+    const cleanLower = cleanTitle.toLowerCase();
+    const seqTokens = [];
+    if (/\b(2|ii)\b/i.test(cleanLower)) seqTokens.push("2", "ii");
+    if (/\b(3|iii)\b/i.test(cleanLower)) seqTokens.push("3", "iii");
+    if (/\b(4|iv)\b/i.test(cleanLower)) seqTokens.push("4", "iv");
+    if (/\b(5|v)\b/i.test(cleanLower)) seqTokens.push("5", "v");
+
+    let bestResult = results[0];
+    let maxScore = -999;
+
+    for (const item of results) {
+      const itemTitleLower = item.title.toLowerCase();
+      let score = 0;
+
+      // Exact title match
+      if (itemTitleLower === cleanLower || itemTitleLower === `${cleanLower} (video game)`) {
+        score += 100;
+      }
+
+      // Sequel number match penalty / reward
+      if (seqTokens.length > 0) {
+        const itemHasSeq = seqTokens.some(tok => new RegExp(`\\b${tok}\\b`, 'i').test(itemTitleLower));
+        if (itemHasSeq) {
+          score += 100;
+        } else {
+          score -= 150; // Heavily penalize base game when user searched for sequel!
+        }
+      }
+
+      if (score > maxScore) {
+        maxScore = score;
+        bestResult = item;
+      }
+    }
     
-    const pageTitle = results[0].title;
+    const pageTitle = bestResult.title;
     const imgUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=pageimages&piprop=thumbnail&pithumbsize=600&pilicense=any&format=json&origin=*`;
     const imgRes = await fetch(imgUrl);
     if (!imgRes.ok) return null;
@@ -144,6 +181,50 @@ export default function IndieRecommendations() {
       }
     }
   });
+
+  // Auto-correct covers for sequels (e.g. Hades 2 having Hades 1 cover)
+  useEffect(() => {
+    if (!recommendations || recommendations.length === 0) return;
+
+    const fixCovers = async () => {
+      let updatedAny = false;
+      for (const item of recommendations) {
+        const titleLower = (item.title || "").toLowerCase();
+        const isSequel = /\b(2|3|4|5|ii|iii|iv|v)\b/i.test(titleLower);
+        
+        if (isSequel || !item.cover_image) {
+          const correctCover = await fetchWikipediaCover(item.title);
+          if (correctCover && correctCover !== item.cover_image) {
+            try {
+              if (isUsingFallback) {
+                const local = localStorage.getItem("__indie_recommendations__");
+                if (local) {
+                  const list = JSON.parse(local);
+                  const idx = list.findIndex(r => r.id === item.id);
+                  if (idx !== -1) {
+                    list[idx].cover_image = correctCover;
+                    localStorage.setItem("__indie_recommendations__", JSON.stringify(list));
+                    updatedAny = true;
+                  }
+                }
+              } else {
+                await db.entities.IndieRecommendation.update(item.id, { cover_image: correctCover });
+                updatedAny = true;
+              }
+            } catch (e) {
+              console.error("Failed to update cover for:", item.title, e);
+            }
+          }
+        }
+      }
+
+      if (updatedAny) {
+        queryClient.invalidateQueries({ queryKey: ["indieRecommendations"] });
+      }
+    };
+
+    fixCovers();
+  }, [recommendations, isUsingFallback, queryClient]);
 
   const isAdmin = user?.role === "admin";
 
