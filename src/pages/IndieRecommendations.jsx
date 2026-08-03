@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { db } from "@/api/supabaseClient";
 import { 
   Gamepad2, Plus, Heart, Share2, Search, Trash2, Pencil, Check, 
-  Sparkles, Trophy, MessageSquare, User, Upload, Wand2, Filter, RefreshCw, Layers
+  Sparkles, Trophy, MessageSquare, User, Filter
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,6 @@ const INITIAL_FALLBACK_RECOMMENDATIONS = [
     submitter_name: "Gustavo",
     comment: "Um dos maiores metroidvanias de todos os tempos. Trilha sonora e direção de arte impecáveis!",
     cover_image: "https://upload.wikimedia.org/wikipedia/en/0/04/Hollow_Knight_first_cover_art.webp",
-    platforms: ["PC", "Switch", "PlayStation", "Xbox"],
     votes: 8,
     created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString()
   },
@@ -29,7 +28,6 @@ const INITIAL_FALLBACK_RECOMMENDATIONS = [
     submitter_name: "Lucas Checkpoint",
     comment: "História emocionante sobre superação e um platformer extremamente afiado. Perfeito para o clube!",
     cover_image: "https://upload.wikimedia.org/wikipedia/commons/6/62/Celeste_box_art.png",
-    platforms: ["PC", "Switch", "PlayStation"],
     votes: 6,
     created_at: new Date(Date.now() - 3600000 * 24).toISOString()
   },
@@ -39,13 +37,12 @@ const INITIAL_FALLBACK_RECOMMENDATIONS = [
     submitter_name: "Mariana",
     comment: "RPG em pixel art inspirado nos clássicos dos anos 90 como Chrono Trigger. Trilha sonora incrível!",
     cover_image: "https://upload.wikimedia.org/wikipedia/en/e/e0/Sea_of_Stars_cover_art.jpg",
-    platforms: ["PC", "Switch", "PlayStation", "Xbox"],
     votes: 5,
     created_at: new Date(Date.now() - 3600000 * 5).toISOString()
   }
 ];
 
-// Utility function to fetch cover art from Wikipedia
+// Utility function to fetch cover art from Wikipedia silently in background
 async function fetchWikipediaCover(gameTitle) {
   if (!gameTitle || !gameTitle.trim()) return null;
   try {
@@ -72,41 +69,6 @@ async function fetchWikipediaCover(gameTitle) {
   }
 }
 
-// Image compression helper
-function compressImage(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target.result;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        const MAX_WIDTH = 400;
-        const MAX_HEIGHT = 400;
-        let width = img.width;
-        let height = img.height;
-        
-        if (width > height) {
-          if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-        } else {
-          if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", 0.75));
-      };
-      img.onerror = (e) => reject(e);
-    };
-    reader.onerror = (e) => reject(e);
-  });
-}
-
-const AVAILABLE_PLATFORMS = ["PC", "Switch", "PlayStation", "Xbox", "Mobile", "Outro"];
-
 export default function IndieRecommendations() {
   const [user, setUser] = useState(null);
   const [isUsingFallback, setIsUsingFallback] = useState(false);
@@ -117,15 +79,11 @@ export default function IndieRecommendations() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showShareSuccess, setShowShareSuccess] = useState(false);
 
-  // Form state
+  // Simple Form state (3 fields only)
   const [gameTitle, setGameTitle] = useState("");
   const [submitterName, setSubmitterName] = useState("");
   const [comment, setComment] = useState("");
-  const [coverUrl, setCoverUrl] = useState("");
-  const [selectedPlatforms, setSelectedPlatforms] = useState(["PC"]);
-  const [isSearchingWiki, setIsSearchingWiki] = useState(false);
   const [formError, setFormError] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
 
   // Edit State (for Admin)
   const [editingItem, setEditingItem] = useState(null);
@@ -142,6 +100,11 @@ export default function IndieRecommendations() {
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Enforce dark mode on page mount
+  useEffect(() => {
+    document.documentElement.classList.add("dark");
+  }, []);
 
   // Load user profile if logged in
   useEffect(() => {
@@ -184,17 +147,31 @@ export default function IndieRecommendations() {
 
   const isAdmin = user?.role === "admin";
 
-  // Create Mutation
+  // Create Mutation with automatic failover to local storage if DB table does not exist
   const addMutation = useMutation({
     mutationFn: async (newItem) => {
-      if (isUsingFallback) {
+      // Background auto-fetch cover image from Wikipedia
+      if (newItem.title) {
+        try {
+          const autoCover = await fetchWikipediaCover(newItem.title);
+          if (autoCover) newItem.cover_image = autoCover;
+        } catch (e) {
+          console.warn("Auto cover fetch failed:", e);
+        }
+      }
+
+      // Try Supabase first, fallback gracefully to localStorage if table doesn't exist
+      try {
+        if (isUsingFallback) throw new Error("Using fallback mode");
+        return await db.entities.IndieRecommendation.create(newItem);
+      } catch (err) {
+        console.warn("Supabase create failed, saving recommendation locally:", err);
+        setIsUsingFallback(true);
         const local = localStorage.getItem("__indie_recommendations__");
         const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_RECOMMENDATIONS;
         const updatedList = [newItem, ...currentList];
         localStorage.setItem("__indie_recommendations__", JSON.stringify(updatedList));
         return newItem;
-      } else {
-        return db.entities.IndieRecommendation.create(newItem);
       }
     },
     onSuccess: () => {
@@ -207,7 +184,26 @@ export default function IndieRecommendations() {
       });
     },
     onError: (err) => {
-      setFormError(`Erro ao salvar recomendação: ${err.message || "Tente novamente."}`);
+      console.error(err);
+      // Fallback save in case mutation throws
+      const newItem = {
+        id: Math.random().toString(36).substring(2, 11),
+        title: gameTitle.trim(),
+        submitter_name: submitterName.trim(),
+        comment: comment.trim() || null,
+        votes: 1,
+        created_at: new Date().toISOString()
+      };
+      const local = localStorage.getItem("__indie_recommendations__");
+      const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_RECOMMENDATIONS;
+      localStorage.setItem("__indie_recommendations__", JSON.stringify([newItem, ...currentList]));
+      queryClient.invalidateQueries({ queryKey: ["indieRecommendations"] });
+      resetForm();
+      setShowAddDialog(false);
+      toast({
+        title: "Recomendação salva! 🚀",
+        description: "Seu jogo foi adicionado à lista.",
+      });
     }
   });
 
@@ -217,14 +213,16 @@ export default function IndieRecommendations() {
       const item = recommendations.find(r => r.id === id);
       const currentVotes = (item?.votes || 0) + delta;
       
-      if (isUsingFallback) {
+      try {
+        if (isUsingFallback) throw new Error("Fallback mode");
+        return await db.entities.IndieRecommendation.update(id, { votes: Math.max(0, currentVotes) });
+      } catch {
+        setIsUsingFallback(true);
         const local = localStorage.getItem("__indie_recommendations__");
         const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_RECOMMENDATIONS;
         const updatedList = currentList.map(r => r.id === id ? { ...r, votes: Math.max(0, currentVotes) } : r);
         localStorage.setItem("__indie_recommendations__", JSON.stringify(updatedList));
         return { id, votes: currentVotes };
-      } else {
-        return db.entities.IndieRecommendation.update(id, { votes: Math.max(0, currentVotes) });
       }
     },
     onSuccess: () => {
@@ -235,14 +233,16 @@ export default function IndieRecommendations() {
   // Delete Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      if (isUsingFallback) {
+      try {
+        if (isUsingFallback) throw new Error("Fallback mode");
+        return await db.entities.IndieRecommendation.delete(id);
+      } catch {
+        setIsUsingFallback(true);
         const local = localStorage.getItem("__indie_recommendations__");
         const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_RECOMMENDATIONS;
         const updatedList = currentList.filter(r => r.id !== id);
         localStorage.setItem("__indie_recommendations__", JSON.stringify(updatedList));
         return { success: true };
-      } else {
-        return db.entities.IndieRecommendation.delete(id);
       }
     },
     onSuccess: () => {
@@ -254,14 +254,16 @@ export default function IndieRecommendations() {
   // Edit Mutation
   const editMutation = useMutation({
     mutationFn: async (updated) => {
-      if (isUsingFallback) {
+      try {
+        if (isUsingFallback) throw new Error("Fallback mode");
+        return await db.entities.IndieRecommendation.update(updated.id, updated);
+      } catch {
+        setIsUsingFallback(true);
         const local = localStorage.getItem("__indie_recommendations__");
         const currentList = local ? JSON.parse(local) : INITIAL_FALLBACK_RECOMMENDATIONS;
         const updatedList = currentList.map(r => r.id === updated.id ? updated : r);
         localStorage.setItem("__indie_recommendations__", JSON.stringify(updatedList));
         return updated;
-      } else {
-        return db.entities.IndieRecommendation.update(updated.id, updated);
       }
     },
     onSuccess: () => {
@@ -271,54 +273,6 @@ export default function IndieRecommendations() {
       toast({ title: "Recomendação atualizada com sucesso!" });
     }
   });
-
-  const handleAutoFetchCover = async (titleToFetch = gameTitle) => {
-    if (!titleToFetch.trim()) return;
-    setIsSearchingWiki(true);
-    try {
-      const wikiImage = await fetchWikipediaCover(titleToFetch);
-      if (wikiImage) {
-        setCoverUrl(wikiImage);
-        toast({ title: "Capa oficial encontrada!", description: "Imagem atualizada via Wikipedia." });
-      } else {
-        toast({ title: "Capa não encontrada", description: "Insira uma URL ou faça upload da imagem." });
-      }
-    } catch {
-      toast({ title: "Falha na busca", description: "Tente novamente ou envie uma imagem." });
-    } finally {
-      setIsSearchingWiki(false);
-    }
-  };
-
-  const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    try {
-      const uploadRes = await db.integrations.Core.UploadFile({ file }).catch(() => null);
-      if (uploadRes?.file_url && !uploadRes.file_url.startsWith("blob:")) {
-        setCoverUrl(uploadRes.file_url);
-      } else {
-        const compressed = await compressImage(file);
-        setCoverUrl(compressed);
-      }
-    } catch {
-      const compressed = await compressImage(file);
-      setCoverUrl(compressed);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const togglePlatform = (platform) => {
-    if (selectedPlatforms.includes(platform)) {
-      if (selectedPlatforms.length > 1) {
-        setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform));
-      }
-    } else {
-      setSelectedPlatforms([...selectedPlatforms, platform]);
-    }
-  };
 
   const handleToggleVote = (id) => {
     const hasVoted = votedIds.includes(id);
@@ -350,8 +304,7 @@ export default function IndieRecommendations() {
       title: gameTitle.trim(),
       submitter_name: submitterName.trim(),
       comment: comment.trim() || null,
-      cover_image: coverUrl.trim() || null,
-      platforms: selectedPlatforms.length > 0 ? selectedPlatforms : ["PC"],
+      cover_image: null,
       votes: 1,
       created_at: new Date().toISOString()
     };
@@ -366,8 +319,6 @@ export default function IndieRecommendations() {
   const resetForm = () => {
     setGameTitle("");
     setComment("");
-    setCoverUrl("");
-    setSelectedPlatforms(["PC"]);
     setFormError("");
     if (user?.display_name || user?.username) {
       setSubmitterName(user.display_name || user.username);
@@ -416,7 +367,7 @@ export default function IndieRecommendations() {
       {/* Premium Minimal Hero Banner */}
       <div className="relative overflow-hidden bg-[#0c101a] border-b border-slate-800/80 pt-12 pb-14 px-4 sm:px-6 lg:px-8">
         
-        {/* Subtle Brand Blue Ambient Lighting */}
+        {/* Subtle Ambient Lighting */}
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-ps-blue/15 blur-[120px] pointer-events-none rounded-full" />
 
         <div className="max-w-6xl mx-auto relative z-10">
@@ -515,7 +466,7 @@ export default function IndieRecommendations() {
       {/* Main Content Area */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         
-        {/* Minimal High-Contrast Filter Bar */}
+        {/* Minimal Filter Bar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-8">
           
           {/* Search Box */}
@@ -667,17 +618,6 @@ export default function IndieRecommendations() {
                           <User className="w-3.5 h-3.5 shrink-0 text-ps-blue" />
                           <span className="truncate">Indicado por <strong className="text-white">{item.submitter_name}</strong></span>
                         </div>
-
-                        {/* Platform Pills */}
-                        {item.platforms && item.platforms.length > 0 && (
-                          <div className="mt-2.5 flex flex-wrap gap-1">
-                            {item.platforms.map((plat) => (
-                              <span key={plat} className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
-                                {plat}
-                              </span>
-                            ))}
-                          </div>
-                        )}
                       </div>
 
                     </div>
@@ -718,8 +658,6 @@ export default function IndieRecommendations() {
                               setGameTitle(item.title || "");
                               setSubmitterName(item.submitter_name || "");
                               setComment(item.comment || "");
-                              setCoverUrl(item.cover_image || "");
-                              setSelectedPlatforms(item.platforms || ["PC"]);
                               setShowEditDialog(true);
                             }}
                             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
@@ -756,7 +694,7 @@ export default function IndieRecommendations() {
 
       </div>
 
-      {/* Add Recommendation Modal */}
+      {/* Simplified Add Recommendation Modal (Only 3 inputs) */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
         <DialogContent className="dark bg-[#0f1420] text-slate-100 border border-slate-800 max-w-lg rounded-2xl p-6 sm:p-7 shadow-2xl">
           <DialogHeader>
@@ -777,37 +715,25 @@ export default function IndieRecommendations() {
               </div>
             )}
 
-            {/* Game Title */}
+            {/* Field 1: Game Title */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
                 Nome do Jogo Indie *
               </label>
-              <div className="flex gap-2">
-                <Input
-                  type="text"
-                  placeholder="Ex: Celeste, Hades, Undertale, Tunic..."
-                  value={gameTitle}
-                  onChange={(e) => {
-                    setGameTitle(e.target.value);
-                    setFormError("");
-                  }}
-                  className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl"
-                  required
-                />
-                <Button
-                  type="button"
-                  onClick={() => handleAutoFetchCover(gameTitle)}
-                  disabled={isSearchingWiki || !gameTitle.trim()}
-                  variant="outline"
-                  className="border-ps-blue/40 bg-ps-blue/15 hover:bg-ps-blue/30 text-blue-300 font-bold shrink-0 rounded-xl"
-                  title="Buscar capa oficial na Wikipedia"
-                >
-                  {isSearchingWiki ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4 text-ps-blue" />}
-                </Button>
-              </div>
+              <Input
+                type="text"
+                placeholder="Ex: Celeste, Hades, Undertale, Tunic..."
+                value={gameTitle}
+                onChange={(e) => {
+                  setGameTitle(e.target.value);
+                  setFormError("");
+                }}
+                className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl py-2.5"
+                required
+              />
             </div>
 
-            {/* Submitter Name */}
+            {/* Field 2: Submitter Name */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
                 Seu Nome ou Apelido *
@@ -817,12 +743,12 @@ export default function IndieRecommendations() {
                 placeholder="Como quer ser identificado na indicação?"
                 value={submitterName}
                 onChange={(e) => setSubmitterName(e.target.value)}
-                className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl"
+                className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl py-2.5"
                 required
               />
             </div>
 
-            {/* Comment */}
+            {/* Field 3: Comment / Motivo (Optional) */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
                 Por que você indica esse jogo? (Opcional)
@@ -831,72 +757,9 @@ export default function IndieRecommendations() {
                 placeholder="Conte brevemente por que ele é perfeito para o clube..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl text-sm min-h-[80px]"
+                className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl text-sm min-h-[90px]"
               />
             </div>
-
-            {/* Platform Selector */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
-                Plataformas Disponíveis
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {AVAILABLE_PLATFORMS.map((plat) => {
-                  const isSelected = selectedPlatforms.includes(plat);
-                  return (
-                    <button
-                      key={plat}
-                      type="button"
-                      onClick={() => togglePlatform(plat)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                        isSelected
-                          ? "bg-ps-blue border-blue-400 text-white shadow-md"
-                          : "bg-slate-900 border-slate-700 text-slate-300 hover:text-white"
-                      }`}
-                    >
-                      {plat}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Cover Image Upload / URL */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1.5">
-                Capa do Jogo (Opcional)
-              </label>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="url"
-                  placeholder="https://..."
-                  value={coverUrl}
-                  onChange={(e) => setCoverUrl(e.target.value)}
-                  className="bg-[#141a27] border-slate-700 focus:border-ps-blue text-white placeholder:text-slate-400 rounded-xl text-xs flex-1"
-                />
-                <label className="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1.5 shrink-0 transition-all">
-                  {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                  <span>Enviar</span>
-                  <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-                </label>
-              </div>
-            </div>
-
-            {/* Card Live Preview */}
-            {(gameTitle || coverUrl) && (
-              <div className="pt-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Prévia do Cartão:</p>
-                <div className="p-3 rounded-xl bg-[#141a27] border border-slate-700 flex items-center gap-3">
-                  <div className="w-10 h-14 rounded-lg bg-slate-800 overflow-hidden shrink-0">
-                    {coverUrl ? <img src={coverUrl} alt="" className="w-full h-full object-cover" /> : null}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-bold text-sm text-white truncate">{gameTitle || "Título do Jogo"}</p>
-                    <p className="text-xs text-ps-blue font-semibold truncate">Indicado por {submitterName || "Seu Nome"}</p>
-                  </div>
-                </div>
-              </div>
-            )}
 
             <DialogFooter className="mt-6 pt-4 border-t border-slate-800 flex gap-2">
               <Button
@@ -910,9 +773,9 @@ export default function IndieRecommendations() {
               <Button
                 type="submit"
                 disabled={addMutation.isPending}
-                className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold px-6 rounded-xl flex-1"
+                className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold py-3 px-6 rounded-xl flex-1 shadow-md shadow-ps-blue/20"
               >
-                {addMutation.isPending ? "Salvando..." : "Enviar Indicação"}
+                {addMutation.isPending ? "Enviando..." : "Enviar Indicação"}
               </Button>
             </DialogFooter>
 
@@ -955,15 +818,6 @@ export default function IndieRecommendations() {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-200 mb-1">URL da Capa</label>
-              <Input
-                value={coverUrl}
-                onChange={(e) => setCoverUrl(e.target.value)}
-                className="bg-[#141a27] border-slate-700 text-white text-xs"
-              />
-            </div>
-
             <DialogFooter className="pt-4 border-t border-slate-800">
               <Button variant="ghost" onClick={() => setShowEditDialog(false)} className="text-slate-300 hover:text-white">Cancelar</Button>
               <Button
@@ -972,9 +826,7 @@ export default function IndieRecommendations() {
                     ...editingItem,
                     title: gameTitle,
                     submitter_name: submitterName,
-                    comment,
-                    cover_image: coverUrl,
-                    platforms: selectedPlatforms
+                    comment
                   });
                 }}
                 className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold"
