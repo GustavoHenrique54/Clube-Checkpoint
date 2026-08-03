@@ -18,6 +18,10 @@ export default function Layout({ children, currentPageName }) {
   });
 
   useEffect(() => {
+    if (currentPageName === "IndieRecommendations") {
+      document.documentElement.classList.add("dark");
+      return;
+    }
     if (theme === "light") {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
@@ -25,7 +29,7 @@ export default function Layout({ children, currentPageName }) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
     }
-  }, [theme]);
+  }, [theme, currentPageName]);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === "dark" ? "light" : "dark"));
@@ -77,9 +81,11 @@ export default function Layout({ children, currentPageName }) {
               <Logo variant="auto" className="h-8 sm:h-9 w-auto object-contain" />
             </Link>
             <div className="flex items-center gap-3">
-              <button onClick={toggleTheme} className="p-2 text-white/60 hover:text-white rounded-full transition-all" title="Alternar Tema">
-                {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
+              {currentPageName !== "IndieRecommendations" && (
+                <button onClick={toggleTheme} className="p-2 text-white/60 hover:text-white rounded-full transition-all" title="Alternar Tema">
+                  {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+              )}
               {user ? (
                 <>
                   <Link to="/perfil">
