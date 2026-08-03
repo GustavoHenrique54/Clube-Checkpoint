@@ -62,6 +62,7 @@ import Profile from './pages/Profile';
 import PublicProfile from './pages/PublicProfile';
 import SearchProfiles from './pages/SearchProfiles';
 import ConsideredGames from './pages/ConsideredGames';
+import IndieRecommendations from './pages/IndieRecommendations';
 import __Layout from './Layout.jsx';
 
 export const PAGES = {
@@ -80,6 +81,7 @@ export const PAGES = {
     "PublicProfile": PublicProfile,
     "SearchProfiles": SearchProfiles,
     "ConsideredGames": ConsideredGames,
+    "IndieRecommendations": IndieRecommendations,
 }
 
 export const pagesConfig = {

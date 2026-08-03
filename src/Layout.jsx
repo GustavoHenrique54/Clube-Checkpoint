@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Gamepad2, User, Shield, LogOut, Menu, X, Trophy, Users, Sun, Moon, Library, Settings, Coffee, Heart } from "lucide-react";
 import Logo from "@/components/Logo";
 
-const PUBLIC_PAGES = ["Landing", "PublicProfile"];
+const PUBLIC_PAGES = ["Landing", "PublicProfile", "IndieRecommendations"];
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);

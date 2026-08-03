@@ -39,7 +39,10 @@ const AuthenticatedApp = () => {
     location.pathname === '/' || 
     location.pathname === '/login' || 
     location.pathname === '/PublicProfile' ||
-    location.pathname.startsWith('/PublicProfile');
+    location.pathname.startsWith('/PublicProfile') ||
+    location.pathname === '/indies' ||
+    location.pathname === '/IndieRecommendations' ||
+    location.pathname === '/recomendacoes-indie';
 
   // If not authenticated and trying to access a private path, redirect to login
   if (!isAuthenticated && !isPublicPath) {
@@ -72,6 +75,9 @@ const AuthenticatedApp = () => {
       <Route path="/perfil" element={<LayoutWrapper currentPageName="Profile"><Profile /></LayoutWrapper>} />
       <Route path="/jogos" element={<LayoutWrapper currentPageName="ConsideredGames"><Pages.ConsideredGames /></LayoutWrapper>} />
       <Route path="/ConsideredGames" element={<LayoutWrapper currentPageName="ConsideredGames"><Pages.ConsideredGames /></LayoutWrapper>} />
+      <Route path="/indies" element={<LayoutWrapper currentPageName="IndieRecommendations"><Pages.IndieRecommendations /></LayoutWrapper>} />
+      <Route path="/IndieRecommendations" element={<LayoutWrapper currentPageName="IndieRecommendations"><Pages.IndieRecommendations /></LayoutWrapper>} />
+      <Route path="/recomendacoes-indie" element={<LayoutWrapper currentPageName="IndieRecommendations"><Pages.IndieRecommendations /></LayoutWrapper>} />
       <Route path="/AdminLandingConfig" element={<LayoutWrapper currentPageName="AdminLandingConfig"><AdminLandingConfig /></LayoutWrapper>} />
       <Route path="/SearchProfiles" element={<LayoutWrapper currentPageName="SearchProfiles"><SearchProfiles /></LayoutWrapper>} />
       <Route path="/Friends" element={<LayoutWrapper currentPageName="Friends"><Friends /></LayoutWrapper>} />

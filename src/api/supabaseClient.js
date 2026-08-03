@@ -19,7 +19,8 @@ const TABLE_MAPPINGS = {
   ClubHub: 'club_hub',
   FriendRequest: 'friend_requests',
   ConsideredGame: 'considered_games',
-  ClubEvent: 'club_events'
+  ClubEvent: 'club_events',
+  IndieRecommendation: 'indie_recommendations'
 };
 
 class SupabaseEntity {
