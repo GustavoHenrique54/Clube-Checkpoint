@@ -125,6 +125,8 @@ export default function IndieRecommendations() {
   // Edit State (for Admin)
   const [editingItem, setEditingItem] = useState(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [coverImage, setCoverImage] = useState("");
+  const [autoCoverEnabled, setAutoCoverEnabled] = useState(true);
 
   // Votes stored in local state/storage to prevent double voting locally
   const [votedIds, setVotedIds] = useState(() => {
@@ -191,8 +193,9 @@ export default function IndieRecommendations() {
       for (const item of recommendations) {
         const titleLower = (item.title || "").toLowerCase();
         const isSequel = /\b(2|3|4|5|ii|iii|iv|v)\b/i.test(titleLower);
+        const isManual = item.cover_image && item.cover_image.includes("#manual");
         
-        if (isSequel || !item.cover_image) {
+        if ((isSequel || !item.cover_image) && !isManual) {
           const correctCover = await fetchWikipediaCover(item.title);
           if (correctCover && correctCover !== item.cover_image) {
             try {
@@ -666,9 +669,9 @@ export default function IndieRecommendations() {
                       
                       {/* Game Cover */}
                       <div className="w-24 h-32 rounded-xl overflow-hidden bg-[#182030] border border-slate-700/80 shrink-0 relative shadow-md group-hover:border-ps-blue/50 transition-colors">
-                        {item.cover_image ? (
+                        {item.cover_image && item.cover_image !== "#manual" ? (
                           <img
-                            src={item.cover_image}
+                            src={item.cover_image.replace("#manual", "")}
                             alt={item.title}
                             className="w-full h-full object-cover"
                             onError={(e) => {
@@ -679,7 +682,7 @@ export default function IndieRecommendations() {
                         ) : null}
                         <div
                           className="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-slate-900 text-ps-blue"
-                          style={{ display: item.cover_image ? 'none' : 'flex' }}
+                          style={{ display: (item.cover_image && item.cover_image !== "#manual") ? 'none' : 'flex' }}
                         >
                           <Gamepad2 className="w-6 h-6 mb-1 opacity-80" />
                           <span className="text-[10px] font-black uppercase tracking-wider line-clamp-2 leading-tight text-slate-200">
@@ -739,6 +742,10 @@ export default function IndieRecommendations() {
                               setGameTitle(item.title || "");
                               setSubmitterName(item.submitter_name || "");
                               setComment(item.comment || "");
+                              const currentCover = item.cover_image || "";
+                              const isManual = currentCover.includes("#manual");
+                              setCoverImage(currentCover.replace("#manual", ""));
+                              setAutoCoverEnabled(!isManual);
                               setShowEditDialog(true);
                             }}
                             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
@@ -899,15 +906,88 @@ export default function IndieRecommendations() {
               />
             </div>
 
+            {/* Cover Image Settings */}
+            <div className="space-y-2 border-t border-slate-800 pt-3">
+              <label className="block text-xs font-bold uppercase text-slate-200">Configuração da Capa</label>
+              <div className="flex items-center space-x-2 my-2">
+                <input
+                  type="checkbox"
+                  id="autoCoverEnabled"
+                  checked={autoCoverEnabled}
+                  onChange={(e) => {
+                    setAutoCoverEnabled(e.target.checked);
+                    if (e.target.checked) {
+                      setCoverImage("");
+                    }
+                  }}
+                  className="rounded border-slate-700 bg-[#141a27] text-ps-blue focus:ring-ps-blue h-4 w-4"
+                />
+                <label htmlFor="autoCoverEnabled" className="text-xs font-medium text-slate-300 cursor-pointer">
+                  Buscar capa automaticamente via Wikipédia
+                </label>
+              </div>
+
+              {!autoCoverEnabled && (
+                <div className="space-y-1">
+                  <label className="block text-[11px] text-slate-400">URL da Imagem Personalizada</label>
+                  <Input
+                    value={coverImage}
+                    onChange={(e) => setCoverImage(e.target.value)}
+                    placeholder="https://exemplo.com/imagem.jpg"
+                    className="bg-[#141a27] border-slate-700 text-white placeholder:text-slate-500 text-xs rounded-lg"
+                  />
+                  <p className="text-[10px] text-slate-500">
+                    Insira a URL de uma imagem direta (JPG/PNG/WEBP). Deixe em branco para nenhuma capa.
+                  </p>
+                </div>
+              )}
+
+              {/* Cover Preview */}
+              {(!autoCoverEnabled || coverImage) && (
+                <div className="mt-3 flex items-center gap-3 bg-[#0a0e17] p-2.5 rounded-xl border border-slate-800">
+                  {coverImage ? (
+                    <img
+                      src={coverImage}
+                      alt="Preview"
+                      className="w-12 h-16 object-cover rounded-lg border border-slate-700"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div
+                    className="w-12 h-16 flex items-center justify-center bg-slate-900 border border-slate-800 rounded-lg text-slate-500 text-[10px]"
+                    style={{ display: coverImage ? 'none' : 'flex' }}
+                  >
+                    Nenhuma
+                  </div>
+                  <div className="text-xs text-slate-400">
+                    <span className="font-semibold block text-slate-200">
+                      {autoCoverEnabled ? "Capa Atual (Automática)" : "Prévia da Capa"}
+                    </span>
+                    {autoCoverEnabled ? "Esta capa foi buscada de forma automática." : "Esta imagem personalizada será salva."}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <DialogFooter className="pt-4 border-t border-slate-800">
               <Button variant="ghost" onClick={() => setShowEditDialog(false)} className="text-slate-300 hover:text-white">Cancelar</Button>
               <Button
                 onClick={() => {
+                  let finalCover = editingItem.cover_image;
+                  if (!autoCoverEnabled) {
+                    finalCover = coverImage.trim() ? `${coverImage.trim()}#manual` : "#manual";
+                  } else {
+                    finalCover = null;
+                  }
                   editMutation.mutate({
                     ...editingItem,
                     title: gameTitle,
                     submitter_name: submitterName,
-                    comment
+                    comment,
+                    cover_image: finalCover
                   });
                 }}
                 className="bg-ps-blue hover:bg-ps-blue-pressed text-white font-bold"
