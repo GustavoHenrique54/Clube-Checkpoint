@@ -122,7 +122,6 @@ export default function AdminBatchBadge() {
             await db.entities.UserBadge.create({
               user_id: user.id,
               badge_id: badge.id,
-              granted_by_admin: admin.email,
             });
           }
           count++;

@@ -85,6 +85,12 @@ class SupabaseEntity {
       }
     }
 
+    if (this.tableName === 'user_badges') {
+      // Remove non-column fields that would cause Supabase schema errors
+      delete copy.granted_by_admin;
+      delete copy.note;
+    }
+
     if (this.tableName === 'club_hub') {
       if (copy.next_meeting_datetime !== undefined) {
         if (copy.next_meeting_datetime) {
@@ -307,23 +313,34 @@ export const db = {
     Core: {
       UploadFile: async ({ file }) => {
         // Upload images/covers to Supabase storage bucket 'uploads'
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-        const filePath = `user_assets/${fileName}`;
+        try {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+          const filePath = `user_assets/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('uploads')
-          .upload(filePath, file);
+          const { error: uploadError } = await supabase.storage
+            .from('uploads')
+            .upload(filePath, file);
 
-        if (uploadError) {
-          // Fallback to local preview URL if bucket is not configured yet
-          console.warn("Storage upload failed (bucket 'uploads' might not be configured). Falling back to temporary local blob URL.", uploadError);
-          const localUrl = URL.createObjectURL(file);
-          return { file_url: localUrl };
+          if (!uploadError) {
+            const { data } = supabase.storage.from('uploads').getPublicUrl(filePath);
+            if (data?.publicUrl) {
+              return { file_url: data.publicUrl };
+            }
+          }
+          console.warn("Storage upload failed (bucket 'uploads' might not be configured). Falling back to persistent base64 Data URL.", uploadError);
+        } catch (err) {
+          console.warn("Storage upload exception. Falling back to persistent base64 Data URL.", err);
         }
 
-        const { data } = supabase.storage.from('uploads').getPublicUrl(filePath);
-        return { file_url: data.publicUrl };
+        // Fallback to persistent base64 Data URL so images are never lost on refresh
+        const base64Url = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = (e) => reject(e);
+        });
+        return { file_url: base64Url };
       }
     }
   }

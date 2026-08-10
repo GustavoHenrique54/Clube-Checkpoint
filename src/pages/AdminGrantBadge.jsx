@@ -104,8 +104,6 @@ export default function AdminGrantBadge() {
     grantMutation.mutate({
       user_id: selectedUserId,
       badge_id: selectedBadgeId,
-      granted_by_admin: admin.email,
-      note: note || undefined,
     });
   };
 
