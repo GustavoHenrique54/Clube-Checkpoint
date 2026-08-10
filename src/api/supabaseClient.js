@@ -11,6 +11,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Map Base44 entity names to Supabase table names
 const TABLE_MAPPINGS = {
+  User: 'profiles',
   PublicProfile: 'profiles',
   Badge: 'badges',
   UserBadge: 'user_badges',
@@ -20,7 +21,8 @@ const TABLE_MAPPINGS = {
   FriendRequest: 'friend_requests',
   ConsideredGame: 'considered_games',
   ClubEvent: 'club_events',
-  IndieRecommendation: 'indie_recommendations'
+  IndieRecommendation: 'indie_recommendations',
+  LandingConfig: 'landing_config'
 };
 
 class SupabaseEntity {

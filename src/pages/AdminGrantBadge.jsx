@@ -87,10 +87,12 @@ export default function AdminGrantBadge() {
   const existingBadgeIds = existingGrants.map(g => g.badge_id);
   const selectedUser = users.find(u => u.id === selectedUserId);
 
-  const filteredUsers = users.filter(u =>
-    u.full_name?.toLowerCase().includes(userSearch.toLowerCase()) ||
-    u.email?.toLowerCase().includes(userSearch.toLowerCase())
-  );
+  const filteredUsers = users.filter(u => {
+    const name = (u.full_name || u.display_name || u.username || "").toLowerCase();
+    const email = (u.email || "").toLowerCase();
+    const query = userSearch.toLowerCase();
+    return name.includes(query) || email.includes(query);
+  });
 
   const filteredBadges = badges.filter(b =>
     b.name?.toLowerCase().includes(badgeSearch.toLowerCase()) &&
@@ -106,6 +108,8 @@ export default function AdminGrantBadge() {
       note: note || undefined,
     });
   };
+
+  const selectedUserDisplayName = selectedUser ? (selectedUser.full_name || selectedUser.display_name || selectedUser.username || selectedUser.email) : "";
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto space-y-6">
@@ -130,12 +134,12 @@ export default function AdminGrantBadge() {
         {selectedUser ? (
           <div className="flex items-center justify-between p-3 rounded-xl bg-white/15 border border-white/25">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-blue-900 overflow-hidden flex items-center justify-center border border-white/20">
-                {selectedUser.profile_image ? <img src={selectedUser.profile_image} alt="" className="w-full h-full object-cover" /> : <span className="text-xs font-black text-white">{selectedUser.full_name?.[0]}</span>}
+              <div className="w-8 h-8 rounded-full bg-blue-900 overflow-hidden flex items-center justify-center border border-white/20 flex-shrink-0">
+                {selectedUser.profile_image ? <img src={selectedUser.profile_image} alt="" className="w-full h-full object-cover" /> : <span className="text-xs font-black text-white">{selectedUserDisplayName?.[0]?.toUpperCase()}</span>}
               </div>
-              <div>
-                <p className="text-sm font-bold text-white">{selectedUser.full_name}</p>
-                <p className="text-xs text-white/50">{selectedUser.email}</p>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-white truncate">{selectedUserDisplayName}</p>
+                <p className="text-xs text-white/50 truncate">{selectedUser.email}</p>
               </div>
             </div>
             <button onClick={() => setSelectedUserId("")} className="text-white/40 hover:text-white"><X className="w-4 h-4" /></button>
@@ -147,17 +151,21 @@ export default function AdminGrantBadge() {
               <Input placeholder="Buscar membro..." value={userSearch} onChange={(e) => setUserSearch(e.target.value)} className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/30" />
             </div>
             <div className="max-h-48 overflow-y-auto space-y-1">
-              {filteredUsers.map((u) => (
-                <button key={u.id} onClick={() => { setSelectedUserId(u.id); setUserSearch(""); }} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors text-left">
-                  <div className="w-7 h-7 rounded-full bg-blue-900 flex items-center justify-center overflow-hidden border border-white/20">
-                    {u.profile_image ? <img src={u.profile_image} alt="" className="w-full h-full object-cover" /> : <span className="text-xs font-black text-white">{u.full_name?.[0]}</span>}
-                  </div>
-                  <div>
-                    <p className="text-sm text-white font-bold">{u.full_name}</p>
-                    <p className="text-xs text-white/50">{u.email}</p>
-                  </div>
-                </button>
-              ))}
+              {filteredUsers.map((u) => {
+                const name = u.full_name || u.display_name || u.username || u.email;
+                return (
+                  <button key={u.id} onClick={() => { setSelectedUserId(u.id); setUserSearch(""); }} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-colors text-left">
+                    <div className="w-7 h-7 rounded-full bg-blue-900 flex items-center justify-center overflow-hidden border border-white/20 flex-shrink-0">
+                      {u.profile_image ? <img src={u.profile_image} alt="" className="w-full h-full object-cover" /> : <span className="text-xs font-black text-white">{name?.[0]?.toUpperCase()}</span>}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm text-white font-bold truncate">{name}</p>
+                      <p className="text-xs text-white/50 truncate">{u.email}</p>
+                    </div>
+                  </button>
+                );
+              })}
+              {filteredUsers.length === 0 && <p className="text-sm text-white/40 text-center py-4">Nenhum membro encontrado.</p>}
             </div>
           </div>
         )}

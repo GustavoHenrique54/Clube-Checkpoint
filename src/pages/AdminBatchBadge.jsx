@@ -79,10 +79,12 @@ export default function AdminBatchBadge() {
     setDone(false);
   };
 
-  const filteredUsers = users.filter(u =>
-    u.full_name?.toLowerCase().includes(userSearch.toLowerCase()) ||
-    u.email?.toLowerCase().includes(userSearch.toLowerCase())
-  );
+  const filteredUsers = users.filter(u => {
+    const name = (u.full_name || u.display_name || u.username || "").toLowerCase();
+    const email = (u.email || "").toLowerCase();
+    const query = userSearch.toLowerCase();
+    return name.includes(query) || email.includes(query);
+  });
 
   // For grant: only show badges not already owned by ALL selected users (show if at least one user doesn't have it)
   const grantedBadgeIdsPerUser = {};
@@ -209,35 +211,43 @@ export default function AdminBatchBadge() {
           {/* Selected users chips */}
           {selectedUsers.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3">
-              {selectedUsers.map(u => (
-                <span key={u.id} className="flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  {u.full_name?.split(" ")[0]}
-                  <button onClick={() => toggleUser(u)}><X className="w-3 h-3" /></button>
-                </span>
-              ))}
+              {selectedUsers.map(u => {
+                const name = u.full_name || u.display_name || u.username || u.email;
+                return (
+                  <span key={u.id} className="flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {name?.split(" ")[0]}
+                    <button onClick={() => toggleUser(u)}><X className="w-3 h-3" /></button>
+                  </span>
+                );
+              })}
             </div>
           )}
 
           <div className="max-h-64 overflow-y-auto space-y-1">
-            {filteredUsers.map((u) => {
-              const isSelected = selectedUsers.some(s => s.id === u.id);
-              return (
-                <button
-                  key={u.id}
-                  onClick={() => toggleUser(u)}
-                  className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left ${isSelected ? "bg-white/20 border border-white/30" : "hover:bg-white/10"}`}
-                >
-                  <div className="w-7 h-7 rounded-full bg-blue-900 flex items-center justify-center overflow-hidden border border-white/20 flex-shrink-0">
-                    {u.profile_image ? <img src={u.profile_image} alt="" className="w-full h-full object-cover" /> : <span className="text-xs font-black text-white">{u.full_name?.[0]}</span>}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm text-white font-bold truncate">{u.full_name}</p>
-                    <p className="text-xs text-white/50 truncate">{u.email}</p>
-                  </div>
-                  {isSelected && <Check className="w-4 h-4 text-green-300 ml-auto flex-shrink-0" />}
-                </button>
-              );
-            })}
+            {filteredUsers.length === 0 ? (
+              <p className="text-sm text-white/40 text-center py-6">Nenhum membro encontrado.</p>
+            ) : (
+              filteredUsers.map((u) => {
+                const isSelected = selectedUsers.some(s => s.id === u.id);
+                const name = u.full_name || u.display_name || u.username || u.email;
+                return (
+                  <button
+                    key={u.id}
+                    onClick={() => toggleUser(u)}
+                    className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left ${isSelected ? "bg-white/20 border border-white/30" : "hover:bg-white/10"}`}
+                  >
+                    <div className="w-7 h-7 rounded-full bg-blue-900 flex items-center justify-center overflow-hidden border border-white/20 flex-shrink-0">
+                      {u.profile_image ? <img src={u.profile_image} alt="" className="w-full h-full object-cover" /> : <span className="text-xs font-black text-white">{name?.[0]?.toUpperCase()}</span>}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm text-white font-bold truncate">{name}</p>
+                      <p className="text-xs text-white/50 truncate">{u.email}</p>
+                    </div>
+                    {isSelected && <Check className="w-4 h-4 text-green-300 ml-auto flex-shrink-0" />}
+                  </button>
+                );
+              })
+            )}
           </div>
         </div>
 

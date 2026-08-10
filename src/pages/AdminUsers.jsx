@@ -45,11 +45,12 @@ export default function AdminUsers() {
   const badgeCountMap = {};
   userBadges.forEach(ub => { badgeCountMap[ub.user_id] = (badgeCountMap[ub.user_id] || 0) + 1; });
 
-  const filteredUsers = users.filter(u =>
-    u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase()) ||
-    u.username?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = users.filter(u => {
+    const name = (u.full_name || u.display_name || u.username || "").toLowerCase();
+    const email = (u.email || "").toLowerCase();
+    const query = search.toLowerCase();
+    return name.includes(query) || email.includes(query);
+  });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
@@ -73,26 +74,28 @@ export default function AdminUsers() {
       </div>
 
       <div className="space-y-3">
-        {filteredUsers.map((member) => (
-          <div key={member.id} className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/15 p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-full bg-blue-900 overflow-hidden flex-shrink-0 flex items-center justify-center border-2 border-white/20">
-                {member.profile_image ? (
-                  <img src={member.profile_image} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-sm font-black text-white">{member.full_name?.[0]?.toUpperCase()}</span>
-                )}
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-bold text-white truncate">{member.full_name}</p>
-                  {member.role === "admin" && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20 text-white font-black uppercase">Admin</span>
+        {filteredUsers.map((member) => {
+          const name = member.full_name || member.display_name || member.username || member.email;
+          return (
+            <div key={member.id} className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/15 p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-full bg-blue-900 overflow-hidden flex-shrink-0 flex items-center justify-center border-2 border-white/20">
+                  {member.profile_image ? (
+                    <img src={member.profile_image} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-sm font-black text-white">{name?.[0]?.toUpperCase()}</span>
                   )}
                 </div>
-                <p className="text-xs text-white/50 truncate">{member.email}</p>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-white truncate">{name}</p>
+                    {member.role === "admin" && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20 text-white font-black uppercase">Admin</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-white/50 truncate">{member.email}</p>
+                </div>
               </div>
-            </div>
             <div className="flex items-center gap-3 flex-shrink-0">
               <span className="text-xs text-white/50 font-medium">{badgeCountMap[member.id] || 0} emblemas</span>
               <Link to={createPageUrl(`AdminGrantBadge?user_id=${member.id}`)}>
@@ -117,7 +120,8 @@ export default function AdminUsers() {
               </Link>
             </div>
           </div>
-        ))}
+        );
+      })}
       </div>
     </div>
   );
